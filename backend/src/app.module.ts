@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { UsersModule } from './modules/users/users.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
 @Module({
@@ -25,9 +26,8 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
     // Database
     PrismaModule,
 
-    // Feature Modules (will be added later)
-    // AuthModule,
-    // UsersModule,
+    // Feature Modules
+    UsersModule,
     // ArtistsModule,
     // AlbumsModule,
     // SongsModule,

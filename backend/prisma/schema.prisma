@@ -136,8 +136,12 @@ enum AdContextType {
 // CORE TABLES
 // =====================================================
 
+// =====================================================
+// CORE TABLES
+// =====================================================
+
 model User {
-  id              String           @id @default(uuid())
+  id              Int              @id @default(autoincrement())
   email           String           @unique
   passwordHash    String?          @map("password_hash")
   username        String           @unique
@@ -172,8 +176,8 @@ model User {
 }
 
 model Artist {
-  id          String   @id @default(uuid())
-  userId      String?  @unique @map("user_id")
+  id          Int      @id @default(autoincrement())
+  userId      Int?     @unique @map("user_id")
   name        String
   slug        String   @unique
   bio         String?
@@ -195,8 +199,8 @@ model Artist {
 }
 
 model Album {
-  id          String    @id @default(uuid())
-  artistId    String    @map("artist_id")
+  id          Int       @id @default(autoincrement())
+  artistId    Int       @map("artist_id")
   title       String
   slug        String    @unique
   description String?
@@ -217,9 +221,9 @@ model Album {
 }
 
 model Song {
-  id          String   @id @default(uuid())
-  albumId     String?  @map("album_id")
-  artistId    String   @map("artist_id")
+  id          Int      @id @default(autoincrement())
+  albumId     Int?     @map("album_id")
+  artistId    Int      @map("artist_id")
   title       String
   slug        String   @unique
   trackNumber Int?     @map("track_number")
@@ -249,7 +253,7 @@ model Song {
 }
 
 model Genre {
-  id          String   @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   name        String   @unique
   slug        String   @unique
   description String?
@@ -265,8 +269,8 @@ model Genre {
 }
 
 model SongGenre {
-  songId  String @map("song_id")
-  genreId String @map("genre_id")
+  songId  Int @map("song_id")
+  genreId Int @map("genre_id")
 
   song    Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
   genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
@@ -276,8 +280,8 @@ model SongGenre {
 }
 
 model ArtistGenre {
-  artistId String @map("artist_id")
-  genreId  String @map("genre_id")
+  artistId Int @map("artist_id")
+  genreId  Int @map("genre_id")
 
   artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
   genre    Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
@@ -287,8 +291,8 @@ model ArtistGenre {
 }
 
 model SongArtist {
-  songId   String     @map("song_id")
-  artistId String     @map("artist_id")
+  songId   Int        @map("song_id")
+  artistId Int        @map("artist_id")
   role     ArtistRole @default(featured)
 
   song     Song       @relation(fields: [songId], references: [id], onDelete: Cascade)
@@ -303,8 +307,8 @@ model SongArtist {
 // =====================================================
 
 model Playlist {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
   name        String
   slug        String   @unique
   description String?
@@ -325,11 +329,11 @@ model Playlist {
 }
 
 model PlaylistSong {
-  id         String   @id @default(uuid())
-  playlistId String   @map("playlist_id")
-  songId     String   @map("song_id")
+  id         Int      @id @default(autoincrement())
+  playlistId Int      @map("playlist_id")
+  songId     Int      @map("song_id")
   position   Int
-  addedBy    String?  @map("added_by")
+  addedBy    Int?     @map("added_by")
   addedAt    DateTime @default(now()) @map("added_at")
 
   playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
@@ -344,10 +348,10 @@ model PlaylistSong {
 // =====================================================
 
 model UserFollow {
-  id            String     @id @default(uuid())
-  followerId    String     @map("follower_id")
+  id            Int        @id @default(autoincrement())
+  followerId    Int        @map("follower_id")
   followingType FollowType @map("following_type")
-  followingId   String     @map("following_id")
+  followingId   Int        @map("following_id")
   createdAt     DateTime   @default(now()) @map("created_at")
 
   follower      User       @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
@@ -358,10 +362,10 @@ model UserFollow {
 }
 
 model UserLibrary {
-  id       String          @id @default(uuid())
-  userId   String          @map("user_id")
+  id       Int             @id @default(autoincrement())
+  userId   Int             @map("user_id")
   itemType LibraryItemType @map("item_type")
-  itemId   String          @map("item_id")
+  itemId   Int             @map("item_id")
   addedAt  DateTime        @default(now()) @map("added_at")
 
   user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -371,13 +375,13 @@ model UserLibrary {
 }
 
 model ListeningHistory {
-  id         String      @id @default(uuid())
-  userId     String      @map("user_id")
-  songId     String      @map("song_id")
+  id         Int         @id @default(autoincrement())
+  userId     Int         @map("user_id")
+  songId     Int         @map("song_id")
   playedAt   DateTime    @default(now()) @map("played_at")
   durationMs Int         @map("duration_ms")
   contextType ContextType? @map("context_type")
-  contextId  String?     @map("context_id")
+  contextId  Int?        @map("context_id")
 
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   song       Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
@@ -387,12 +391,12 @@ model ListeningHistory {
 }
 
 model RecentlyPlayed {
-  id         String      @id @default(uuid())
-  userId     String      @map("user_id")
-  songId     String      @map("song_id")
+  id         Int         @id @default(autoincrement())
+  userId     Int         @map("user_id")
+  songId     Int         @map("song_id")
   playedAt   DateTime    @default(now()) @map("played_at")
   contextType ContextType? @map("context_type")
-  contextId  String?     @map("context_id")
+  contextId  Int?        @map("context_id")
 
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   song       Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
@@ -406,9 +410,9 @@ model RecentlyPlayed {
 // =====================================================
 
 model PlaybackQueue {
-  id       String   @id @default(uuid())
-  userId   String   @map("user_id")
-  songId   String   @map("song_id")
+  id       Int      @id @default(autoincrement())
+  userId   Int      @map("user_id")
+  songId   Int      @map("song_id")
   position Int
   addedAt  DateTime @default(now()) @map("added_at")
 
@@ -420,16 +424,16 @@ model PlaybackQueue {
 }
 
 model PlaybackState {
-  userId         String       @id @map("user_id")
-  currentSongId  String?      @map("current_song_id")
+  userId         Int          @id @map("user_id")
+  currentSongId  Int?         @map("current_song_id")
   progressMs     Int          @default(0) @map("progress_ms")
   isPlaying      Boolean      @default(false) @map("is_playing")
   shuffleMode    ShuffleMode  @default(off) @map("shuffle_mode")
   repeatMode     RepeatMode   @default(off) @map("repeat_mode")
   volume         Int          @default(100)
   contextType    ContextType? @map("context_type")
-  contextId      String?      @map("context_id")
-  activeDeviceId String?      @map("active_device_id")
+  contextId      Int?         @map("context_id")
+  activeDeviceId Int?         @map("active_device_id")
   updatedAt      DateTime     @updatedAt @map("updated_at")
 
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -444,8 +448,8 @@ model PlaybackState {
 // =====================================================
 
 model UserOAuthAccount {
-  id             String   @id @default(uuid())
-  userId         String   @map("user_id")
+  id             Int      @id @default(autoincrement())
+  userId         Int      @map("user_id")
   provider       String
   providerUserId String   @map("provider_user_id")
   email          String?
@@ -464,9 +468,9 @@ model UserOAuthAccount {
 }
 
 model UserSession {
-  id             String   @id @default(uuid())
-  userId         String   @map("user_id")
-  deviceId       String?  @map("device_id")
+  id             Int      @id @default(autoincrement())
+  userId         Int      @map("user_id")
+  deviceId       Int?     @map("device_id")
   tokenHash      String   @map("token_hash")
   ipAddress      String?  @map("ip_address")
   userAgent      String?  @map("user_agent")
@@ -483,8 +487,8 @@ model UserSession {
 }
 
 model UserDevice {
-  id          String     @id @default(uuid())
-  userId      String     @map("user_id")
+  id          Int        @id @default(autoincrement())
+  userId      Int        @map("user_id")
   deviceType  DeviceType @map("device_type")
   deviceName  String?    @map("device_name")
   deviceToken String?    @map("device_token")
@@ -512,9 +516,9 @@ model UserDevice {
 // =====================================================
 
 model DeviceSyncState {
-  id              String   @id @default(uuid())
-  userId          String   @map("user_id")
-  deviceId        String   @map("device_id")
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  deviceId        Int      @map("device_id")
   syncType        SyncType @map("sync_type")
   lastSyncVersion BigInt   @default(0) @map("last_sync_version")
   lastSyncAt      DateTime? @map("last_sync_at")
@@ -527,14 +531,14 @@ model DeviceSyncState {
 }
 
 model SyncLog {
-  id             String     @id @default(uuid())
-  userId         String     @map("user_id")
+  id             Int        @id @default(autoincrement())
+  userId         Int        @map("user_id")
   entityType     String     @map("entity_type")
-  entityId       String     @map("entity_id")
+  entityId       Int        @map("entity_id")
   action         SyncAction
   version        BigInt
   payload        Json?
-  sourceDeviceId String?    @map("source_device_id")
+  sourceDeviceId Int?       @map("source_device_id")
   createdAt      DateTime   @default(now()) @map("created_at")
 
   sourceDevice   UserDevice? @relation(fields: [sourceDeviceId], references: [id], onDelete: SetNull)
@@ -544,10 +548,10 @@ model SyncLog {
 }
 
 model DeviceTransfer {
-  id           String         @id @default(uuid())
-  userId       String         @map("user_id")
-  fromDeviceId String         @map("from_device_id")
-  toDeviceId   String         @map("to_device_id")
+  id           Int            @id @default(autoincrement())
+  userId       Int            @map("user_id")
+  fromDeviceId Int            @map("from_device_id")
+  toDeviceId   Int            @map("to_device_id")
   status       TransferStatus @default(pending)
   transferData Json?          @map("transfer_data")
   createdAt    DateTime       @default(now()) @map("created_at")
@@ -565,7 +569,7 @@ model DeviceTransfer {
 // =====================================================
 
 model SubscriptionPlan {
-  id           String       @id @default(uuid())
+  id           Int          @id @default(autoincrement())
   name         String       @unique
   slug         String       @unique
   description  String?
@@ -587,9 +591,9 @@ model SubscriptionPlan {
 }
 
 model UserSubscription {
-  id              String             @id @default(uuid())
-  userId          String             @map("user_id")
-  planId          String             @map("plan_id")
+  id              Int                @id @default(autoincrement())
+  userId          Int                @map("user_id")
+  planId          Int                @map("plan_id")
   status          SubscriptionStatus @default(active)
   billingCycle    BillingCycle       @default(monthly) @map("billing_cycle")
   startDate       DateTime           @default(now()) @map("start_date")
@@ -608,7 +612,7 @@ model UserSubscription {
 }
 
 model Advertisement {
-  id                String   @id @default(uuid())
+  id                Int      @id @default(autoincrement())
   name              String
   advertiser        String
   adType            AdType   @map("ad_type")
@@ -638,10 +642,10 @@ model Advertisement {
 }
 
 model AdImpression {
-  id             String        @id @default(uuid())
-  userId         String        @map("user_id")
-  adId           String        @map("ad_id")
-  deviceId       String?       @map("device_id")
+  id             Int           @id @default(autoincrement())
+  userId         Int           @map("user_id")
+  adId           Int           @map("ad_id")
+  deviceId       Int?          @map("device_id")
   impressionType ImpressionType @map("impression_type")
   contextType    AdContextType? @map("context_type")
   revenue        Decimal       @default(0) @db.Decimal(8, 4)
@@ -656,7 +660,7 @@ model AdImpression {
 }
 
 model UserAdSettings {
-  userId            String    @id @map("user_id")
+  userId            Int       @id @map("user_id")
   lastAdShownAt     DateTime? @map("last_ad_shown_at")
   songsSinceLastAd  Int       @default(0) @map("songs_since_last_ad")
   adsPerHour        Int       @default(4) @map("ads_per_hour")

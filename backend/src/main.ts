@@ -1,8 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { TransformInterceptor } from './common/interceptor';
+import { HttpExceptionFilter } from './common/filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -35,6 +37,15 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Global Interceptors
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector)),
+    new TransformInterceptor(),
+  );
+
+  // Global Filters
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger documentation
   const config = new DocumentBuilder()
