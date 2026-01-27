@@ -1,0 +1,670 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum SubscriptionType {
+  free
+  premium
+  family
+}
+
+enum AlbumType {
+  album
+  single
+  ep
+  compilation
+}
+
+enum ArtistRole {
+  primary
+  featured
+  composer
+  producer
+}
+
+enum FollowType {
+  artist
+  user
+  playlist
+}
+
+enum LibraryItemType {
+  song
+  album
+  playlist
+  artist
+}
+
+enum ContextType {
+  album
+  playlist
+  artist
+  search
+  radio
+}
+
+enum RepeatMode {
+  off
+  all
+  one
+}
+
+enum ShuffleMode {
+  off
+  normal
+  smart
+}
+
+enum DeviceType {
+  web
+  ios
+  android
+  desktop
+}
+
+enum SyncType {
+  library
+  playlists
+  playback
+  queue
+}
+
+enum SyncAction {
+  create
+  update
+  delete
+}
+
+enum TransferStatus {
+  pending
+  accepted
+  rejected
+  expired
+}
+
+enum AudioQuality {
+  normal
+  high
+  lossless
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
+  paused
+}
+
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+enum AdType {
+  audio
+  banner
+  video
+  popup
+}
+
+enum ImpressionType {
+  view
+  click
+  skip
+  complete
+}
+
+enum AdContextType {
+  between_songs
+  app_open
+  browse
+}
+
+// =====================================================
+// CORE TABLES
+// =====================================================
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  passwordHash    String?          @map("password_hash")
+  username        String           @unique
+  displayName     String?          @map("display_name")
+  avatarUrl       String?          @map("avatar_url")
+  dateOfBirth     DateTime?        @map("date_of_birth") @db.Date
+  country         String?
+  subscriptionType SubscriptionType @default(free) @map("subscription_type")
+  isArtist        Boolean          @default(false) @map("is_artist")
+  isActive        Boolean          @default(true) @map("is_active")
+  emailVerified   Boolean          @default(false) @map("email_verified")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  artist          Artist?
+  oauthAccounts   UserOAuthAccount[]
+  sessions        UserSession[]
+  devices         UserDevice[]
+  playlists       Playlist[]
+  follows         UserFollow[]      @relation("Follower")
+  library         UserLibrary[]
+  listeningHistory ListeningHistory[]
+  recentlyPlayed  RecentlyPlayed[]
+  playbackState   PlaybackState?
+  playbackQueue   PlaybackQueue[]
+  subscriptions   UserSubscription[]
+  adImpressions   AdImpression[]
+  adSettings      UserAdSettings?
+
+  @@map("users")
+}
+
+model Artist {
+  id          String   @id @default(uuid())
+  userId      String?  @unique @map("user_id")
+  name        String
+  slug        String   @unique
+  bio         String?
+  avatarUrl   String?  @map("avatar_url")
+  coverUrl    String?  @map("cover_url")
+  verified    Boolean  @default(false)
+  monthlyListeners Int  @default(0) @map("monthly_listeners")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  albums      Album[]
+  songs       Song[]   @relation("PrimaryArtist")
+  songArtists SongArtist[]
+  genres      ArtistGenre[]
+
+  @@map("artists")
+}
+
+model Album {
+  id          String    @id @default(uuid())
+  artistId    String    @map("artist_id")
+  title       String
+  slug        String    @unique
+  description String?
+  coverUrl    String?   @map("cover_url")
+  releaseDate DateTime? @map("release_date") @db.Date
+  albumType   AlbumType @default(album) @map("album_type")
+  totalTracks Int       @default(0) @map("total_tracks")
+  durationMs  Int       @default(0) @map("duration_ms")
+  isPublished Boolean   @default(false) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  artist      Artist    @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  songs       Song[]
+
+  @@map("albums")
+}
+
+model Song {
+  id          String   @id @default(uuid())
+  albumId     String?  @map("album_id")
+  artistId    String   @map("artist_id")
+  title       String
+  slug        String   @unique
+  trackNumber Int?     @map("track_number")
+  discNumber  Int      @default(1) @map("disc_number")
+  durationMs  Int      @map("duration_ms")
+  audioUrl    String   @map("audio_url")
+  previewUrl  String?  @map("preview_url")
+  lyricsUrl   String?  @map("lyrics_url")
+  isExplicit  Boolean  @default(false) @map("is_explicit")
+  isPlayable  Boolean  @default(true) @map("is_playable")
+  playCount   BigInt   @default(0) @map("play_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  album           Album?           @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  primaryArtist   Artist           @relation("PrimaryArtist", fields: [artistId], references: [id], onDelete: Cascade)
+  songArtists     SongArtist[]
+  genres          SongGenre[]
+  playlistSongs   PlaylistSong[]
+  listeningHistory ListeningHistory[]
+  recentlyPlayed  RecentlyPlayed[]
+  playbackStates  PlaybackState[]  @relation("CurrentSong")
+  playbackQueues  PlaybackQueue[]
+
+  @@map("songs")
+}
+
+model Genre {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  imageUrl    String?  @map("image_url")
+  color       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  songs       SongGenre[]
+  artists     ArtistGenre[]
+
+  @@map("genres")
+}
+
+model SongGenre {
+  songId  String @map("song_id")
+  genreId String @map("genre_id")
+
+  song    Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([songId, genreId])
+  @@map("song_genres")
+}
+
+model ArtistGenre {
+  artistId String @map("artist_id")
+  genreId  String @map("genre_id")
+
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  genre    Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([artistId, genreId])
+  @@map("artist_genres")
+}
+
+model SongArtist {
+  songId   String     @map("song_id")
+  artistId String     @map("artist_id")
+  role     ArtistRole @default(featured)
+
+  song     Song       @relation(fields: [songId], references: [id], onDelete: Cascade)
+  artist   Artist     @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([songId, artistId])
+  @@map("song_artists")
+}
+
+// =====================================================
+// PLAYLIST TABLES
+// =====================================================
+
+model Playlist {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  name        String
+  slug        String   @unique
+  description String?
+  imageUrl    String?  @map("image_url")
+  isPublic    Boolean  @default(false) @map("is_public")
+  isCollaborative Boolean @default(false) @map("is_collaborative")
+  totalTracks Int      @default(0) @map("total_tracks")
+  durationMs  Int      @default(0) @map("duration_ms")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  songs       PlaylistSong[]
+  followers   UserFollow[]
+
+  @@map("playlists")
+}
+
+model PlaylistSong {
+  id         String   @id @default(uuid())
+  playlistId String   @map("playlist_id")
+  songId     String   @map("song_id")
+  position   Int
+  addedBy    String?  @map("added_by")
+  addedAt    DateTime @default(now()) @map("added_at")
+
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, songId])
+  @@map("playlist_songs")
+}
+
+// =====================================================
+// USER INTERACTION TABLES
+// =====================================================
+
+model UserFollow {
+  id            String     @id @default(uuid())
+  followerId    String     @map("follower_id")
+  followingType FollowType @map("following_type")
+  followingId   String     @map("following_id")
+  createdAt     DateTime   @default(now()) @map("created_at")
+
+  follower      User       @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  playlist      Playlist?  @relation(fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingType, followingId])
+  @@map("user_follows")
+}
+
+model UserLibrary {
+  id       String          @id @default(uuid())
+  userId   String          @map("user_id")
+  itemType LibraryItemType @map("item_type")
+  itemId   String          @map("item_id")
+  addedAt  DateTime        @default(now()) @map("added_at")
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemType, itemId])
+  @@map("user_library")
+}
+
+model ListeningHistory {
+  id         String      @id @default(uuid())
+  userId     String      @map("user_id")
+  songId     String      @map("song_id")
+  playedAt   DateTime    @default(now()) @map("played_at")
+  durationMs Int         @map("duration_ms")
+  contextType ContextType? @map("context_type")
+  contextId  String?     @map("context_id")
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song       Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([userId, playedAt(sort: Desc)])
+  @@map("listening_history")
+}
+
+model RecentlyPlayed {
+  id         String      @id @default(uuid())
+  userId     String      @map("user_id")
+  songId     String      @map("song_id")
+  playedAt   DateTime    @default(now()) @map("played_at")
+  contextType ContextType? @map("context_type")
+  contextId  String?     @map("context_id")
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song       Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+  @@map("recently_played")
+}
+
+// =====================================================
+// PLAYBACK TABLES
+// =====================================================
+
+model PlaybackQueue {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  songId   String   @map("song_id")
+  position Int
+  addedAt  DateTime @default(now()) @map("added_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, position])
+  @@map("playback_queue")
+}
+
+model PlaybackState {
+  userId         String       @id @map("user_id")
+  currentSongId  String?      @map("current_song_id")
+  progressMs     Int          @default(0) @map("progress_ms")
+  isPlaying      Boolean      @default(false) @map("is_playing")
+  shuffleMode    ShuffleMode  @default(off) @map("shuffle_mode")
+  repeatMode     RepeatMode   @default(off) @map("repeat_mode")
+  volume         Int          @default(100)
+  contextType    ContextType? @map("context_type")
+  contextId      String?      @map("context_id")
+  activeDeviceId String?      @map("active_device_id")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentSong    Song?        @relation("CurrentSong", fields: [currentSongId], references: [id], onDelete: SetNull)
+  activeDevice   UserDevice?  @relation(fields: [activeDeviceId], references: [id], onDelete: SetNull)
+
+  @@map("playback_state")
+}
+
+// =====================================================
+// OAUTH & AUTHENTICATION TABLES
+// =====================================================
+
+model UserOAuthAccount {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  provider       String
+  providerUserId String   @map("provider_user_id")
+  email          String?
+  name           String?
+  avatarUrl      String?  @map("avatar_url")
+  accessToken    String?  @map("access_token")
+  refreshToken   String?  @map("refresh_token")
+  tokenExpiresAt DateTime? @map("token_expires_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@map("user_oauth_accounts")
+}
+
+model UserSession {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  deviceId       String?  @map("device_id")
+  tokenHash      String   @map("token_hash")
+  ipAddress      String?  @map("ip_address")
+  userAgent      String?  @map("user_agent")
+  isActive       Boolean  @default(true) @map("is_active")
+  expiresAt      DateTime @map("expires_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  lastActivityAt DateTime @default(now()) @map("last_activity_at")
+
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device         UserDevice? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isActive])
+  @@map("user_sessions")
+}
+
+model UserDevice {
+  id          String     @id @default(uuid())
+  userId      String     @map("user_id")
+  deviceType  DeviceType @map("device_type")
+  deviceName  String?    @map("device_name")
+  deviceToken String?    @map("device_token")
+  appVersion  String?    @map("app_version")
+  osVersion   String?    @map("os_version")
+  isActive    Boolean    @default(true) @map("is_active")
+  lastSyncAt  DateTime?  @map("last_sync_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions        UserSession[]
+  playbackStates  PlaybackState[]
+  syncStates      DeviceSyncState[]
+  syncLogs        SyncLog[]
+  transfersFrom   DeviceTransfer[] @relation("FromDevice")
+  transfersTo     DeviceTransfer[] @relation("ToDevice")
+  adImpressions   AdImpression[]
+
+  @@map("user_devices")
+}
+
+// =====================================================
+// DEVICE SYNC TABLES
+// =====================================================
+
+model DeviceSyncState {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  deviceId        String   @map("device_id")
+  syncType        SyncType @map("sync_type")
+  lastSyncVersion BigInt   @default(0) @map("last_sync_version")
+  lastSyncAt      DateTime? @map("last_sync_at")
+  pendingChanges  Int      @default(0) @map("pending_changes")
+
+  device          UserDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId, syncType])
+  @@map("device_sync_state")
+}
+
+model SyncLog {
+  id             String     @id @default(uuid())
+  userId         String     @map("user_id")
+  entityType     String     @map("entity_type")
+  entityId       String     @map("entity_id")
+  action         SyncAction
+  version        BigInt
+  payload        Json?
+  sourceDeviceId String?    @map("source_device_id")
+  createdAt      DateTime   @default(now()) @map("created_at")
+
+  sourceDevice   UserDevice? @relation(fields: [sourceDeviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, version(sort: Desc)])
+  @@map("sync_log")
+}
+
+model DeviceTransfer {
+  id           String         @id @default(uuid())
+  userId       String         @map("user_id")
+  fromDeviceId String         @map("from_device_id")
+  toDeviceId   String         @map("to_device_id")
+  status       TransferStatus @default(pending)
+  transferData Json?          @map("transfer_data")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  expiresAt    DateTime       @map("expires_at")
+
+  fromDevice   UserDevice     @relation("FromDevice", fields: [fromDeviceId], references: [id], onDelete: Cascade)
+  toDevice     UserDevice     @relation("ToDevice", fields: [toDeviceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("device_transfer")
+}
+
+// =====================================================
+// SUBSCRIPTION & ADS TABLES
+// =====================================================
+
+model SubscriptionPlan {
+  id           String       @id @default(uuid())
+  name         String       @unique
+  slug         String       @unique
+  description  String?
+  priceMonthly Decimal      @default(0) @map("price_monthly") @db.Decimal(10, 2)
+  priceYearly  Decimal      @default(0) @map("price_yearly") @db.Decimal(10, 2)
+  currency     String       @default("VND")
+  maxDevices   Int          @default(1) @map("max_devices")
+  hasAds       Boolean      @default(true) @map("has_ads")
+  canDownload  Boolean      @default(false) @map("can_download")
+  audioQuality AudioQuality @default(normal) @map("audio_quality")
+  smartShuffle Boolean      @default(false) @map("smart_shuffle")
+  skipLimit    Int?         @map("skip_limit")
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  subscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id              String             @id @default(uuid())
+  userId          String             @map("user_id")
+  planId          String             @map("plan_id")
+  status          SubscriptionStatus @default(active)
+  billingCycle    BillingCycle       @default(monthly) @map("billing_cycle")
+  startDate       DateTime           @default(now()) @map("start_date")
+  endDate         DateTime?          @map("end_date")
+  nextBillingDate DateTime?          @map("next_billing_date")
+  cancelledAt     DateTime?          @map("cancelled_at")
+  paymentMethod   String?            @map("payment_method")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            SubscriptionPlan   @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+  @@map("user_subscriptions")
+}
+
+model Advertisement {
+  id                String   @id @default(uuid())
+  name              String
+  advertiser        String
+  adType            AdType   @map("ad_type")
+  mediaUrl          String   @map("media_url")
+  clickUrl          String?  @map("click_url")
+  durationMs        Int?     @map("duration_ms")
+  targetCountries   Json?    @map("target_countries")
+  targetAgeMin      Int?     @map("target_age_min")
+  targetAgeMax      Int?     @map("target_age_max")
+  targetGenres      Json?    @map("target_genres")
+  priority          Int      @default(1)
+  budget            Decimal? @db.Decimal(12, 2)
+  costPerImpression Decimal? @map("cost_per_impression") @db.Decimal(8, 4)
+  costPerClick      Decimal? @map("cost_per_click") @db.Decimal(8, 4)
+  totalImpressions  BigInt   @default(0) @map("total_impressions")
+  totalClicks       BigInt   @default(0) @map("total_clicks")
+  startDate         DateTime? @map("start_date")
+  endDate           DateTime? @map("end_date")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  impressions       AdImpression[]
+
+  @@index([isActive, adType])
+  @@map("advertisements")
+}
+
+model AdImpression {
+  id             String        @id @default(uuid())
+  userId         String        @map("user_id")
+  adId           String        @map("ad_id")
+  deviceId       String?       @map("device_id")
+  impressionType ImpressionType @map("impression_type")
+  contextType    AdContextType? @map("context_type")
+  revenue        Decimal       @default(0) @db.Decimal(8, 4)
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ad             Advertisement @relation(fields: [adId], references: [id], onDelete: Cascade)
+  device         UserDevice?   @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("ad_impressions")
+}
+
+model UserAdSettings {
+  userId            String    @id @map("user_id")
+  lastAdShownAt     DateTime? @map("last_ad_shown_at")
+  songsSinceLastAd  Int       @default(0) @map("songs_since_last_ad")
+  adsPerHour        Int       @default(4) @map("ads_per_hour")
+  skipCountToday    Int       @default(0) @map("skip_count_today")
+  skipResetAt       DateTime? @map("skip_reset_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_ad_settings")
+}
