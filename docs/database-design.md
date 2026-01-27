@@ -54,7 +54,7 @@ Bảng lưu thông tin người dùng của hệ thống.
 | `date_of_birth`     | DATE         | NULL             | Ngày sinh                       |
 | `country`           | VARCHAR(100) | NULL             | Quốc gia                        |
 | `subscription_type` | ENUM         | DEFAULT 'free'   | 'free', 'premium', 'family'     |
-| `is_artist`         | BOOLEAN      | DEFAULT false    | Có phải nghệ sĩ không           |
+| `role`              | ENUM         | DEFAULT 'user'   | 'user', 'artist', 'admin'       |
 | `is_active`         | BOOLEAN      | DEFAULT true     | Trạng thái tài khoản            |
 | `email_verified`    | BOOLEAN      | DEFAULT false    | Email đã xác thực (is_verified) |
 | `otp_code`          | VARCHAR(6)   | NULL             | Mã OTP xác thực                 |
@@ -732,6 +732,8 @@ CREATE TYPE library_item_type AS ENUM ('song', 'album', 'playlist', 'artist');
 CREATE TYPE context_type AS ENUM ('album', 'playlist', 'artist', 'search', 'radio');
 CREATE TYPE repeat_mode AS ENUM ('off', 'all', 'one');
 
+CREATE TYPE user_role AS ENUM ('user', 'artist', 'admin');
+
 -- Users table
 CREATE TABLE users (
     id SERIAL,
@@ -743,7 +745,7 @@ CREATE TABLE users (
     date_of_birth DATE,
     country VARCHAR(100),
     subscription_type subscription_type DEFAULT 'free',
-    is_artist BOOLEAN DEFAULT false,
+    role user_role DEFAULT 'user',
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()

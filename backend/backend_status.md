@@ -17,6 +17,8 @@
 - [x] Prisma Schema Setup
 - [x] Global Exception Filters
 - [x] Response Interceptors (Standardized API response format)
+- [x] Admin Setup (Default credentials in .env, Seeding)
+- [x] Role Based Access Control (RBAC) System
 
 ### Modules
 
@@ -31,15 +33,27 @@
     - Filter by `isActive`, `isArtist`, `subscriptionType`.
   - **Pagination**: Standardized pagination.
   - **Security**: Password hashing using `bcrypt`.
+  - **RBAC**: Role-based access control (User, Artist, Admin).
+  - **Admin**: Protected default Admin account (configured via `.env`).
   - **Data Integrity**: All IDs migrated to **Integer (Auto-increment)**.
 - **Key Files:**
   - `src/modules/users/controller/user.controller.ts`
   - `src/modules/users/service/user.service.ts`
   - `src/modules/users/repository/user.repository.ts`
 
-#### 🔴 Auth Module
+#### 🟢 Auth Module (Complete)
 
-- **Status:** Removed (as requested).
+- **Status:** Operational
+- **Features:**
+  - **Register**: Sign up with Email/Password + OTP verification.
+  - **Login**: Email/Username + Password login.
+  - **Tokens**: JWT (Access Token 15m, Refresh Token 7d).
+  - **Password Reset**: Forgot password flow with OTP.
+  - **Guards**: `JwtAuthGuard`, `RolesGuard`.
+  - **Swagger Auth**: Standard Bearer Auth integration.
+- **Key Files:**
+  - `src/modules/auth/service/auth.service.ts`
+  - `src/modules/auth/strategy/jwt.strategy.ts`
 
 #### ⚪ Pending Modules (Schema Only)
 
