@@ -153,6 +153,8 @@ model User {
   isArtist        Boolean          @default(false) @map("is_artist")
   isActive        Boolean          @default(true) @map("is_active")
   emailVerified   Boolean          @default(false) @map("email_verified")
+  otpCode         String?          @map("otp_code")
+  otpExpiresAt    DateTime?        @map("otp_expires_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
 

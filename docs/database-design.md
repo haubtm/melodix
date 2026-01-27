@@ -43,22 +43,24 @@ Thiết kế database cho ứng dụng nghe nhạc Melodix - một ứng dụng 
 
 Bảng lưu thông tin người dùng của hệ thống.
 
-| Column              | Type         | Constraints      | Description                    |
-| ------------------- | ------------ | ---------------- | ------------------------------ |
-| `id`                | INTEGER      | PRIMARY KEY      | ID người dùng                  |
-| `email`             | VARCHAR(255) | UNIQUE, NOT NULL | Email đăng nhập                |
-| `password_hash`     | VARCHAR(255) | NULL             | Mật khẩu (NULL nếu dùng OAuth) |
-| `username`          | VARCHAR(100) | UNIQUE, NOT NULL | Tên hiển thị                   |
-| `display_name`      | VARCHAR(255) | NULL             | Tên hiển thị đầy đủ            |
-| `avatar_url`        | TEXT         | NULL             | URL ảnh đại diện               |
-| `date_of_birth`     | DATE         | NULL             | Ngày sinh                      |
-| `country`           | VARCHAR(100) | NULL             | Quốc gia                       |
-| `subscription_type` | ENUM         | DEFAULT 'free'   | 'free', 'premium', 'family'    |
-| `is_artist`         | BOOLEAN      | DEFAULT false    | Có phải nghệ sĩ không          |
-| `is_active`         | BOOLEAN      | DEFAULT true     | Trạng thái tài khoản           |
-| `email_verified`    | BOOLEAN      | DEFAULT false    | Email đã xác thực              |
-| `created_at`        | TIMESTAMP    | DEFAULT NOW()    | Ngày tạo                       |
-| `updated_at`        | TIMESTAMP    | DEFAULT NOW()    | Ngày cập nhật                  |
+| Column              | Type         | Constraints      | Description                     |
+| ------------------- | ------------ | ---------------- | ------------------------------- |
+| `id`                | INTEGER      | PRIMARY KEY      | ID người dùng                   |
+| `email`             | VARCHAR(255) | UNIQUE, NOT NULL | Email đăng nhập                 |
+| `password_hash`     | VARCHAR(255) | NULL             | Mật khẩu (NULL nếu dùng OAuth)  |
+| `username`          | VARCHAR(100) | UNIQUE, NOT NULL | Tên hiển thị                    |
+| `display_name`      | VARCHAR(255) | NULL             | Tên hiển thị đầy đủ             |
+| `avatar_url`        | TEXT         | NULL             | URL ảnh đại diện                |
+| `date_of_birth`     | DATE         | NULL             | Ngày sinh                       |
+| `country`           | VARCHAR(100) | NULL             | Quốc gia                        |
+| `subscription_type` | ENUM         | DEFAULT 'free'   | 'free', 'premium', 'family'     |
+| `is_artist`         | BOOLEAN      | DEFAULT false    | Có phải nghệ sĩ không           |
+| `is_active`         | BOOLEAN      | DEFAULT true     | Trạng thái tài khoản            |
+| `email_verified`    | BOOLEAN      | DEFAULT false    | Email đã xác thực (is_verified) |
+| `otp_code`          | VARCHAR(6)   | NULL             | Mã OTP xác thực                 |
+| `otp_expires_at`    | TIMESTAMP    | NULL             | Thời gian hết hạn OTP           |
+| `created_at`        | TIMESTAMP    | DEFAULT NOW()    | Ngày tạo                        |
+| `updated_at`        | TIMESTAMP    | DEFAULT NOW()    | Ngày cập nhật                   |
 
 ---
 

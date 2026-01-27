@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { MailModule } from './modules/mail/mail.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
 @Module({
@@ -28,6 +30,8 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
 
     // Feature Modules
     UsersModule,
+    AuthModule,
+    MailModule,
     // ArtistsModule,
     // AlbumsModule,
     // SongsModule,

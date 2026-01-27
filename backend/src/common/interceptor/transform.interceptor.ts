@@ -13,21 +13,38 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponseDt
         const response = ctx.getResponse();
         const statusCode = response.statusCode;
 
-        let responseData = data || null;
+        let responseData = data;
         let metadata = undefined;
-        const message = 'Thành công';
+        let message = 'Thành công';
 
         // Check if data is PaginatedResponseDto
         if (data instanceof PaginatedResponseDto) {
           responseData = data.data;
-          // Extract metadata from PaginatedResponseDto
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { data: _, ...meta } = data;
           metadata = meta;
+        } else if (
+          data &&
+          typeof data === 'object' &&
+          'message' in data &&
+          Object.keys(data).length === 1
+        ) {
+          // Case where service returns { message: "..." }
+          message = data.message;
+          responseData = null;
+        } else if (data && typeof data === 'object' && 'message' in data) {
+          // Case where service returns { message: "...", ...otherData }
+          message = data.message;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { message: _, ...rest } = data;
+          responseData = rest;
+          if (Object.keys(responseData).length === 0) responseData = null;
         }
 
+        if (responseData === undefined) responseData = null;
+
         return {
-          code: 1, // Default success code, you can customize this logic
+          code: 1, // Default success code
           status: statusCode,
           message: message,
           data: responseData,
