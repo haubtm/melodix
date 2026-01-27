@@ -18,13 +18,7 @@ export class ApiResponseDto<T> {
   })
   metadata?: any;
 
-  constructor(
-    code: number,
-    status: number,
-    message: string,
-    data: T,
-    metadata?: any,
-  ) {
+  constructor(code: number, status: number, message: string, data: T, metadata?: any) {
     this.code = code;
     this.status = status;
     this.message = message;

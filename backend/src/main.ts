@@ -13,9 +13,7 @@ async function bootstrap() {
   // Get config values
   const port = configService.get<number>('app.port', 3000);
   const apiPrefix = configService.get<string>('app.apiPrefix', 'api/v1');
-  const corsOrigins = configService.get<string[]>('app.corsOrigins', [
-    'http://localhost:3001',
-  ]);
+  const corsOrigins = configService.get<string[]>('app.corsOrigins', ['http://localhost:3001']);
 
   // Global prefix
   app.setGlobalPrefix(apiPrefix);
@@ -69,9 +67,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(port);
-  console.log(
-    `🚀 Melodix API is running on: http://localhost:${port}/${apiPrefix}`,
-  );
+  console.log(`🚀 Melodix API is running on: http://localhost:${port}/${apiPrefix}`);
   console.log(`📚 API Documentation: http://localhost:${port}/docs`);
 }
 

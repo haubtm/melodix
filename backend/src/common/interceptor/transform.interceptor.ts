@@ -1,23 +1,12 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PaginatedResponseDto } from '../dto/paginated-response.dto';
 import { ApiResponseDto } from '../dto/api-response.dto';
 
 @Injectable()
-export class TransformInterceptor<T> implements NestInterceptor<
-  T,
-  ApiResponseDto<T>
-> {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<ApiResponseDto<T>> {
+export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponseDto<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponseDto<T>> {
     return next.handle().pipe(
       map((data) => {
         const ctx = context.switchToHttp();
@@ -26,7 +15,7 @@ export class TransformInterceptor<T> implements NestInterceptor<
 
         let responseData = data || null;
         let metadata = undefined;
-        let message = 'Thành công';
+        const message = 'Thành công';
 
         // Check if data is PaginatedResponseDto
         if (data instanceof PaginatedResponseDto) {

@@ -18,5 +18,4 @@ export const SUBSCRIPTION_TYPES = {
   FAMILY: 'family',
 } as const;
 
-export type SubscriptionType =
-  (typeof SUBSCRIPTION_TYPES)[keyof typeof SUBSCRIPTION_TYPES];
+export type SubscriptionType = (typeof SUBSCRIPTION_TYPES)[keyof typeof SUBSCRIPTION_TYPES];

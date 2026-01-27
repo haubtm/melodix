@@ -1,17 +1,7 @@
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../repository';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  UserResponseDto,
-  UserListDto,
-  DeleteManyDto,
-} from '../dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto } from '../dto';
 import { USER_ERRORS, USER_DEFAULTS } from '../constant';
 import { PaginatedResponseDto } from '../../../common/dto';
 import { Prisma } from '@prisma/client';
@@ -46,23 +36,16 @@ export class UserService {
       passwordHash,
       username: createUserDto.username,
       displayName: createUserDto.displayName,
-      dateOfBirth: createUserDto.dateOfBirth
-        ? new Date(createUserDto.dateOfBirth)
-        : null,
+      dateOfBirth: createUserDto.dateOfBirth ? new Date(createUserDto.dateOfBirth) : null,
       country: createUserDto.country,
     });
 
     return new UserResponseDto(user);
   }
 
-  async findAll(
-    listDto: UserListDto,
-  ): Promise<PaginatedResponseDto<UserResponseDto>> {
+  async findAll(listDto: UserListDto): Promise<PaginatedResponseDto<UserResponseDto>> {
     const page = listDto.page || 1;
-    const limit = Math.min(
-      listDto.limit || USER_DEFAULTS.PAGE_SIZE,
-      USER_DEFAULTS.MAX_PAGE_SIZE,
-    );
+    const limit = Math.min(listDto.limit || USER_DEFAULTS.PAGE_SIZE, USER_DEFAULTS.MAX_PAGE_SIZE);
     const skip = (page - 1) * limit;
 
     // Build where clause
@@ -100,9 +83,7 @@ export class UserService {
     }
 
     // Build orderBy
-    let orderBy:
-      | Prisma.UserOrderByWithRelationInput
-      | Prisma.UserOrderByWithRelationInput[] = {
+    let orderBy: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[] = {
       createdAt: 'desc',
     };
 
@@ -139,10 +120,7 @@ export class UserService {
     return this.userRepository.findByUsername(username);
   }
 
-  async update(
-    id: number,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseDto> {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     const existingUser = await this.userRepository.findActiveById(id);
 
     if (!existingUser) {
@@ -152,9 +130,7 @@ export class UserService {
     const user = await this.userRepository.update(id, {
       displayName: updateUserDto.displayName,
       avatarUrl: updateUserDto.avatarUrl,
-      dateOfBirth: updateUserDto.dateOfBirth
-        ? new Date(updateUserDto.dateOfBirth)
-        : undefined,
+      dateOfBirth: updateUserDto.dateOfBirth ? new Date(updateUserDto.dateOfBirth) : undefined,
       country: updateUserDto.country,
     });
 
@@ -183,18 +159,13 @@ export class UserService {
     const missingIds = ids.filter((id) => !foundIds.includes(id));
 
     if (missingIds.length > 0) {
-      throw new NotFoundException(
-        `Users with IDs [${missingIds.join(', ')}] not found`,
-      );
+      throw new NotFoundException(`Users with IDs [${missingIds.join(', ')}] not found`);
     }
 
     await this.userRepository.softDeleteMany(ids);
   }
 
-  async validatePassword(
-    email: string,
-    password: string,
-  ): Promise<UserResponseDto | null> {
+  async validatePassword(email: string, password: string): Promise<UserResponseDto | null> {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user || !user.passwordHash) {
@@ -215,10 +186,7 @@ export class UserService {
   }
 
   async updatePassword(id: number, newPassword: string): Promise<void> {
-    const passwordHash = await bcrypt.hash(
-      newPassword,
-      USER_DEFAULTS.PASSWORD_SALT_ROUNDS,
-    );
+    const passwordHash = await bcrypt.hash(newPassword, USER_DEFAULTS.PASSWORD_SALT_ROUNDS);
     await this.userRepository.updatePassword(id, passwordHash);
   }
 

@@ -2,6 +2,7 @@ import { User } from '@prisma/client';
 
 export type UserEntity = User;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IUserWithoutPassword extends Omit<User, 'passwordHash'> {}
 
 export interface IUserPublicProfile {

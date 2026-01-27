@@ -9,23 +9,10 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
-  BadRequestException,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UserService } from '../service';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  UserResponseDto,
-  UserListDto,
-  DeleteManyDto,
-} from '../dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto, DeleteManyDto } from '../dto';
 import { PaginatedResponseDto } from '../../../common/dto';
 
 @ApiTags('users')
@@ -49,9 +36,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Lấy danh sách users với search, filter, sort' })
   @ApiResponse({ status: 200, description: 'Danh sách users' })
-  async findAll(
-    @Body() listDto: UserListDto,
-  ): Promise<PaginatedResponseDto<UserResponseDto>> {
+  async findAll(@Body() listDto: UserListDto): Promise<PaginatedResponseDto<UserResponseDto>> {
     return this.userService.findAll(listDto);
   }
 
@@ -64,9 +49,7 @@ export class UserController {
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User không tồn tại' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserResponseDto> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserResponseDto> {
     return this.userService.findOne(id);
   }
 

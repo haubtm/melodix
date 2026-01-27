@@ -23,10 +23,7 @@ export class UserRepository {
     return this.prisma.user.findUnique({ where: { username } });
   }
 
-  async findByEmailOrUsername(
-    email: string,
-    username: string,
-  ): Promise<UserEntity | null> {
+  async findByEmailOrUsername(email: string, username: string): Promise<UserEntity | null> {
     return this.prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }],
@@ -38,9 +35,7 @@ export class UserRepository {
     skip?: number;
     take?: number;
     where?: Prisma.UserWhereInput;
-    orderBy?:
-      | Prisma.UserOrderByWithRelationInput
-      | Prisma.UserOrderByWithRelationInput[];
+    orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[];
   }): Promise<UserEntity[]> {
     const { skip, take, where, orderBy } = params;
     return this.prisma.user.findMany({
