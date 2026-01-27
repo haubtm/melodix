@@ -1,4 +1,10 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../repository';
 import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto } from '../dto';
@@ -8,7 +14,10 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly configService: ConfigService,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Check if email or username already exists
@@ -38,6 +47,7 @@ export class UserService {
       displayName: createUserDto.displayName,
       dateOfBirth: createUserDto.dateOfBirth ? new Date(createUserDto.dateOfBirth) : null,
       country: createUserDto.country,
+      role: createUserDto.role || 'user',
     });
 
     return new UserResponseDto(user);
@@ -58,9 +68,9 @@ export class UserService {
       where.isActive = true; // Default: only active users
     }
 
-    // isArtist filter
-    if (listDto.isArtist !== undefined) {
-      where.isArtist = listDto.isArtist;
+    // role filter
+    if (listDto.role) {
+      where.role = listDto.role as any;
     }
 
     // subscriptionType filter
@@ -144,6 +154,11 @@ export class UserService {
       throw new NotFoundException(USER_ERRORS.USER_NOT_FOUND);
     }
 
+    const adminUsername = this.configService.get<string>('app.admin.username');
+    if (user.username === adminUsername) {
+      throw new ForbiddenException('Không thể xóa tài khoản Admin mặc định');
+    }
+
     await this.userRepository.softDelete(id);
   }
 
@@ -160,6 +175,12 @@ export class UserService {
 
     if (missingIds.length > 0) {
       throw new NotFoundException(`Users with IDs [${missingIds.join(', ')}] not found`);
+    }
+
+    const adminUsername = this.configService.get<string>('app.admin.username');
+    const adminUser = users.find((user) => user.username === adminUsername);
+    if (adminUser) {
+      throw new ForbiddenException('Không thể xóa tài khoản Admin mặc định');
     }
 
     await this.userRepository.softDeleteMany(ids);

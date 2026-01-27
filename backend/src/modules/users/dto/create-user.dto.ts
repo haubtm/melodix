@@ -1,5 +1,14 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsDateString, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsDateString,
+  MaxLength,
+  IsEnum,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@example.com', description: 'Email của user' })
@@ -32,6 +41,15 @@ export class CreateUserDto {
   @IsOptional()
   @IsDateString()
   dateOfBirth?: string;
+
+  @ApiPropertyOptional({
+    example: 'user',
+    enum: UserRole,
+    description: 'Vai trò người dùng (user, artist, admin)',
+  })
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
 
   @ApiPropertyOptional({ example: 'VN', description: 'Mã quốc gia' })
   @IsOptional()

@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 
 export type UserEntity = User;
 
@@ -10,7 +10,7 @@ export interface IUserPublicProfile {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
-  isArtist: boolean;
+  role: UserRole;
 }
 
 export interface IUserSession {
@@ -18,4 +18,5 @@ export interface IUserSession {
   email: string;
   username: string;
   subscriptionType: string;
+  role: UserRole;
 }

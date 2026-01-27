@@ -43,8 +43,8 @@ export class UserResponseDto {
   subscriptionType: string;
 
   @Expose()
-  @ApiProperty({ example: false, description: 'User có phải artist không' })
-  isArtist: boolean;
+  @ApiProperty({ example: 'user', description: 'Vai trò người dùng' })
+  role: string;
 
   @Expose()
   @ApiProperty({ example: true, description: 'Tài khoản đang hoạt động' })

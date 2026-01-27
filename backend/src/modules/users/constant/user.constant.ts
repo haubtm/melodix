@@ -2,7 +2,8 @@ export const USER_ERRORS = {
   EMAIL_EXISTS: 'Email đã được sử dụng',
   USERNAME_EXISTS: 'Username đã được sử dụng',
   USER_NOT_FOUND: 'User không tồn tại',
-  INVALID_CREDENTIALS: 'Email hoặc mật khẩu không đúng',
+  INVALID_CREDENTIALS: 'Tài khoản hoặc mật khẩu không chính xác',
+  WRONG_PASSWORD: 'Mật khẩu không đúng',
   ACCOUNT_DISABLED: 'Tài khoản đã bị vô hiệu hóa',
 };
 

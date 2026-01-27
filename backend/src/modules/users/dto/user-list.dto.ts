@@ -1,17 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsBoolean } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 import { BaseListDto } from '../../../common/dto';
 
 export class UserListDto extends BaseListDto {
   @ApiPropertyOptional({
-    example: true,
-    description: 'Lọc theo trạng thái artist',
+    example: 'user',
+    description: 'Lọc theo role (user, artist, admin)',
   })
   @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
-  isArtist?: boolean;
+  role?: string;
 
   @ApiPropertyOptional({
     example: 'premium',

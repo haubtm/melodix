@@ -20,6 +20,7 @@ import {
 import { UserEntity } from '../../users/entity';
 
 import { MailService } from '../../mail/mail.service';
+import { USER_ERRORS } from '../../users/constant';
 
 @Injectable()
 export class AuthService {
@@ -108,16 +109,16 @@ export class AuthService {
 
     const user = await this.userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(USER_ERRORS.INVALID_CREDENTIALS);
     }
 
     // Check password
     if (!user.passwordHash) {
-      throw new UnauthorizedException('Invalid credentials (OAuth account?)');
+      throw new UnauthorizedException(USER_ERRORS.INVALID_CREDENTIALS);
     }
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(USER_ERRORS.INVALID_CREDENTIALS);
     }
 
     // Check verification
@@ -126,14 +127,14 @@ export class AuthService {
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Account disabled');
+      throw new UnauthorizedException(USER_ERRORS.ACCOUNT_DISABLED);
     }
 
     return this.generateTokens(user);
   }
 
   private async generateTokens(user: UserEntity) {
-    const payload = { sub: user.id, email: user.email, role: user.isArtist ? 'artist' : 'user' };
+    const payload = { sub: user.id, email: user.email, role: user.role };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, { expiresIn: '15m' }), // Short lived

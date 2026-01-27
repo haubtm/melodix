@@ -140,6 +140,12 @@ enum AdContextType {
 // CORE TABLES
 // =====================================================
 
+enum UserRole {
+  user
+  artist
+  admin
+}
+
 model User {
   id              Int              @id @default(autoincrement())
   email           String           @unique
@@ -150,7 +156,7 @@ model User {
   dateOfBirth     DateTime?        @map("date_of_birth") @db.Date
   country         String?
   subscriptionType SubscriptionType @default(free) @map("subscription_type")
-  isArtist        Boolean          @default(false) @map("is_artist")
+  role            UserRole         @default(user)
   isActive        Boolean          @default(true) @map("is_active")
   emailVerified   Boolean          @default(false) @map("email_verified")
   otpCode         String?          @map("otp_code")

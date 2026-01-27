@@ -9,18 +9,28 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from '../service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto, DeleteManyDto } from '../dto';
 import { PaginatedResponseDto } from '../../../common/dto';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../../auth/guard';
+import { RolesGuard } from '../../../common/guard/roles.guard';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { UserRole } from '@prisma/client';
+import { GetUser } from '../../auth/decorator';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @Roles(UserRole.admin)
   @ApiOperation({ summary: 'Tạo user mới' })
   @ApiResponse({
     status: 201,
@@ -33,6 +43,7 @@ export class UserController {
   }
 
   @Post('list')
+  @Roles(UserRole.admin)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Lấy danh sách users với search, filter, sort' })
   @ApiResponse({ status: 200, description: 'Danh sách users' })
@@ -65,11 +76,17 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @GetUser('id') currentUserId: number,
+    @GetUser('role') currentUserRole: UserRole,
   ): Promise<UserResponseDto> {
+    if (currentUserRole !== UserRole.admin && currentUserId !== id) {
+      throw new ForbiddenException('Bạn không có quyền cập nhật user này');
+    }
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete('many')
+  @Roles(UserRole.admin)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Xóa nhiều users (soft delete)' })
   @ApiResponse({ status: 200, description: 'Các users đã được xóa' })
