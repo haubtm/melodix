@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  melodix-backend:
+    container_name: melodix-backend
+    image: lebahau/melodix-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: mysql://root:root@melodix-db:3306/melodix
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: melodix-redis
+    restart: always
+    ports:
+      - '6379:6379'
+
+  melodix-db:
+    image: mariadb:10.11
+    container_name: melodix-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-melodix}
+      MYSQL_USER: ${DB_USER:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - default
+
+volumes:
+  db_data:
