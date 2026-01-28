@@ -2,7 +2,7 @@
 
 > **Tài liệu thiết kế Backend cho ứng dụng nghe nhạc Melodix**
 >
-> Ngày tạo: 2026-01-27
+> Ngày tạo: 2026-01-28
 
 ---
 
@@ -129,6 +129,8 @@ modules/auth/
 | GET    | `/auth/facebook/callback` | Facebook OAuth callback     | No   |
 | GET    | `/auth/sessions`          | Lấy danh sách sessions      | Yes  |
 | DELETE | `/auth/sessions/:id`      | Xóa session (logout device) | Yes  |
+| POST   | `/auth/change-password`   | Đổi mật khẩu                | Yes  |
+| GET    | `/auth/me`                | Lấy profile cá nhân         | Yes  |
 
 ---
 

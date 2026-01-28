@@ -8,7 +8,11 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
   RefreshTokenDto,
+  ChangePasswordDto,
 } from '../dto';
+import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { UseGuards, Get, Request } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -68,5 +72,25 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Tokens refreshed' })
   async refresh(@Body() dto: RefreshTokenDto) {
     return await this.authService.refresh(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  async changePassword(@Request() req: any, @Body() dto: ChangePasswordDto) {
+    return await this.authService.changePassword(req.user.id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('me')
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({ status: 200, description: 'User profile returned' })
+  async getProfile(@Request() req: any) {
+    const userId = req.user.id || req.user.sub || req.user.userId;
+    return await this.authService.getProfile(userId);
   }
 }

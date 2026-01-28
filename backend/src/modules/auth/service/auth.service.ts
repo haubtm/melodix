@@ -16,6 +16,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
   RefreshTokenDto,
+  ChangePasswordDto,
 } from '../dto';
 import { UserEntity } from '../../users/entity';
 
@@ -233,5 +234,43 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
+  }
+  async changePassword(
+    userId: number,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    const { oldPassword, newPassword, confirmPassword } = changePasswordDto;
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('Mật khẩu xác nhận không khớp');
+    }
+
+    const user = await this.userRepository.findActiveById(userId);
+    if (!user || !user.passwordHash) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!isMatch) {
+      throw new BadRequestException('Mật khẩu cũ không chính xác');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.updatePassword(userId, passwordHash);
+
+    return { message: 'Đổi mật khẩu thành công' };
+  }
+
+  async getProfile(userId: number): Promise<any> {
+    const user = await this.userRepository.findActiveById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const tokens = await this.generateTokens(user);
+    const { passwordHash, ...result } = user;
+    return {
+      ...result,
+      ...tokens,
+    };
   }
 }

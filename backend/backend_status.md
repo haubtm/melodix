@@ -1,6 +1,6 @@
 # Melodix Backend Status Report
 
-**Last Updated:** 2026-01-27
+**Last Updated:** 2026-01-28
 
 ## 1. System Overview
 
@@ -19,6 +19,13 @@
 - [x] Response Interceptors (Standardized API response format)
 - [x] Admin Setup (Default credentials in .env, Seeding)
 - [x] Role Based Access Control (RBAC) System
+
+### Testing Status
+
+- [x] **Unit Tests Setup**: Jest configured.
+- [x] **Auth Module Tests**: 100% Coverage (Service & Controller).
+- [x] **Users Module Tests**: 100% Coverage (Service & Controller).
+- **Total Passing Tests**: 46
 
 ### Modules
 

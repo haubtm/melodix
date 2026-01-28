@@ -114,6 +114,29 @@ describe('UserService', () => {
     });
   });
 
+  describe('update', () => {
+    const updateUserDto = {
+      displayName: 'Updated Name',
+      country: 'US',
+    };
+
+    it('should update user successfully', async () => {
+      userRepository.findActiveById.mockResolvedValue({ id: 1, email: 'test@example.com' });
+      userRepository.update.mockResolvedValue({ id: 1, ...updateUserDto });
+
+      const result = await service.update(1, updateUserDto);
+
+      expect(userRepository.update).toHaveBeenCalledWith(1, expect.objectContaining(updateUserDto));
+      expect(result.displayName).toBe(updateUserDto.displayName);
+    });
+
+    it('should throw NotFoundException if user not found', async () => {
+      userRepository.findActiveById.mockResolvedValue(null);
+
+      await expect(service.update(999, updateUserDto)).rejects.toThrow(NotFoundException);
+    });
+  });
+
   describe('remove', () => {
     it('should soft delete user successfully', async () => {
       userRepository.findById.mockResolvedValue({ id: 2, username: 'user2' });
