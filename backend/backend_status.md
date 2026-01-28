@@ -24,7 +24,8 @@
 
 - [x] **Unit Tests Setup**: Jest configured.
 - [x] **Auth Module Tests**: 100% Coverage (Service & Controller).
-- [x] **Users Module Tests**: 100% Coverage (Service & Controller).
+- [x] **Users Module**: 100% (Repository, Service, Controller tests passing). Total 25 tests.
+- **Artists Module**: 100% (Repository, Service, Controller tests passing).
 - **Total Passing Tests**: 46
 
 ### Modules
@@ -62,11 +63,22 @@
   - `src/modules/auth/service/auth.service.ts`
   - `src/modules/auth/strategy/jwt.strategy.ts`
 
+#### 🟢 Artists Module (Complete)
+
+- **Status:** Operational
+- **Features:**
+  - **CRUD Operations**: Create, Read (List/Detail), Update, Delete (Hard Delete).
+  - **Search & Filter**: Verified, Search (Name, Slug, Bio), Sort.
+  - **Security**: ID-based ownership check for updates.
+  - **Batch Operations**: Delete many.
+- **Key Files:**
+  - `src/modules/artists/controller/artist.controller.ts`
+  - `src/modules/artists/service/artist.service.ts`
+
 #### ⚪ Pending Modules (Schema Only)
 
 The following modules have their database schema defined in `schema.prisma` but **no implementation code** yet:
 
-- Artists
 - Songs
 - Albums
 - Playlists

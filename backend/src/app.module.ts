@@ -7,6 +7,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MailModule } from './modules/mail/mail.module';
+import { ArtistsModule } from './modules/artists/artists.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
 @Module({
@@ -32,7 +33,7 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
     UsersModule,
     AuthModule,
     MailModule,
-    // ArtistsModule,
+    ArtistsModule,
     // AlbumsModule,
     // SongsModule,
     // GenresModule,

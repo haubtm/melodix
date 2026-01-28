@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from '../service';
-import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto, DeleteManyDto } from '../dto';
-import { PaginatedResponseDto } from '../../../common/dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto } from '../dto';
+import { PaginatedResponseDto, DeleteManyDto } from '../../../common/dto';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/guard';
 import { RolesGuard } from '../../../common/guard/roles.guard';
