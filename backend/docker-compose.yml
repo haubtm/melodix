@@ -12,8 +12,7 @@ services:
       - '3000:3000'
     env_file:
       - .env
-    environment:
-      DATABASE_URL: mysql://root:root@melodix-db:3306/melodix
+
     depends_on:
       - redis
 
