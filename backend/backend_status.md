@@ -63,6 +63,17 @@
   - `src/modules/auth/service/auth.service.ts`
   - `src/modules/auth/strategy/jwt.strategy.ts`
 
+#### 🟢 Upload Module (AWS S3)
+
+- **Status:** Operational
+- **Features:**
+  - **Upload to S3**: Supports Images & Audio.
+  - **Security**: Protected by JWT.
+  - **Organization**: Supports folder structure (e.g., `artists/`, `avatars/`).
+- **Key Files:**
+  - `src/modules/upload/service/upload.service.ts`
+  - `src/modules/upload/controller/upload.controller.ts`
+
 #### 🟢 Artists Module (Complete)
 
 - **Status:** Operational

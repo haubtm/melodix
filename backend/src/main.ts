@@ -61,6 +61,7 @@ async function bootstrap() {
     .addTag('playback', 'Playback control')
     .addTag('subscriptions', 'Subscription plans')
     .addTag('search', 'Search functionality')
+    .addTag('upload', 'File upload')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
