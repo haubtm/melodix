@@ -11,6 +11,14 @@
 
 ## 2. Completed Features
 
+### Deployment Status
+
+- **Environment:** Production (AWS EC2)
+- **Domain:** [https://api.melodix.lebahau.site](https://api.melodix.lebahau.site)
+- **Docs:** [https://api.melodix.lebahau.site/docs](https://api.melodix.lebahau.site/docs)
+- **Infrastructure:** Docker Compose (App + MariaDB + Redis) + Nginx (Reverse Proxy) + SSL (Let's Encrypt).
+- **CI/CD:** GitHub Actions (Auto-deploy on push to `main`).
+
 ### Core Setup
 
 - [x] Environment Configuration (.env)
