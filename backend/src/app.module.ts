@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ArtistsModule } from './modules/artists/artists.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { SongsModule } from './modules/songs/songs.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
 @Module({
@@ -36,7 +37,7 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
     MailModule,
     ArtistsModule,
     // AlbumsModule,
-    // SongsModule,
+    SongsModule,
     // GenresModule,
     // PlaylistsModule,
     // LibraryModule,

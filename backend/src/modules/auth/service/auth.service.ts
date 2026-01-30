@@ -267,7 +267,7 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     const tokens = await this.generateTokens(user);
-    const { passwordHash, ...result } = user;
+    const { ...result } = user;
     return {
       ...result,
       ...tokens,

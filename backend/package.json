@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "npx prisma generate && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
     "dev": "npx prisma db push && nest start --watch",
@@ -58,6 +58,7 @@
     "prisma": "^5.22.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "slugify": "^1.6.6",
     "socket.io": "^4.8.3",
     "uuid": "^13.0.0"
   },

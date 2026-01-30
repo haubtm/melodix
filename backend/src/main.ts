@@ -6,6 +6,11 @@ import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptor';
 import { HttpExceptionFilter } from './common/filter';
 
+// BigInt serialization workaround
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
@@ -13,14 +18,14 @@ async function bootstrap() {
   // Get config values
   const port = configService.get<number>('app.port', 3000);
   const apiPrefix = configService.get<string>('app.apiPrefix', 'api/v1');
-  const corsOrigins = configService.get<string[]>('app.corsOrigins', ['http://localhost:3001']);
+  // const corsOrigins = configService.get<string[]>('app.corsOrigins', ['http://localhost:3001']);
 
   // Global prefix
   app.setGlobalPrefix(apiPrefix);
 
   // CORS
   app.enableCors({
-    origin: corsOrigins,
+    origin: true, // Allow all origins for development
     credentials: true,
   });
 
