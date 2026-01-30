@@ -51,13 +51,13 @@ jobs:
             # echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
             # Pull latest images
-            docker-compose pull
+            docker compose pull
 
             # Restart services
-            docker-compose up -d --remove-orphans
+            docker compose up -d --force-recreate --remove-orphans
 
             # Run Database Migrations (Auto-update DB schema)
-            docker-compose exec -T melodix-backend npx prisma migrate deploy
+            docker compose exec -T melodix-backend npx prisma migrate deploy
 
             # Cleanup
             docker image prune -f
