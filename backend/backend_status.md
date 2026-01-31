@@ -33,8 +33,9 @@
 - [x] **Unit Tests Setup**: Jest configured.
 - [x] **Auth Module Tests**: 100% Coverage (Service & Controller).
 - [x] **Users Module**: 100% (Repository, Service, Controller tests passing). Total 25 tests.
-- **Artists Module**: 100% (Repository, Service, Controller tests passing).
-- **Total Passing Tests**: 46
+- [x] **Artists Module**: 100% (Repository, Service, Controller tests passing).
+- [x] **Albums Module**: 100% (Service, Controller tests passing).
+- **Total Passing Tests**: 60
 
 ### Modules
 
