@@ -106,11 +106,23 @@
   - `src/modules/songs/controller/song.controller.ts`
   - `src/modules/songs/service/song.service.ts`
 
+#### 🟢 Albums Module (Complete)
+
+- **Status:** Operational
+- **Features:**
+  - **CRUD Operations**: Create, Read (List/Detail with Songs), Update, Delete (Hard Delete).
+  - **Search & Filter**: Search (Title/Description), Filter by Artist/Published.
+  - **Security**: ID-based ownership check for updates and deletes.
+  - **Batch Operations**: Delete many with ownership checks.
+  - **Data Integration**: Includes song list in album details.
+- **Key Files:**
+  - `src/modules/albums/controller/album.controller.ts`
+  - `src/modules/albums/service/album.service.ts`
+
 #### ⚪ Pending Modules (Schema Only)
 
 The following modules have their database schema defined in `schema.prisma` but **no implementation code** yet:
 
-- Albums
 - Playlists
 - Genres
 - Library
@@ -131,4 +143,5 @@ The following modules have their database schema defined in `schema.prisma` but 
 
 1.  Refine **User-Artist Relationship** (Done).
 2.  Implement **Songs Module** (Done).
-3.  Implement **Albums Module** (Next priority).
+3.  Implement **Albums Module** (Done).
+4.  Implement **Playlists Module** (Next priority).

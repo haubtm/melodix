@@ -228,13 +228,16 @@ modules/albums/
 
 | Method | Endpoint               | Description            | Auth         |
 | ------ | ---------------------- | ---------------------- | ------------ |
+| Method | Endpoint               | Description            | Auth         |
+| ------ | ---------------------- | ---------------------- | ------------ |
 | GET    | `/albums`              | Lấy danh sách albums   | No           |
 | GET    | `/albums/new-releases` | Lấy new releases       | No           |
 | GET    | `/albums/:id`          | Lấy chi tiết album     | No           |
 | GET    | `/albums/:id/tracks`   | Lấy tracks trong album | No           |
 | POST   | `/albums`              | Tạo album              | Admin/Artist |
 | PATCH  | `/albums/:id`          | Cập nhật album         | Admin/Artist |
-| DELETE | `/albums/:id`          | Xóa album              | Admin        |
+| DELETE | `/albums/:id`          | Xóa album              | Admin/Artist |
+| DELETE | `/albums/many`         | Xóa nhiều album        | Admin/Artist |
 
 ---
 
