@@ -201,7 +201,7 @@ modules/artists/
 | GET    | `/artists/:id/related`    | Lấy artists liên quan     | No           |
 | POST   | `/artists`                | Tạo artist (Admin)        | Admin        |
 | PATCH  | `/artists/:id`            | Cập nhật artist           | Admin/Artist |
-| DELETE | `/artists/:id`            | Xóa artist                | Admin        |
+| DELETE | `/artists/:id`            | Xóa artist                | Admin/Artist |
 
 ---
 

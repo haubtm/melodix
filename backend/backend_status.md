@@ -88,17 +88,28 @@
 - **Features:**
   - **CRUD Operations**: Create, Read (List/Detail), Update, Delete (Hard Delete).
   - **Search & Filter**: Verified, Search (Name, Slug, Bio), Sort.
-  - **Security**: ID-based ownership check for updates.
+  - **Security**: ID-based ownership check for updates and deletes.
   - **Batch Operations**: Delete many.
+  - **Permissions**: Artists can manage (update/delete) their own profiles.
 - **Key Files:**
   - `src/modules/artists/controller/artist.controller.ts`
   - `src/modules/artists/service/artist.service.ts`
+
+#### 🟢 Songs Module (Complete)
+
+- **Status:** Operational
+- **Features:**
+  - **CRUD Operations**: Create, Read, Update, Delete.
+  - **Relations**: Linked to Artist and Album.
+  - **Filtering**: By Artist, Album, Genre.
+- **Key Files:**
+  - `src/modules/songs/controller/song.controller.ts`
+  - `src/modules/songs/service/song.service.ts`
 
 #### ⚪ Pending Modules (Schema Only)
 
 The following modules have their database schema defined in `schema.prisma` but **no implementation code** yet:
 
-- Songs
 - Albums
 - Playlists
 - Genres
@@ -118,6 +129,6 @@ The following modules have their database schema defined in `schema.prisma` but 
 
 ## 4. Immediate Next Steps
 
-1.  Implement **Artists Module** (Next priority).
-2.  Implement **Songs Module**.
-3.  Implement **Albums Module**.
+1.  Refine **User-Artist Relationship** (Done).
+2.  Implement **Songs Module** (Done).
+3.  Implement **Albums Module** (Next priority).

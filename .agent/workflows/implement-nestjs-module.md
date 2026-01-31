@@ -55,6 +55,7 @@ Follow standard naming conventions and extend from base DTOs where applicable.
   - `create(data)`
   - `findAll(params: { skip, take, where, orderBy })`
   - `findById(id)`
+  - `findByUserId(userId)` (for ownership checks)
   - `findBySlug(slug)` (if applicable)
   - `update(id, data)`
   - `delete(id)` (or `softDelete` if supported)
@@ -66,7 +67,9 @@ Follow standard naming conventions and extend from base DTOs where applicable.
 - [ ] Class: `[Name]Service`.
 - [ ] Inject `[Name]Repository`.
 - [ ] Implement CRUD logic:
-  - **Create**: Handle unique constraints (e.g., Slug generation).
+  - **Create**:
+    - Handle unique constraints (e.g., Slug generation).
+    - **Check Logical Duplicates**: Verify if user already has an entity (e.g., Artist Profile). Throw `BadRequestException`.
   - **FindAll**:
     - Map `ListDto` to Prisma `where`.
     - Handle Search logic (`OR` conditions).
@@ -75,7 +78,8 @@ Follow standard naming conventions and extend from base DTOs where applicable.
     - **CRITICAL**: Implement Ownership Check if applicable (`artist.userId !== currentUserId`).
     - Check for duplicate slug if slug is updated.
   - **Delete/DeleteMany**:
-    - Check existence before delete.
+    - **Ownership Check**: Verify existence AND `entity.userId === currentUserId`.
+    - Allow Admin to bypass ownership check.
     - Throw `NotFoundException`.
 
 ## 6. Implement Controller
@@ -87,7 +91,7 @@ Follow standard naming conventions and extend from base DTOs where applicable.
   - `POST /list` (FindAll) - **Public** (usually). Use `HttpCode(200)`.
   - `GET /:id` (FindOne) - **Public** or Protected.
   - `PATCH /:id` (Update) - Protected. Use `@GetUser()` to pass `currentUserId` to Service for ownership check.
-  - `DELETE /:id` (Delete) - Admin only.
+  - `DELETE /:id` (Delete) - Admin or Owner. Pass `currentUserId` to Service.
   - `DELETE /many` (Delete Many) - Admin only.
 - [ ] **Guards**: Apply `JwtAuthGuard`, `RolesGuard` specifically to protected routes.
 
