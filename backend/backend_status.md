@@ -35,7 +35,8 @@
 - [x] **Users Module**: 100% (Repository, Service, Controller tests passing). Total 25 tests.
 - [x] **Artists Module**: 100% (Repository, Service, Controller tests passing).
 - [x] **Albums Module**: 100% (Service, Controller tests passing).
-- **Total Passing Tests**: 60
+- [x] **Genres Module**: 100% (Service, Controller tests passing).
+- **Total Passing Tests**: 77
 
 ### Modules
 

@@ -10,6 +10,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { ArtistsModule } from './modules/artists/artists.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { AlbumsModule } from './modules/albums/albums.module';
+import { GenresModule } from './modules/genres/genres.module';
 import { SongsModule } from './modules/songs/songs.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
@@ -39,7 +40,7 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
     ArtistsModule,
     AlbumsModule,
     SongsModule,
-    // GenresModule,
+    GenresModule,
     // PlaylistsModule,
     // LibraryModule,
     // PlaybackModule,
