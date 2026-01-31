@@ -26,6 +26,14 @@ export class ArtistService {
       throw new BadRequestException('Slug already exists');
     }
 
+    // Check if user (if linked) already has an artist profile
+    if (dto.userId) {
+      const existingArtist = await this.artistRepository.findByUserId(dto.userId);
+      if (existingArtist) {
+        throw new BadRequestException('User already has an artist profile');
+      }
+    }
+
     const artist = await this.artistRepository.create({
       ...dto,
       slug,
@@ -129,11 +137,22 @@ export class ArtistService {
     return new ArtistResponseDto(updatedArtist);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, currentUserId?: number, currentUserRole?: UserRole): Promise<void> {
     const artist = await this.artistRepository.findById(id);
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
+
+    // Check permission: Admin or Owner
+    if (
+      currentUserId &&
+      currentUserRole &&
+      currentUserRole !== UserRole.admin &&
+      artist.userId !== currentUserId
+    ) {
+      throw new ForbiddenException('You can only delete your own artist profile');
+    }
+
     await this.artistRepository.delete(id);
   }
 

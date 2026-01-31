@@ -19,6 +19,10 @@ export class ArtistRepository {
     return this.prisma.artist.findUnique({ where: { slug } });
   }
 
+  async findByUserId(userId: number): Promise<ArtistEntity | null> {
+    return this.prisma.artist.findUnique({ where: { userId } });
+  }
+
   async findAll(params: {
     skip?: number;
     take?: number;

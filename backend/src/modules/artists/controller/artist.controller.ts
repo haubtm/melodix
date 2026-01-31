@@ -98,14 +98,18 @@ export class ArtistController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.admin)
+  @Roles(UserRole.admin, UserRole.artist)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete artist (Admin only)' })
+  @ApiOperation({ summary: 'Delete artist (Admin or Owner)' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Artist deleted successfully',
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.artistService.remove(id);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser('id') currentUserId: number,
+    @GetUser('role') currentUserRole: UserRole,
+  ) {
+    return this.artistService.remove(id, currentUserId, currentUserRole);
   }
 }
