@@ -36,7 +36,8 @@
 - [x] **Artists Module**: 100% (Repository, Service, Controller tests passing).
 - [x] **Albums Module**: 100% (Service, Controller tests passing).
 - [x] **Genres Module**: 100% (Service, Controller tests passing).
-- **Total Passing Tests**: 77
+- [x] **Playlists Module**: 100% (Service, Controller tests passing).
+- **Total Passing Tests**: 96
 
 ### Modules
 
@@ -121,12 +122,22 @@
   - `src/modules/albums/controller/album.controller.ts`
   - `src/modules/albums/service/album.service.ts`
 
+#### 🟢 Playlists Module (Complete)
+
+- **Status:** Operational
+- **Features:**
+  - **CRUD Operations**: Create, Read (List/Detail), Update, Delete.
+  - **Song Management**: Add/Remove songs to/from playlist.
+  - **Security**: Owner-only access for modification; Public/Private visibility.
+  - **Data Integration**: Calculates total tracks and duration.
+- **Key Files:**
+  - `src/modules/playlists/controller/playlist.controller.ts`
+  - `src/modules/playlists/service/playlist.service.ts`
+
 #### ⚪ Pending Modules (Schema Only)
 
 The following modules have their database schema defined in `schema.prisma` but **no implementation code** yet:
 
-- Playlists
-- Genres
 - Library
 - Playback
 - Subscriptions
@@ -146,4 +157,6 @@ The following modules have their database schema defined in `schema.prisma` but 
 1.  Refine **User-Artist Relationship** (Done).
 2.  Implement **Songs Module** (Done).
 3.  Implement **Albums Module** (Done).
-4.  Implement **Playlists Module** (Next priority).
+4.  Implement **Genres Module** (Done).
+5.  Implement **Playlists Module** (Done).
+6.  Implement **Library Module** (Next priority).

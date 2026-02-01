@@ -11,6 +11,7 @@ import { ArtistsModule } from './modules/artists/artists.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { AlbumsModule } from './modules/albums/albums.module';
 import { GenresModule } from './modules/genres/genres.module';
+import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { SongsModule } from './modules/songs/songs.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
@@ -41,7 +42,7 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
     AlbumsModule,
     SongsModule,
     GenresModule,
-    // PlaylistsModule,
+    PlaylistsModule,
     // LibraryModule,
     // PlaybackModule,
     // SyncModule,
