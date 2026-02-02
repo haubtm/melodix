@@ -1,0 +1,217 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, #0a0a0a 100%);
+  padding: var(--spacing-lg);
+}
+
+.formCard {
+  width: 100%;
+  max-width: 450px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+}
+
+.logoText {
+  margin: 0 !important;
+  background: linear-gradient(135deg, #1DB954, #1ED760);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: var(--spacing-xl) !important;
+  color: var(--text-primary) !important;
+}
+
+.steps {
+  margin-bottom: var(--spacing-xl);
+}
+
+.steps :global(.ant-steps-item-title) {
+  color: var(--text-secondary) !important;
+}
+
+.steps :global(.ant-steps-item-active .ant-steps-item-title) {
+  color: var(--text-primary) !important;
+}
+
+.socialButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.socialButton {
+  background: transparent !important;
+  border: 1px solid var(--bg-highlight) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  height: 48px !important;
+  transition: all var(--transition-fast);
+}
+
+.socialButton:hover {
+  border-color: var(--text-secondary) !important;
+  transform: scale(1.02);
+}
+
+.divider {
+  color: var(--text-subdued) !important;
+  border-color: var(--bg-highlight) !important;
+}
+
+.divider::before,
+.divider::after {
+  border-color: var(--bg-highlight) !important;
+}
+
+.form {
+  margin-top: var(--spacing-lg);
+}
+
+.form :global(.ant-form-item-label > label) {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.form :global(.ant-input),
+.form :global(.ant-input-password) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--bg-highlight) !important;
+  color: var(--text-primary) !important;
+  height: 48px;
+}
+
+.form :global(.ant-input:hover),
+.form :global(.ant-input-password:hover),
+.form :global(.ant-input:focus),
+.form :global(.ant-input-password:focus) {
+  border-color: var(--accent-primary) !important;
+}
+
+.form :global(.ant-input-affix-wrapper) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--bg-highlight) !important;
+}
+
+.form :global(.ant-input-affix-wrapper:hover),
+.form :global(.ant-input-affix-wrapper-focused) {
+  border-color: var(--accent-primary) !important;
+}
+
+.form :global(.ant-input-prefix) {
+  color: var(--text-subdued);
+  margin-right: var(--spacing-sm);
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-bottom: var(--spacing-md);
+}
+
+.forgotPassword a {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.forgotPassword a:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.submitItem {
+  margin-bottom: 0 !important;
+  margin-top: var(--spacing-lg);
+}
+
+.submitButton {
+  height: 48px !important;
+  font-weight: 700;
+  font-size: 1rem !important;
+}
+
+.footer {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--bg-highlight);
+}
+
+.footerText {
+  color: var(--text-subdued) !important;
+}
+
+.link {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: var(--accent-primary) !important;
+}
+
+/* Verify Step Styles */
+.verifyInfo {
+  text-align: center;
+  margin: var(--spacing-xl) 0;
+}
+
+.verifyIcon {
+  font-size: 48px;
+  color: var(--accent-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.verifyText {
+  display: block;
+  color: var(--text-secondary) !important;
+  line-height: 1.6;
+}
+
+.verifyText strong {
+  color: var(--text-primary);
+}
+
+.otpInput {
+  text-align: center;
+  font-size: 1.5rem !important;
+  letter-spacing: 0.5em;
+}
+
+.backButton {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: var(--spacing-md);
+  color: var(--text-secondary) !important;
+}
+
+.backButton:hover {
+  color: var(--text-primary) !important;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .formCard {
+    padding: var(--spacing-lg);
+  }
+
+  .title {
+    font-size: 1.25rem !important;
+  }
+}

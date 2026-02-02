@@ -1,0 +1,144 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--header-height);
+  background: linear-gradient(180deg, rgba(18, 18, 18, 0.9) 0%, rgba(18, 18, 18, 0.7) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 0 var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  z-index: 99;
+  border-bottom: none;
+}
+
+.navigation {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.navButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: var(--text-primary) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navButton:hover {
+  background: rgba(0, 0, 0, 0.7) !important;
+  transform: scale(1.05);
+}
+
+.navButton:disabled {
+  opacity: 0.5;
+}
+
+.searchContainer {
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  background: var(--bg-elevated) !important;
+  border-radius: var(--radius-full) !important;
+  border: none !important;
+  height: 48px;
+}
+
+.searchInput:global(.ant-input-affix-wrapper) {
+  background: var(--bg-elevated) !important;
+  border: 2px solid transparent !important;
+  transition: all var(--transition-fast);
+}
+
+.searchInput:global(.ant-input-affix-wrapper:hover),
+.searchInput:global(.ant-input-affix-wrapper-focused) {
+  border-color: var(--text-primary) !important;
+  background: var(--bg-highlight) !important;
+}
+
+.searchInput input {
+  background: transparent !important;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.searchInput input::placeholder {
+  color: var(--text-subdued);
+}
+
+.searchIcon {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 4px 12px 4px 4px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.userButton:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--bg-highlight);
+}
+
+.userName {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.registerButton {
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+}
+
+.registerButton:hover {
+  color: var(--text-primary) !important;
+  transform: scale(1.05);
+}
+
+.loginButton {
+  font-weight: 600;
+  padding: 8px 32px;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    left: 0;
+    padding: 0 var(--spacing-md);
+  }
+
+  .searchContainer {
+    display: none;
+  }
+
+  .userName {
+    display: none;
+  }
+}

@@ -1,0 +1,80 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.card:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-4px);
+}
+
+.avatarWrapper {
+  position: relative;
+  aspect-ratio: 1;
+  margin-bottom: var(--spacing-md);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: var(--shadow-lg);
+}
+
+.playButton {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  right: var(--spacing-sm);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-lg);
+}
+
+.card:hover .playButton {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.playButton:hover {
+  transform: scale(1.06);
+  background: var(--accent-hover);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  text-align: center;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  font-size: 0.875rem;
+  color: var(--text-subdued);
+  margin: 0;
+}

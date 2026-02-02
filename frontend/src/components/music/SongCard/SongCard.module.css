@@ -1,0 +1,161 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.card:hover {
+  background-color: var(--bg-elevated);
+}
+
+.card.active {
+  background-color: var(--bg-elevated);
+}
+
+.index {
+  width: 24px;
+  text-align: center;
+  color: var(--text-subdued);
+  font-size: 0.875rem;
+}
+
+.card:hover .index span {
+  display: none;
+}
+
+.playingIndicator {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  align-items: flex-end;
+  height: 16px;
+}
+
+.playingIndicator span {
+  width: 3px;
+  background: var(--accent-primary);
+  animation: bounce 0.6s ease infinite;
+}
+
+.playingIndicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.playingIndicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.playingIndicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+
+.coverWrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  font-size: 24px;
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.card:hover .playButton {
+  opacity: 1;
+}
+
+.playButton:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title:hover {
+  text-decoration: underline;
+}
+
+.card.active .title {
+  color: var(--accent-primary);
+}
+
+.artist {
+  font-size: 0.8125rem;
+  color: var(--text-subdued);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.album {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--text-subdued);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.duration {
+  font-size: 0.8125rem;
+  color: var(--text-subdued);
+  min-width: 40px;
+  text-align: right;
+}
