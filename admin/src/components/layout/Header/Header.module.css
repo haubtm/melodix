@@ -1,0 +1,59 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px !important;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.trigger {
+  font-size: 18px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconButton {
+  font-size: 18px;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.userButton:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.userName {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .userName {
+    display: none;
+  }
+  
+  .themeToggle {
+    display: none;
+  }
+}
