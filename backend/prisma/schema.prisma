@@ -464,8 +464,8 @@ model UserOAuthAccount {
   email          String?
   name           String?
   avatarUrl      String?  @map("avatar_url")
-  accessToken    String?  @map("access_token")
-  refreshToken   String?  @map("refresh_token")
+  accessToken    String?  @map("access_token") @db.Text
+  refreshToken   String?  @map("refresh_token") @db.Text
   tokenExpiresAt DateTime? @map("token_expires_at")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")

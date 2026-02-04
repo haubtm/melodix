@@ -1,5 +1,5 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { AuthService } from '../service';
 import {
   RegisterDto,
@@ -11,13 +11,20 @@ import {
   ChangePasswordDto,
 } from '../dto';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { GoogleAuthGuard } from '../guard/google-auth.guard';
+import { FacebookAuthGuard } from '../guard/facebook-auth.guard';
 import { UseGuards, Get, Request } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import type { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
@@ -92,5 +99,71 @@ export class AuthController {
   async getProfile(@Request() req: any) {
     const userId = req.user.id || req.user.sub || req.user.userId;
     return await this.authService.getProfile(userId);
+  }
+
+  // =====================================================
+  // GOOGLE OAUTH
+  // =====================================================
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: 'Redirect to Google OAuth' })
+  @ApiExcludeEndpoint()
+  googleAuth() {
+    // Guard will redirect to Google
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @ApiExcludeEndpoint()
+  async googleCallback(@Request() req: any, @Res() res: Response) {
+    const result = await this.authService.oauthLogin({
+      provider: req.user.provider,
+      providerId: req.user.providerId,
+      email: req.user.email,
+      displayName: req.user.displayName,
+      avatarUrl: req.user.avatarUrl,
+      accessToken: req.user.accessToken,
+      refreshToken: req.user.refreshToken,
+    });
+
+    // Redirect to frontend with tokens
+    const frontendUrl =
+      this.configService.get<string>('app.frontendUrl') || 'http://localhost:3000';
+    const redirectUrl = `${frontendUrl}/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
+    return res.redirect(redirectUrl);
+  }
+
+  // =====================================================
+  // FACEBOOK OAUTH
+  // =====================================================
+
+  @Get('facebook')
+  @UseGuards(FacebookAuthGuard)
+  @ApiOperation({ summary: 'Redirect to Facebook OAuth' })
+  @ApiExcludeEndpoint()
+  facebookAuth() {
+    // Guard will redirect to Facebook
+  }
+
+  @Get('facebook/callback')
+  @UseGuards(FacebookAuthGuard)
+  @ApiExcludeEndpoint()
+  async facebookCallback(@Request() req: any, @Res() res: Response) {
+    const result = await this.authService.oauthLogin({
+      provider: req.user.provider,
+      providerId: req.user.providerId,
+      email: req.user.email,
+      displayName: req.user.displayName,
+      avatarUrl: req.user.avatarUrl,
+      accessToken: req.user.accessToken,
+      refreshToken: req.user.refreshToken,
+    });
+
+    // Redirect to frontend with tokens
+    const frontendUrl =
+      this.configService.get<string>('app.frontendUrl') || 'http://localhost:3000';
+    const redirectUrl = `${frontendUrl}/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
+    return res.redirect(redirectUrl);
   }
 }

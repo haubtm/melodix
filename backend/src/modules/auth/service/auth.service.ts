@@ -273,4 +273,23 @@ export class AuthService {
       ...tokens,
     };
   }
+
+  async oauthLogin(oauthData: {
+    provider: string;
+    providerId: string;
+    email: string | null;
+    displayName: string | null;
+    avatarUrl: string | null;
+    accessToken?: string;
+    refreshToken?: string;
+  }): Promise<{ accessToken: string; refreshToken: string; user: UserEntity }> {
+    const user = await this.userRepository.findOrCreateOAuthUser(oauthData);
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account is disabled');
+    }
+
+    const tokens = await this.generateTokens(user);
+    return { ...tokens, user };
+  }
 }
