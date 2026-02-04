@@ -710,7 +710,7 @@ sequenceDiagram
     participant G as Google/Facebook
 
     C->>S: GET /auth/google
-    S->>C: Redirect to Google
+    S->>G: Redirect to Google
     C->>G: Login with Google
     G->>C: Redirect with code
     C->>S: GET /auth/google/callback?code=xxx
@@ -718,7 +718,8 @@ sequenceDiagram
     G->>S: Return user info
     S->>S: Create/Update user
     S->>S: Create session
-    S->>C: Return JWT tokens
+    S->>C: Redirect to Frontend (APP_FRONTEND_URL) with JWT tokens
+    C->>C: Parse URL, Save Tokens, Login Success
 ```
 
 ---

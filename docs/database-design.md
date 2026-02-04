@@ -590,6 +590,32 @@ Bảng lưu cài đặt quảng cáo của user (cho Free users).
 
 ---
 
+## OAuth Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend (localhost:4000)
+    participant B as Backend (localhost:3000)
+    participant P as Google/Facebook
+
+    U->>F: Click "Login with Social"
+    F->>B: GET /api/v1/auth/{provider}
+    B->>P: Redirect to Provider OAuth
+    P->>U: Show Consent Screen
+    U->>P: Approve Access
+    P->>B: Callback with Authorization Code
+    B->>P: Exchange Code for Access Token
+    P->>B: Return Access/Refresh Tokens
+    B->>B: Find or Create User (in DB)
+    B->>B: Generate App JWT Tokens
+    B->>F: Redirect to Frontend Callback URL
+    Note over B,F: URL: localhost:4000/auth/callback?accessToken=...
+    F->>U: Store Tokens & Update UI
+```
+
+---
+
 ## Entity Relationship Diagram
 
 ```mermaid
