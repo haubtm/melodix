@@ -6,12 +6,13 @@ import {
 } from '@nestjs/common';
 import { CreateSongDto } from '../dto/create-song.dto';
 import { UpdateSongDto } from '../dto/update-song.dto';
+import { RejectSongDto } from '../dto/reject-song.dto';
 import { SongRepository } from '../repository/song.repository';
 import { PaginatedResponseDto } from '../../../common/dto/paginated-response.dto';
 import { generateSlug } from '../../../common/utils/slug.util';
 
 import { ArtistService } from '../../artists/service/artist.service';
-import { User, UserRole } from '@prisma/client';
+import { User, UserRole, SongStatus } from '@prisma/client';
 
 @Injectable()
 export class SongService {
@@ -47,9 +48,13 @@ export class SongService {
       slug = `${slug}-${Date.now()}`;
     }
 
+    // Default status: pending for artist, approved for admin
+    const status = user.role === UserRole.admin ? SongStatus.approved : SongStatus.pending;
+
     return this.songRepository.create({
       ...rest,
       slug,
+      status,
       primaryArtist: {
         connect: { id: artistId },
       },
@@ -83,8 +88,51 @@ export class SongService {
     artistId?: number,
     albumId?: number,
     genreId?: number,
+    status?: SongStatus,
+    user?: User,
   ): Promise<PaginatedResponseDto<any>> {
-    return this.songRepository.findAll(page, limit, search, artistId, albumId, genreId);
+    // Public users can only see approved songs
+    // Admin can see all or filter by status
+    // Artist can use findMySongs for their own songs
+    let effectiveStatus = status;
+
+    if (!user || user.role === UserRole.user) {
+      // Public/Regular users: only approved songs
+      effectiveStatus = SongStatus.approved;
+    } else if (user.role === UserRole.artist && !status) {
+      // Artist without status filter: only approved songs (use findMySongs for own songs)
+      effectiveStatus = SongStatus.approved;
+    }
+    // Admin can filter by any status or see all
+
+    return this.songRepository.findAll(
+      page,
+      limit,
+      search,
+      artistId,
+      albumId,
+      genreId,
+      effectiveStatus,
+    );
+  }
+
+  async findMySongs(user: User, page: number, limit: number): Promise<PaginatedResponseDto<any>> {
+    if (user.role !== UserRole.artist && user.role !== UserRole.admin) {
+      throw new ForbiddenException('Chỉ nghệ sĩ mới có thể xem bài hát của mình');
+    }
+    return this.songRepository.findByArtistUserId(user.id, page, limit);
+  }
+
+  async findPending(page: number, limit: number): Promise<PaginatedResponseDto<any>> {
+    return this.songRepository.findAll(
+      page,
+      limit,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      SongStatus.pending,
+    );
   }
 
   async findOne(id: number) {
@@ -93,6 +141,44 @@ export class SongService {
       throw new NotFoundException(`Song with ID ${id} not found`);
     }
     return song;
+  }
+
+  async approve(id: number, user: User) {
+    if (user.role !== UserRole.admin) {
+      throw new ForbiddenException('Chỉ Admin mới có quyền duyệt bài hát');
+    }
+
+    const song = await this.findOne(id);
+
+    if (song.status === SongStatus.approved) {
+      throw new BadRequestException('Bài hát đã được duyệt trước đó');
+    }
+
+    return this.songRepository.update(id, {
+      status: SongStatus.approved,
+      rejectionReason: null,
+      reviewedAt: new Date(),
+      reviewedBy: user.id,
+    });
+  }
+
+  async reject(id: number, rejectSongDto: RejectSongDto, user: User) {
+    if (user.role !== UserRole.admin) {
+      throw new ForbiddenException('Chỉ Admin mới có quyền từ chối bài hát');
+    }
+
+    const song = await this.findOne(id);
+
+    if (song.status === SongStatus.rejected) {
+      throw new BadRequestException('Bài hát đã bị từ chối trước đó');
+    }
+
+    return this.songRepository.update(id, {
+      status: SongStatus.rejected,
+      rejectionReason: rejectSongDto.rejectionReason || null,
+      reviewedAt: new Date(),
+      reviewedBy: user.id,
+    });
   }
 
   async update(id: number, updateSongDto: UpdateSongDto, user: User) {
@@ -133,9 +219,14 @@ export class SongService {
       }
     }
 
+    // If artist updates, reset to pending (unless admin)
+    const shouldResetStatus =
+      user.role !== UserRole.admin && existingSong.status === SongStatus.approved;
+
     return this.songRepository.update(id, {
       ...rest,
       ...(title && { title, slug }),
+      ...(shouldResetStatus && { status: SongStatus.pending, reviewedAt: null, reviewedBy: null }),
       ...(artistId && {
         primaryArtist: {
           connect: { id: artistId },

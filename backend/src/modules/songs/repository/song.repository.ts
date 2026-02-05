@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, SongStatus } from '@prisma/client';
 import { PaginatedResponseDto } from '../../../common/dto/paginated-response.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -29,17 +29,51 @@ export class SongRepository {
     artistId?: number,
     albumId?: number,
     genreId?: number,
+    status?: SongStatus,
   ): Promise<PaginatedResponseDto<any>> {
     const skip = (page - 1) * limit;
     const where: Prisma.SongWhereInput = {
       ...(search && {
-        OR: [
-          { title: { contains: search } }, // Case-insensitive handled by collation or specific logic if needed
-        ],
+        OR: [{ title: { contains: search } }],
       }),
       ...(artistId && { artistId }),
       ...(albumId && { albumId }),
       ...(genreId && { genres: { some: { genreId } } }),
+      ...(status && { status }),
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.song.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          primaryArtist: true,
+          album: true,
+          songArtists: {
+            include: {
+              artist: true,
+            },
+          },
+        },
+      }),
+      this.prisma.song.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(items, total, page, limit);
+  }
+
+  async findByArtistUserId(
+    userId: number,
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResponseDto<any>> {
+    const skip = (page - 1) * limit;
+    const where: Prisma.SongWhereInput = {
+      primaryArtist: {
+        userId: userId,
+      },
     };
 
     const [items, total] = await Promise.all([

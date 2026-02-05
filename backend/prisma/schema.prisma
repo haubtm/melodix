@@ -132,6 +132,12 @@ enum AdContextType {
   browse
 }
 
+enum SongStatus {
+  pending
+  approved
+  rejected
+}
+
 // =====================================================
 // CORE TABLES
 // =====================================================
@@ -241,11 +247,15 @@ model Song {
   coverUrl    String?  @map("cover_url")
   previewUrl  String?  @map("preview_url")
   lyricsUrl   String?  @map("lyrics_url")
-  isExplicit  Boolean  @default(false) @map("is_explicit")
-  isPlayable  Boolean  @default(true) @map("is_playable")
-  playCount   BigInt   @default(0) @map("play_count")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  isExplicit      Boolean    @default(false) @map("is_explicit")
+  isPlayable      Boolean    @default(true) @map("is_playable")
+  playCount       BigInt     @default(0) @map("play_count")
+  status          SongStatus @default(pending)
+  rejectionReason String?    @map("rejection_reason")
+  reviewedAt      DateTime?  @map("reviewed_at")
+  reviewedBy      Int?       @map("reviewed_by")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
 
   // Relations
   album           Album?           @relation(fields: [albumId], references: [id], onDelete: SetNull)

@@ -1,4 +1,4 @@
-import { Song } from '@prisma/client';
+import { Song, SongStatus } from '@prisma/client';
 
 export class SongEntity implements Song {
   id: number;
@@ -16,6 +16,10 @@ export class SongEntity implements Song {
   isExplicit: boolean;
   isPlayable: boolean;
   playCount: bigint;
+  status: SongStatus;
+  rejectionReason: string | null;
+  reviewedAt: Date | null;
+  reviewedBy: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
