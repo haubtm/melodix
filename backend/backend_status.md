@@ -129,7 +129,11 @@
 - **Features:**
   - **CRUD Operations**: Create, Read, Update, Delete.
   - **Relations**: Linked to Artist and Album.
-  - **Filtering**: By Artist, Album, Genre.
+  - **Filtering**: By Artist, Album, Genre, Status.
+  - **Approval Workflow**:
+    - Artists create songs ending in `pending`.
+    - Admins approve/reject songs.
+    - Only `approved` songs are public.
 - **Key Files:**
   - `src/modules/songs/controller/song.controller.ts`
   - `src/modules/songs/service/song.service.ts`

@@ -267,7 +267,8 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     const tokens = await this.generateTokens(user);
-    const { ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...result } = user as any;
     return {
       ...result,
       ...tokens,

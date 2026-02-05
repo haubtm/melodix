@@ -26,6 +26,7 @@ describe('ArtistService', () => {
     findAll: jest.fn().mockResolvedValue([mockArtist]),
     count: jest.fn().mockResolvedValue(1),
     findById: jest.fn().mockResolvedValue(mockArtist),
+    findByUserId: jest.fn().mockResolvedValue(null),
     findBySlug: jest.fn().mockResolvedValue(null),
     update: jest.fn().mockResolvedValue(mockArtist),
     delete: jest.fn().mockResolvedValue(mockArtist),

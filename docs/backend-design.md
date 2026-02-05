@@ -263,16 +263,21 @@ modules/songs/
 
 #### API Endpoints
 
-| Method | Endpoint            | Description         | Auth         |
-| ------ | ------------------- | ------------------- | ------------ |
-| GET    | `/songs`            | Lấy danh sách songs | No           |
-| GET    | `/songs/:id`        | Lấy chi tiết song   | No           |
-| GET    | `/songs/:id/stream` | Stream audio file   | Yes          |
-| GET    | `/songs/:id/lyrics` | Lấy lyrics          | No           |
-| POST   | `/songs`            | Tạo song            | Admin/Artist |
-| PATCH  | `/songs/:id`        | Cập nhật song       | Admin/Artist |
-| DELETE | `/songs/:id`        | Xóa song            | Admin        |
-| POST   | `/songs/:id/play`   | Track play count    | Yes          |
+| Method | Endpoint | Description | Auth |
+| Method | Endpoint | Description | Auth |
+| ------ | ------------------------ | ------------------------- | ------------ |
+| GET | `/songs` | Lấy danh sách songs | No |
+| GET | `/songs/my` | Lấy songs của tôi | Artist |
+| GET | `/songs/pending` | Lấy songs đang chờ duyệt | Admin |
+| GET | `/songs/:id` | Lấy chi tiết song | No |
+| GET | `/songs/:id/stream` | Stream audio file | Yes |
+| GET | `/songs/:id/lyrics` | Lấy lyrics | No |
+| POST | `/songs` | Tạo song | Artist, Admin|
+| PATCH | `/songs/:id` | Cập nhật song | Artist, Admin|
+| PATCH | `/songs/:id/approve` | Duyệt song | Admin |
+| PATCH | `/songs/:id/reject` | Từ chối song | Admin |
+| DELETE | `/songs/:id` | Xóa song | Admin |
+| POST | `/songs/:id/play` | Track play count | Yes |
 
 ---
 

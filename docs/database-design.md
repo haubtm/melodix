@@ -14,6 +14,7 @@ Thiết kế database cho ứng dụng nghe nhạc Melodix - một ứng dụng 
 - **Đăng nhập bằng Google, Facebook (OAuth 2.0)**
 - **Hỗ trợ cả Web và Mobile App**
 - **Đồng bộ nghe nhạc giữa các thiết bị**
+- **Quy trình kiểm duyệt bài hát (Song Approval)**
 - **Gói Free (có quảng cáo) và Premium (không quảng cáo, Smart Shuffle)**
 - Quản lý nghệ sĩ, album, bài hát
 - Playlist cá nhân và cộng đồng
@@ -189,26 +190,30 @@ Bảng lưu thông tin album.
 
 Bảng lưu thông tin bài hát.
 
-| Column              | Type         | Constraints                        | Description              |
-| ------------------- | ------------ | ---------------------------------- | ------------------------ |
-| `id`                | INTEGER      | PRIMARY KEY                        | ID bài hát               |
-| `title`             | VARCHAR(255) | NOT NULL                           | Tên bài hát              |
-| `slug`              | VARCHAR(255) | NOT NULL                           | URL-friendly name        |
-| `album_id`          | INTEGER      | FOREIGN KEY (Albums.id), NULL      | Album chứa bài hát       |
-| `artist_id`         | INTEGER      | FOREIGN KEY (Artists.id), NOT NULL | Nghệ sĩ chính            |
-| `genre_id`          | INTEGER      | FOREIGN KEY (Genres.id), NULL      | Thể loại chính           |
-| `track_number`      | INTEGER      | NULL                               | Số thứ tự trong album    |
-| `duration_ms`       | INTEGER      | NOT NULL                           | Thời lượng (ms)          |
-| `audio_url`         | TEXT         | NOT NULL                           | URL file nhạc            |
-| `audio_preview_url` | TEXT         | NULL                               | URL preview (30s)        |
-| `cover_url`         | TEXT         | NULL                               | Ảnh bìa (override album) |
-| `lyrics`            | TEXT         | NULL                               | Lời bài hát              |
-| `play_count`        | BIGINT       | DEFAULT 0                          | Số lượt phát             |
-| `explicit`          | BOOLEAN      | DEFAULT false                      | Nội dung nhạy cảm        |
-| `is_published`      | BOOLEAN      | DEFAULT false                      | Đã xuất bản              |
-| `released_at`       | TIMESTAMP    | NULL                               | Ngày phát hành           |
-| `created_at`        | TIMESTAMP    | DEFAULT NOW()                      | Ngày tạo                 |
-| `updated_at`        | TIMESTAMP    | DEFAULT NOW()                      | Ngày cập nhật            |
+| Column              | Type         | Constraints                        | Description                       |
+| ------------------- | ------------ | ---------------------------------- | --------------------------------- |
+| `id`                | INTEGER      | PRIMARY KEY                        | ID bài hát                        |
+| `title`             | VARCHAR(255) | NOT NULL                           | Tên bài hát                       |
+| `slug`              | VARCHAR(255) | NOT NULL                           | URL-friendly name                 |
+| `album_id`          | INTEGER      | FOREIGN KEY (Albums.id), NULL      | Album chứa bài hát                |
+| `artist_id`         | INTEGER      | FOREIGN KEY (Artists.id), NOT NULL | Nghệ sĩ chính                     |
+| `genre_id`          | INTEGER      | FOREIGN KEY (Genres.id), NULL      | Thể loại chính                    |
+| `track_number`      | INTEGER      | NULL                               | Số thứ tự trong album             |
+| `duration_ms`       | INTEGER      | NOT NULL                           | Thời lượng (ms)                   |
+| `audio_url`         | TEXT         | NOT NULL                           | URL file nhạc                     |
+| `audio_preview_url` | TEXT         | NULL                               | URL preview (30s)                 |
+| `cover_url`         | TEXT         | NULL                               | Ảnh bìa (override album)          |
+| `lyrics`            | TEXT         | NULL                               | Lời bài hát                       |
+| `play_count`        | BIGINT       | DEFAULT 0                          | Số lượt phát                      |
+| `explicit`          | BOOLEAN      | DEFAULT false                      | Nội dung nhạy cảm                 |
+| `status`            | ENUM         | DEFAULT 'pending'                  | 'pending', 'approved', 'rejected' |
+| `rejection_reason`  | TEXT         | NULL                               | Lý do từ chối                     |
+| `reviewed_at`       | TIMESTAMP    | NULL                               | Thời điểm duyệt                   |
+| `reviewed_by`       | INTEGER      | NULL                               | Admin duyệt                       |
+| `is_published`      | BOOLEAN      | DEFAULT false                      | Đã xuất bản                       |
+| `released_at`       | TIMESTAMP    | NULL                               | Ngày phát hành                    |
+| `created_at`        | TIMESTAMP    | DEFAULT NOW()                      | Ngày tạo                          |
+| `updated_at`        | TIMESTAMP    | DEFAULT NOW()                      | Ngày cập nhật                     |
 
 ---
 
@@ -759,6 +764,7 @@ CREATE TYPE context_type AS ENUM ('album', 'playlist', 'artist', 'search', 'radi
 CREATE TYPE repeat_mode AS ENUM ('off', 'all', 'one');
 
 CREATE TYPE user_role AS ENUM ('user', 'artist', 'admin');
+CREATE TYPE song_status AS ENUM ('pending', 'approved', 'rejected');
 
 -- Users table
 CREATE TABLE users (
