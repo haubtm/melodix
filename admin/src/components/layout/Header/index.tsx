@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Layout, Button, Dropdown, Avatar, Space, Switch, theme } from "antd";
+import { Layout, Button, Dropdown, Avatar, Switch, theme } from "antd";
 import type { MenuProps } from "antd";
 import {
   MenuFoldOutlined,

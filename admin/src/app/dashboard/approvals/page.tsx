@@ -6,7 +6,6 @@ import {
   Row,
   Col,
   Button,
-  Space,
   Tag,
   Modal,
   Input,
@@ -24,7 +23,6 @@ import {
   PlaySquareOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
-import { Song, Album, ContentStatus } from "@/types";
 import styles from "./approvals.module.css";
 
 const { Title, Text, Paragraph } = Typography;

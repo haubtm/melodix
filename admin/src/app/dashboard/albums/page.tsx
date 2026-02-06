@@ -23,7 +23,7 @@ import {
   EyeOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
-import { Album } from "@/types";
+import { Album } from "@/dtos";
 import styles from "./albums.module.css";
 
 const { Title } = Typography;

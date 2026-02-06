@@ -24,7 +24,7 @@ import {
   StopOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
-import { User, UserRole } from "@/types";
+import { User, UserRole } from "@/dtos";
 import styles from "./users.module.css";
 
 const { Title } = Typography;
@@ -37,7 +37,7 @@ const mockUsers: User[] = [
     email: "admin@melodix.com",
     username: "admin",
     displayName: "Admin User",
-    avatarUrl: null,
+    avatarUrl: undefined,
     subscriptionType: "premium",
     role: "admin",
     isActive: true,
