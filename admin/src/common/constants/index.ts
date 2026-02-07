@@ -12,7 +12,8 @@ export const ROUTE_PATH = {
 } as const;
 
 export const STORAGE_KEY = {
-  TOKEN: "token",
+  ACCESS_TOKEN: "accessToken",
+  REFRESH_TOKEN: "refreshToken",
   USER: "user",
 } as const;
 

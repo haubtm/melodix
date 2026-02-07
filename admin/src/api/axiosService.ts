@@ -12,15 +12,18 @@ export interface IResponse<T = unknown> {
   data: T;
 }
 
+import { STORAGE_KEY } from "@/common/constants";
+
 const getToken = (): string | null => {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("token");
+  return localStorage.getItem(STORAGE_KEY.ACCESS_TOKEN);
 };
 
 const clearStorage = () => {
   if (typeof window === "undefined") return;
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  localStorage.removeItem(STORAGE_KEY.ACCESS_TOKEN);
+  localStorage.removeItem(STORAGE_KEY.REFRESH_TOKEN);
+  localStorage.removeItem(STORAGE_KEY.USER);
 };
 
 const requestInterceptor = async (config: InternalAxiosRequestConfig) => {
