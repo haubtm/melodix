@@ -51,6 +51,17 @@ export class ArtistController {
     return this.artistService.findAll(listDto);
   }
 
+  @Post('list-using-select')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get simplified artist list for select inputs with filtering' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return paginated list of artists (id, name)',
+  })
+  getListUsingSelect(@Body() listDto: ArtistListDto) {
+    return this.artistService.getListUsingSelect(listDto);
+  }
+
   @Delete('many')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)

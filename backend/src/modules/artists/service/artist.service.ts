@@ -137,6 +137,59 @@ export class ArtistService {
     return new ArtistResponseDto(updatedArtist);
   }
 
+  async getListUsingSelect(
+    listDto: ArtistListDto,
+  ): Promise<PaginatedResponseDto<{ id: number; name: string }>> {
+    const page = listDto.page || 1;
+    const limit = Number(listDto.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.ArtistWhereInput = {};
+
+    // Reusing filter logic from findAll
+    // Filter by verified status
+    if (listDto.verified !== undefined) {
+      where.verified = listDto.verified;
+    }
+
+    // Search filter
+    const VALID_SEARCH_FIELDS = ['name', 'slug', 'bio'];
+    if (listDto.search?.data && listDto.search.fields?.length) {
+      const searchConditions = listDto.search.fields
+        .filter((field: string) => VALID_SEARCH_FIELDS.includes(field))
+        .map((field: string) => ({
+          [field]: { contains: listDto.search!.data },
+        }));
+
+      if (searchConditions.length > 0) {
+        where.OR = searchConditions;
+      }
+    }
+
+    // Build orderBy
+    let orderBy: Prisma.ArtistOrderByWithRelationInput | Prisma.ArtistOrderByWithRelationInput[] = {
+      name: 'asc',
+    };
+
+    if (listDto.sorts?.length) {
+      orderBy = listDto.sorts.map((sort) => ({
+        [sort.field || 'name']: sort.order?.toLowerCase() || 'asc',
+      }));
+    }
+
+    const [items, total] = await Promise.all([
+      this.artistRepository.getListUsingSelect({
+        skip,
+        take: limit,
+        where,
+        orderBy,
+      }),
+      this.artistRepository.count(where),
+    ]);
+
+    return new PaginatedResponseDto(items, total, page, limit);
+  }
+
   async remove(id: number, currentUserId?: number, currentUserRole?: UserRole): Promise<void> {
     const artist = await this.artistRepository.findById(id);
     if (!artist) {

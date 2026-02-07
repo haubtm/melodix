@@ -145,6 +145,41 @@ export class AlbumService {
     return new AlbumResponseDto(updatedAlbum);
   }
 
+  async getListUsingSelect(
+    listDto: AlbumListDto,
+  ): Promise<PaginatedResponseDto<{ id: number; title: string }>> {
+    const page = listDto.page || 1;
+    const limit = Number(listDto.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.AlbumWhereInput = {};
+
+    if (listDto.isPublished !== undefined) {
+      where.isPublished = listDto.isPublished;
+    }
+
+    if (listDto.artistId) {
+      where.artistId = listDto.artistId;
+    }
+
+    if (listDto.search && listDto.search.data) {
+      const keyword = listDto.search.data;
+      where.OR = [{ title: { contains: keyword } }, { description: { contains: keyword } }];
+    }
+
+    const [items, total] = await Promise.all([
+      this.albumRepository.getListUsingSelect({
+        skip,
+        take: limit,
+        where,
+        orderBy: { title: 'asc' },
+      }),
+      this.albumRepository.count(where),
+    ]);
+
+    return new PaginatedResponseDto(items, total, page, limit);
+  }
+
   async remove(id: number, currentUserId: number, currentUserRole: UserRole): Promise<void> {
     const album = await this.albumRepository.findById(id);
     if (!album) {

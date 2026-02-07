@@ -50,6 +50,17 @@ export class GenreController {
     return this.genreService.findAll(listDto);
   }
 
+  @Post('list-using-select')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get simplified genre list for select inputs with filtering' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return paginated list of genres (id, name)',
+  })
+  getListUsingSelect(@Body() listDto: GenreListDto) {
+    return this.genreService.getListUsingSelect(listDto);
+  }
+
   @Delete('many')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)

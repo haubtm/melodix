@@ -53,6 +53,25 @@ export class GenreRepository {
     });
   }
 
+  async getListUsingSelect(params: {
+    skip?: number;
+    take?: number;
+    where?: Prisma.GenreWhereInput;
+    orderBy?: Prisma.GenreOrderByWithRelationInput;
+  }): Promise<{ id: number; name: string }[]> {
+    const { skip, take, where, orderBy } = params;
+    return this.prisma.genre.findMany({
+      skip,
+      take,
+      where,
+      orderBy,
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
   async count(where?: Prisma.GenreWhereInput): Promise<number> {
     return this.prisma.genre.count({ where });
   }

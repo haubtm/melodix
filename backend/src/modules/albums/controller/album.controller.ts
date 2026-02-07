@@ -6,10 +6,10 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   UseGuards,
   ParseIntPipe,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { AlbumService } from '../service/album.service';
 import { CreateAlbumDto, UpdateAlbumDto, AlbumResponseDto } from '../dto';
@@ -46,15 +46,28 @@ export class AlbumController {
     return this.albumService.create(createAlbumDto, currentUserId, currentUserRole);
   }
 
-  @Get()
+  @Post('list')
   @Public()
-  @ApiOperation({ summary: 'Get all albums' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all albums with filtering' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Return list of albums',
   })
-  findAll(@Query() listDto: AlbumListDto) {
+  findAll(@Body() listDto: AlbumListDto) {
     return this.albumService.findAll(listDto);
+  }
+
+  @Post('list-using-select')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get simplified album list for select inputs with filtering' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return paginated list of albums (id, title)',
+  })
+  getListUsingSelect(@Body() listDto: AlbumListDto) {
+    return this.albumService.getListUsingSelect(listDto);
   }
 
   @Get(':id')

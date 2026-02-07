@@ -82,6 +82,33 @@ export class GenreService {
     return new GenreResponseDto(updatedGenre);
   }
 
+  async getListUsingSelect(
+    listDto: GenreListDto,
+  ): Promise<PaginatedResponseDto<{ id: number; name: string }>> {
+    const page = listDto.page || 1;
+    const limit = Number(listDto.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.GenreWhereInput = {};
+
+    if (listDto.search && listDto.search.data) {
+      const keyword = listDto.search.data;
+      where.OR = [{ name: { contains: keyword } }, { description: { contains: keyword } }];
+    }
+
+    const [items, total] = await Promise.all([
+      this.genreRepository.getListUsingSelect({
+        skip,
+        take: limit,
+        where,
+        orderBy: { name: 'asc' },
+      }),
+      this.genreRepository.count(where),
+    ]);
+
+    return new PaginatedResponseDto(items, total, page, limit);
+  }
+
   async remove(id: number): Promise<void> {
     const genre = await this.genreRepository.findById(id);
     if (!genre) {
