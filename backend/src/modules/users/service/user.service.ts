@@ -19,6 +19,48 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
+  async getListUsingSelect(
+    listDto: UserListDto,
+  ): Promise<PaginatedResponseDto<{ id: number; displayName: string | null; username: string }>> {
+    const page = listDto.page || 1;
+    const limit = Number(listDto.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.UserWhereInput = {
+      isActive: true, // Only show active users by default
+      ...(listDto.role && { role: listDto.role as any }),
+    };
+
+    if (listDto.search) {
+      if (typeof listDto.search === 'string') {
+        where.OR = [
+          { displayName: { contains: listDto.search } },
+          { username: { contains: listDto.search } },
+          { email: { contains: listDto.search } },
+        ];
+      } else if (listDto.search.data) {
+        const keyword = listDto.search.data;
+        where.OR = [
+          { displayName: { contains: keyword } },
+          { username: { contains: keyword } },
+          { email: { contains: keyword } },
+        ];
+      }
+    }
+
+    const [items, total] = await Promise.all([
+      this.userRepository.getListUsingSelect({
+        skip,
+        take: limit,
+        where,
+        orderBy: { displayName: 'asc' },
+      }),
+      this.userRepository.count(where),
+    ]);
+
+    return new PaginatedResponseDto(items, total, page, limit);
+  }
+
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Check if email or username already exists
     const existingUser = await this.userRepository.findByEmailOrUsername(

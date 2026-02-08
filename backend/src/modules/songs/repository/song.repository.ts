@@ -145,4 +145,27 @@ export class SongRepository {
       where: { slug },
     });
   }
+
+  async getListUsingSelect(params: {
+    skip?: number;
+    take?: number;
+    where?: Prisma.SongWhereInput;
+    orderBy?: Prisma.SongOrderByWithRelationInput;
+  }): Promise<{ id: number; title: string }[]> {
+    const { skip, take, where, orderBy } = params;
+    return this.prisma.song.findMany({
+      skip,
+      take,
+      where,
+      orderBy,
+      select: {
+        id: true,
+        title: true,
+      },
+    });
+  }
+
+  async count(where?: Prisma.SongWhereInput): Promise<number> {
+    return this.prisma.song.count({ where });
+  }
 }

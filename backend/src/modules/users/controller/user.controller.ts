@@ -103,4 +103,12 @@ export class UserController {
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userService.remove(id);
   }
+
+  @Post('list-using-select')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Danh sách users rút gọn cho select input (Admin)' })
+  @ApiResponse({ status: 200, description: 'Danh sách users rút gọn (id, displayName, username)' })
+  async getListUsingSelect(@Body() listDto: UserListDto) {
+    return this.userService.getListUsingSelect(listDto);
+  }
 }

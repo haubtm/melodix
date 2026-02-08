@@ -46,6 +46,26 @@ export class UserRepository {
     });
   }
 
+  async getListUsingSelect(params: {
+    skip?: number;
+    take?: number;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[];
+  }): Promise<{ id: number; displayName: string | null; username: string }[]> {
+    const { skip, take, where, orderBy } = params;
+    return this.prisma.user.findMany({
+      skip,
+      take,
+      where,
+      orderBy,
+      select: {
+        id: true,
+        displayName: true,
+        username: true,
+      },
+    });
+  }
+
   async count(where?: Prisma.UserWhereInput): Promise<number> {
     return this.prisma.user.count({ where });
   }

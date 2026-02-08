@@ -12,7 +12,8 @@ import { PaginatedResponseDto } from '../../../common/dto/paginated-response.dto
 import { generateSlug } from '../../../common/utils/slug.util';
 
 import { ArtistService } from '../../artists/service/artist.service';
-import { User, UserRole, SongStatus } from '@prisma/client';
+import { User, UserRole, SongStatus, Prisma } from '@prisma/client';
+import { SongListDto } from '../dto/song-list.dto';
 
 @Injectable()
 export class SongService {
@@ -20,6 +21,36 @@ export class SongService {
     private readonly songRepository: SongRepository,
     private readonly artistService: ArtistService,
   ) {}
+
+  async getListUsingSelect(
+    listDto: SongListDto,
+  ): Promise<PaginatedResponseDto<{ id: number; title: string }>> {
+    const page = listDto.page || 1;
+    const limit = Number(listDto.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.SongWhereInput = {
+      ...(listDto.status && { status: listDto.status }),
+      ...(listDto.artistId && { primaryArtistId: listDto.artistId }), // Changed artistId to primaryArtistId based on schema
+    };
+
+    if (listDto.search && listDto.search.data) {
+      const keyword = listDto.search.data;
+      where.OR = [{ title: { contains: keyword } }];
+    }
+
+    const [items, total] = await Promise.all([
+      this.songRepository.getListUsingSelect({
+        skip,
+        take: limit,
+        where,
+        orderBy: { title: 'asc' },
+      }),
+      this.songRepository.count(where),
+    ]);
+
+    return new PaginatedResponseDto(items, total, page, limit);
+  }
 
   async create(createSongDto: CreateSongDto, user: User) {
     const { genreIds, artistId, albumId, featuredArtistIds, ...rest } = createSongDto;
@@ -81,25 +112,19 @@ export class SongService {
     });
   }
 
-  async findAll(
-    page: number,
-    limit: number,
-    search?: string,
-    artistId?: number,
-    albumId?: number,
-    genreId?: number,
-    status?: SongStatus,
-    user?: User,
-  ): Promise<PaginatedResponseDto<any>> {
+  async findAll(listDto: SongListDto, user?: User): Promise<PaginatedResponseDto<any>> {
+    const page = listDto.page || 1;
+    const limit = Number(listDto.limit) || 10;
+
     // Public users can only see approved songs
     // Admin can see all or filter by status
     // Artist can use findMySongs for their own songs
-    let effectiveStatus = status;
+    let effectiveStatus = listDto.status;
 
     if (!user || user.role === UserRole.user) {
       // Public/Regular users: only approved songs
       effectiveStatus = SongStatus.approved;
-    } else if (user.role === UserRole.artist && !status) {
+    } else if (user.role === UserRole.artist && !listDto.status) {
       // Artist without status filter: only approved songs (use findMySongs for own songs)
       effectiveStatus = SongStatus.approved;
     }
@@ -108,10 +133,10 @@ export class SongService {
     return this.songRepository.findAll(
       page,
       limit,
-      search,
-      artistId,
-      albumId,
-      genreId,
+      typeof listDto.search === 'string' ? listDto.search : listDto.search?.data,
+      listDto.artistId,
+      listDto.albumId,
+      listDto.genreId,
       effectiveStatus,
     );
   }
@@ -124,15 +149,11 @@ export class SongService {
   }
 
   async findPending(page: number, limit: number): Promise<PaginatedResponseDto<any>> {
-    return this.songRepository.findAll(
-      page,
-      limit,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      SongStatus.pending,
-    );
+    const listDto = new SongListDto();
+    listDto.page = page;
+    listDto.limit = limit;
+    listDto.status = SongStatus.pending;
+    return this.findAll(listDto);
   }
 
   async findOne(id: number) {

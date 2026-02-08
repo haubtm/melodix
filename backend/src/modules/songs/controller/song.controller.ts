@@ -14,13 +14,15 @@ import { SongService } from '../service/song.service';
 import { CreateSongDto } from '../dto/create-song.dto';
 import { UpdateSongDto } from '../dto/update-song.dto';
 import { RejectSongDto } from '../dto/reject-song.dto';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { SongListDto } from '../dto/song-list.dto';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../../auth/guard/optional-jwt-auth.guard';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { UserRole, SongStatus } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { Public } from '../../../common/decorator/public.decorator';
 import { CurrentUser } from '../../../common/decorator/current-user.decorator';
+import { HttpStatus, HttpCode } from '@nestjs/common';
 
 @ApiTags('songs')
 @Controller('songs')
@@ -36,42 +38,17 @@ export class SongController {
     return this.songService.create(createSongDto, user);
   }
 
-  @Get()
+  @Post('list')
   @UseGuards(OptionalJwtAuthGuard)
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all songs with pagination and filtering' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'artistId', required: false, type: Number })
-  @ApiQuery({ name: 'albumId', required: false, type: Number })
-  @ApiQuery({ name: 'genreId', required: false, type: Number })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    enum: SongStatus,
-    description: 'Filter by status (Admin only)',
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return list of songs',
   })
-  findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('search') search?: string,
-    @Query('artistId') artistId?: number,
-    @Query('albumId') albumId?: number,
-    @Query('genreId') genreId?: number,
-    @Query('status') status?: SongStatus,
-    @CurrentUser() user?: any,
-  ) {
-    return this.songService.findAll(
-      Number(page),
-      Number(limit),
-      search,
-      artistId ? Number(artistId) : undefined,
-      albumId ? Number(albumId) : undefined,
-      genreId ? Number(genreId) : undefined,
-      status,
-      user,
-    );
+  findAll(@Body() listDto: SongListDto, @CurrentUser() user?: any) {
+    return this.songService.findAll(listDto, user);
   }
 
   @Get('my')
@@ -149,5 +126,17 @@ export class SongController {
   @ApiOperation({ summary: 'Delete a song' })
   remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: any) {
     return this.songService.remove(id, user);
+  }
+
+  @Post('list-using-select')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get simplified song list for select inputs with filtering' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return paginated list of songs (id, title)',
+  })
+  getListUsingSelect(@Body() listDto: SongListDto) {
+    return this.songService.getListUsingSelect(listDto);
   }
 }
