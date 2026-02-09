@@ -1,16 +1,10 @@
-export interface IResponse<T = unknown> {
-  status: number;
-  message: string;
-  data: T;
-}
+import { IResponse, IPaginatedResponse } from "@/api/axiosService";
 
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+// Re-export from axiosService
+export type { IResponse, IPaginatedResponse };
+
+// Alias for backward compatibility
+export type PaginatedResponse<T> = IPaginatedResponse<T>;
 
 export interface PaginatedRequest {
   page?: number;
@@ -18,4 +12,9 @@ export interface PaginatedRequest {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+}
+
+export interface UploadResponse {
+  url: string;
+  filename: string;
 }

@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User, UserRole } from "@/dtos";
+import { IUserResponseData } from "@/dtos/users";
+
+export type UserRole = "user" | "artist" | "admin";
 
 interface AuthState {
-  user: User | null;
+  user: IUserResponseData | null;
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -22,7 +24,7 @@ const authSlice = createSlice({
     setCredentials: (
       state,
       action: PayloadAction<{
-        user: User;
+        user: IUserResponseData;
         accessToken: string;
         refreshToken: string;
       }>,
@@ -37,7 +39,7 @@ const authSlice = createSlice({
         localStorage.setItem("refreshToken", action.payload.refreshToken);
       }
     },
-    setUser: (state, action: PayloadAction<User>) => {
+    setUser: (state, action: PayloadAction<IUserResponseData>) => {
       state.user = action.payload;
     },
     logout: (state) => {
@@ -68,17 +70,24 @@ const authSlice = createSlice({
 });
 
 // Permission helpers
-export const hasRole = (user: User | null, roles: UserRole[]): boolean => {
+export const hasRole = (
+  user: IUserResponseData | null,
+  roles: UserRole[],
+): boolean => {
   if (!user) return false;
-  return roles.includes(user.role);
+  return roles.includes(user.role as UserRole);
 };
 
-export const isAdmin = (user: User | null): boolean => hasRole(user, ["admin"]);
-export const isArtist = (user: User | null): boolean =>
+export const isAdmin = (user: IUserResponseData | null): boolean =>
+  hasRole(user, ["admin"]);
+export const isArtist = (user: IUserResponseData | null): boolean =>
   hasRole(user, ["artist", "admin"]);
-export const canManageUsers = (user: User | null): boolean => isAdmin(user);
-export const canApproveContent = (user: User | null): boolean => isAdmin(user);
-export const canManageArtists = (user: User | null): boolean => isAdmin(user);
+export const canManageUsers = (user: IUserResponseData | null): boolean =>
+  isAdmin(user);
+export const canApproveContent = (user: IUserResponseData | null): boolean =>
+  isAdmin(user);
+export const canManageArtists = (user: IUserResponseData | null): boolean =>
+  isAdmin(user);
 
 export const { setCredentials, setUser, logout, setLoading, initializeAuth } =
   authSlice.actions;

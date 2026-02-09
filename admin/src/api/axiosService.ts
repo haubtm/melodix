@@ -6,10 +6,28 @@ import axios, {
   AxiosError,
 } from "axios";
 
+// Response wrapper cho single item
 export interface IResponse<T = unknown> {
+  code: number;
   status: number;
   message: string;
   data: T;
+}
+
+// Response wrapper cho paginated list
+export interface IPaginatedResponse<T = unknown> {
+  code: number;
+  status: number;
+  message: string;
+  data: T[];
+  metadata: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
 }
 
 import { STORAGE_KEY } from "@/common/constants";
@@ -77,29 +95,39 @@ class ApiService {
 
     this.instance.interceptors.request.use(requestInterceptor);
     this.instance.interceptors.response.use(
-      (response) => response,
+      (response) => response.data,
       errorResponseInterceptor,
     );
   }
 
-  get<T>(url: string, config?: object) {
-    return this.instance.get<IResponse<T>>(url, config);
+  // Single item responses
+  get<T>(url: string, config?: object): Promise<IResponse<T>> {
+    return this.instance.get(url, config);
   }
 
-  post<T>(url: string, data?: object, config?: object) {
-    return this.instance.post<IResponse<T>>(url, data, config);
+  post<T>(url: string, data?: object, config?: object): Promise<IResponse<T>> {
+    return this.instance.post(url, data, config);
   }
 
-  put<T>(url: string, data?: object, config?: object) {
-    return this.instance.put<IResponse<T>>(url, data, config);
+  put<T>(url: string, data?: object, config?: object): Promise<IResponse<T>> {
+    return this.instance.put(url, data, config);
   }
 
-  patch<T>(url: string, data?: object, config?: object) {
-    return this.instance.patch<IResponse<T>>(url, data, config);
+  patch<T>(url: string, data?: object, config?: object): Promise<IResponse<T>> {
+    return this.instance.patch(url, data, config);
   }
 
-  delete<T>(url: string, config?: object) {
-    return this.instance.delete<IResponse<T>>(url, config);
+  delete<T>(url: string, config?: object): Promise<IResponse<T>> {
+    return this.instance.delete(url, config);
+  }
+
+  // Paginated list responses
+  postPaginated<T>(
+    url: string,
+    data?: object,
+    config?: object,
+  ): Promise<IPaginatedResponse<T>> {
+    return this.instance.post(url, data, config);
   }
 }
 

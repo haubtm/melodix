@@ -11,39 +11,39 @@ const songsApi = {
       "/songs",
       { params },
     );
-    return response.data.data;
+    return response.data;
   },
 
   detail: async (id: number) => {
     const response = await apiService.get<Song>(`/songs/${id}`);
-    return response.data.data;
+    return response.data;
   },
 
   create: async (data: CreateSongRequest) => {
     const response = await apiService.post<Song>("/songs", data);
-    return response.data.data;
+    return response.data;
   },
 
   update: async (id: number, data: UpdateSongRequest) => {
     const response = await apiService.patch<Song>(`/songs/${id}`, data);
-    return response.data.data;
+    return response.data;
   },
 
   delete: async (id: number) => {
     const response = await apiService.delete<void>(`/songs/${id}`);
-    return response.data.data;
+    return response.data;
   },
 
   approve: async (id: number) => {
     const response = await apiService.patch<Song>(`/songs/${id}/approve`);
-    return response.data.data;
+    return response.data;
   },
 
   reject: async (id: number, reason: string) => {
     const response = await apiService.patch<Song>(`/songs/${id}/reject`, {
       reason,
     });
-    return response.data.data;
+    return response.data;
   },
 };
 
