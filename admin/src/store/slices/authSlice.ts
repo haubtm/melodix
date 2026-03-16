@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IUserResponseData } from "@/dtos/users";
+import { STORAGE_KEY } from "@/common/constants";
 
 export type UserRole = "user" | "artist" | "admin";
 
@@ -35,8 +36,18 @@ const authSlice = createSlice({
       state.isLoading = false;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("accessToken", action.payload.accessToken);
-        localStorage.setItem("refreshToken", action.payload.refreshToken);
+        localStorage.setItem(
+          STORAGE_KEY.ACCESS_TOKEN,
+          action.payload.accessToken,
+        );
+        localStorage.setItem(
+          STORAGE_KEY.REFRESH_TOKEN,
+          action.payload.refreshToken,
+        );
+        localStorage.setItem(
+          STORAGE_KEY.USER,
+          JSON.stringify(action.payload.user),
+        );
       }
     },
     setUser: (state, action: PayloadAction<IUserResponseData>) => {
@@ -49,8 +60,9 @@ const authSlice = createSlice({
       state.isLoading = false;
 
       if (typeof window !== "undefined") {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        localStorage.removeItem(STORAGE_KEY.ACCESS_TOKEN);
+        localStorage.removeItem(STORAGE_KEY.REFRESH_TOKEN);
+        localStorage.removeItem(STORAGE_KEY.USER);
       }
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -58,10 +70,19 @@ const authSlice = createSlice({
     },
     initializeAuth: (state) => {
       if (typeof window !== "undefined") {
-        const accessToken = localStorage.getItem("accessToken");
+        const accessToken = localStorage.getItem(STORAGE_KEY.ACCESS_TOKEN);
+        const userStr = localStorage.getItem(STORAGE_KEY.USER);
+
         if (accessToken) {
           state.accessToken = accessToken;
           state.isAuthenticated = true;
+          if (userStr) {
+            try {
+              state.user = JSON.parse(userStr);
+            } catch (e) {
+              console.error("Failed to parse user from local storage", e);
+            }
+          }
         }
       }
       state.isLoading = false;
