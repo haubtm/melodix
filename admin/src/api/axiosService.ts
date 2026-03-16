@@ -37,6 +37,11 @@ const getToken = (): string | null => {
   return localStorage.getItem(STORAGE_KEY.ACCESS_TOKEN);
 };
 
+const getRefreshToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(STORAGE_KEY.REFRESH_TOKEN);
+};
+
 const clearStorage = () => {
   if (typeof window === "undefined") return;
   localStorage.removeItem(STORAGE_KEY.ACCESS_TOKEN);
@@ -57,12 +62,52 @@ const requestInterceptor = async (config: InternalAxiosRequestConfig) => {
 export const errorResponseInterceptor = async (
   error: AxiosError<IResponse>,
 ) => {
+  const originalRequest = error.config as InternalAxiosRequestConfig & {
+    _retry?: boolean;
+  };
+
   if (error.response?.data) {
     const currentPath = window.location.pathname;
+
+    // Handle 401 Unauthorized
     if (error.response.status === 401 && currentPath !== "/login") {
-      window.location.href = "/login";
-      clearStorage();
-      return Promise.reject(error.response.data);
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+
+        try {
+          const refreshToken = getRefreshToken();
+          if (!refreshToken) throw new Error("No refresh token");
+
+          // Explicitly call axios to avoid interceptor loops
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"}/auth/refresh`,
+            { refreshToken },
+          );
+
+          if (response.data?.data) {
+            const { accessToken, refreshToken: newRefresh } =
+              response.data.data;
+
+            // Update storage
+            localStorage.setItem(STORAGE_KEY.ACCESS_TOKEN, accessToken);
+            if (newRefresh) {
+              localStorage.setItem(STORAGE_KEY.REFRESH_TOKEN, newRefresh);
+            }
+
+            // Update failed request header and retry
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            return axios(originalRequest).then((res) => res.data); // Return the un-wrapped promise
+          }
+        } catch {
+          clearStorage();
+          window.location.href = "/login";
+          return Promise.reject(error.response.data);
+        }
+      } else {
+        // Fallback if retry also fails
+        clearStorage();
+        window.location.href = "/login";
+      }
     }
 
     if (error.response.status === 403) {
