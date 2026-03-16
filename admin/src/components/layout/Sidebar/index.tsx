@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layout, Menu, Typography, Button } from "antd";
+import { Layout, Menu, Typography, Button, theme } from "antd";
 import type { MenuProps } from "antd";
 import {
   LeftOutlined,
@@ -31,8 +31,10 @@ export default function Sidebar() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const collapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
+  const themeMode = useAppSelector((state) => state.ui.theme);
   const user = useAppSelector((state) => state.auth.user);
   const userIsAdmin = isAdmin(user);
+  const { token } = theme.useToken();
 
   const menuItems: MenuItem[] = [
     {
@@ -107,23 +109,34 @@ export default function Sidebar() {
 
   return (
     <Sider
+      theme={themeMode}
       width={240}
       collapsedWidth={80}
       collapsed={collapsed}
       className={styles.sidebar}
       trigger={null}
       collapsible
+      style={{
+        background: token.colorBgContainer,
+        borderRight: `1px solid ${token.colorBorderSecondary}`,
+      }}
     >
-      {/* Logo */}
-      <div className={styles.logo}>
+      <div
+        className={styles.logo}
+        style={{ borderBottom: `1px solid ${token.colorBorderSecondary}` }}
+      >
         <Link href="/dashboard">
           <div className={styles.logoContent}>
             <svg viewBox="0 0 24 24" width="32" height="32">
-              <circle cx="12" cy="12" r="10" fill="#1890ff" />
+              <circle cx="12" cy="12" r="10" fill={token.colorPrimary} />
               <path d="M8 15V9l8 3-8 3z" fill="white" />
             </svg>
             {!collapsed && (
-              <Title level={4} className={styles.logoText}>
+              <Title
+                level={4}
+                className={styles.logoText}
+                style={{ color: token.colorText }}
+              >
                 Melodix
               </Title>
             )}
@@ -142,6 +155,11 @@ export default function Sidebar() {
       {/* Collapse button */}
       <Button
         className={styles.collapseButton}
+        style={{
+          background: token.colorBgContainer,
+          color: token.colorText,
+          border: `1px solid ${token.colorBorderSecondary}`,
+        }}
         icon={
           collapsed ? (
             <RightOutlined style={{ fontSize: "12px" }} />

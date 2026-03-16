@@ -1,15 +1,13 @@
 "use client";
 
 import React from "react";
-import { Table as AntTable, Modal, Button, Popconfirm } from "antd";
+import { Table as AntTable, App, Button, Popconfirm } from "antd";
 import type { TableProps, ColumnType } from "antd/es/table";
 import {
   DeleteOutlined,
   EditOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-
-const { confirm } = Modal;
 
 interface ActionColumnOptions<T> {
   onEdit?: (record: T) => void;
@@ -23,7 +21,7 @@ export function useTableColumns<T extends object>() {
     title: "Thao tác",
     key: "action",
     align: "center",
-    width: 120,
+    fixed: "right",
     render: (_, record) => (
       <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
         {options.onEdit && (
@@ -64,10 +62,11 @@ export default function Table<T extends object>({
   ...tableProps
 }: CommonTableProps<T>) {
   const hasSelected = selectedRowKeys && selectedRowKeys.length > 0;
+  const { modal } = App.useApp();
 
   const handleDeleteMany = () => {
     if (!selectedRowKeys || !onDeleteMany) return;
-    confirm({
+    modal.confirm({
       title: "Xác nhận xóa",
       icon: <ExclamationCircleOutlined />,
       content: `Bạn có chắc chắn muốn xóa ${selectedRowKeys.length} mục đã chọn?`,
@@ -91,14 +90,9 @@ export default function Table<T extends object>({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      {onDeleteMany && setSelectedRowKeys && (
+      {hasSelected && onDeleteMany && setSelectedRowKeys && (
         <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            disabled={!hasSelected}
-            onClick={handleDeleteMany}
-          >
+          <Button danger icon={<DeleteOutlined />} onClick={handleDeleteMany}>
             Xóa ({selectedRowKeys?.length || 0}) mục đã chọn
           </Button>
         </div>

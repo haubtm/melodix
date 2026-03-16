@@ -16,7 +16,6 @@ const lightTheme = {
     colorPrimary: "#1890ff",
     colorBgContainer: "#ffffff",
     colorBgLayout: "#f5f5f5",
-    colorBgElevated: "#ffffff",
     borderRadius: 8,
   },
 };
@@ -27,7 +26,6 @@ const darkTheme = {
     colorPrimary: "#1890ff",
     colorBgContainer: "#1f1f1f",
     colorBgLayout: "#141414",
-    colorBgElevated: "#1f1f1f",
     borderRadius: 8,
   },
   components: {

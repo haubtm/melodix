@@ -89,16 +89,20 @@ export function UserListContainer() {
       dataIndex: "id",
       key: "id",
       width: 80,
+      fixed: "left" as const,
     },
     {
       title: "Username",
       dataIndex: "username",
       key: "username",
+      fixed: "left" as const,
+      width: 150,
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      width: 250,
     },
     {
       title: "Tên hiển thị",
@@ -261,6 +265,13 @@ export function UserListContainer() {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
         onDeleteMany={handleDeleteMany}
+        onRow={(record) => ({
+          onClick: () => {
+            setEditingUser(record);
+            setIsModalVisible(true);
+          },
+          style: { cursor: "pointer" },
+        })}
       />
 
       {isModalVisible && (
