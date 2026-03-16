@@ -15,7 +15,7 @@ import { useAppSelector } from "@/store/hooks";
 import { isAdmin } from "@/store/slices/authSlice";
 import styles from "./dashboard.module.css";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 // Mock data for dashboard
 const mockStats = {
@@ -155,16 +155,6 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <Title level={2} className={styles.title}>
-          Dashboard
-        </Title>
-        <Text type="secondary">
-          Xin chào, {user?.displayName || user?.username || "Admin"}!
-        </Text>
-      </div>
-
       {/* Stats Cards */}
       <Row gutter={[16, 16]} className={styles.statsRow}>
         {statCards

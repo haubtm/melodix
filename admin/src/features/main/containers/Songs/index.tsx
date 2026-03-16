@@ -115,8 +115,7 @@ export const SongsContainer = () => {
 
   return (
     <S.Root>
-      <S.Header $justify="space-between" $align="center">
-        <S.Title>Quản lý bài hát</S.Title>
+      <S.Header $justify="flex-end" $align="center">
         <Button type="primary" icon={<PlusOutlined />}>
           Thêm bài hát
         </Button>

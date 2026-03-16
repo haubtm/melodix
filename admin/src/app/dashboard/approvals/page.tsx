@@ -150,18 +150,6 @@ export default function ApprovalsPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <div>
-          <Title level={2} className={styles.title}>
-            Duyệt nội dung
-          </Title>
-          <Text type="secondary">
-            Xem và duyệt các bài hát, album đang chờ phê duyệt
-          </Text>
-        </div>
-      </div>
-
       {/* Tabs */}
       <Tabs
         activeKey={activeTab}

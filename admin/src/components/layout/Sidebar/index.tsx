@@ -3,9 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layout, Menu, Typography } from "antd";
+import { Layout, Menu, Typography, Button } from "antd";
 import type { MenuProps } from "antd";
 import {
+  LeftOutlined,
+  RightOutlined,
   DashboardOutlined,
   CustomerServiceOutlined,
   PlaySquareOutlined,
@@ -15,8 +17,9 @@ import {
   AppstoreOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { isAdmin } from "@/store/slices/authSlice";
+import { toggleSidebar } from "@/store/slices/uiSlice";
 import styles from "./Sidebar.module.css";
 
 const { Sider } = Layout;
@@ -26,6 +29,7 @@ type MenuItem = Required<MenuProps>["items"][number];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
   const collapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
   const user = useAppSelector((state) => state.auth.user);
   const userIsAdmin = isAdmin(user);
@@ -133,6 +137,21 @@ export default function Sidebar() {
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
         className={styles.menu}
+      />
+
+      {/* Collapse button */}
+      <Button
+        className={styles.collapseButton}
+        icon={
+          collapsed ? (
+            <RightOutlined style={{ fontSize: "12px" }} />
+          ) : (
+            <LeftOutlined style={{ fontSize: "12px" }} />
+          )
+        }
+        onClick={() => dispatch(toggleSidebar())}
+        shape="circle"
+        size="small"
       />
     </Sider>
   );

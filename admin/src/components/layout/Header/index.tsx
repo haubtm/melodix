@@ -1,12 +1,18 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { Layout, Button, Dropdown, Avatar, Switch, theme } from "antd";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  Layout,
+  Button,
+  Dropdown,
+  Avatar,
+  Switch,
+  theme,
+  Typography,
+} from "antd";
 import type { MenuProps } from "antd";
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   UserOutlined,
   LogoutOutlined,
   SunOutlined,
@@ -14,20 +20,32 @@ import {
   BellOutlined,
 } from "@ant-design/icons";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { toggleSidebar, toggleTheme } from "@/store/slices/uiSlice";
+import { toggleTheme } from "@/store/slices/uiSlice";
 import { logout } from "@/store/slices/authSlice";
 import styles from "./Header.module.css";
 
 const { Header: AntHeader } = Layout;
+const { Title } = Typography;
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { token } = theme.useToken();
 
-  const collapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
   const themeMode = useAppSelector((state) => state.ui.theme);
   const user = useAppSelector((state) => state.auth.user);
+
+  const getPageTitle = () => {
+    if (pathname.startsWith("/dashboard/songs")) return "Quản lý Bài hát";
+    if (pathname.startsWith("/dashboard/albums")) return "Quản lý Albums";
+    if (pathname.startsWith("/dashboard/artists")) return "Quản lý Nghệ sĩ";
+    if (pathname.startsWith("/dashboard/genres")) return "Quản lý Thể loại";
+    if (pathname.startsWith("/dashboard/approvals")) return "Duyệt bài";
+    if (pathname.startsWith("/dashboard/users")) return "Quản lý Người dùng";
+    if (pathname.startsWith("/dashboard/settings")) return "Cài đặt";
+    return "Dashboard";
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -58,13 +76,14 @@ export default function Header() {
       className={styles.header}
       style={{ background: token.colorBgContainer }}
     >
-      {/* Toggle sidebar */}
-      <Button
-        type="text"
-        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        onClick={() => dispatch(toggleSidebar())}
-        className={styles.trigger}
-      />
+      {/* Page Title */}
+      <div
+        style={{ marginLeft: "16px", display: "flex", alignItems: "center" }}
+      >
+        <Title level={4} style={{ margin: 0 }}>
+          {getPageTitle()}
+        </Title>
+      </div>
 
       {/* Right section */}
       <div className={styles.right}>

@@ -10,7 +10,6 @@ import {
   Dropdown,
   Modal,
   message,
-  Typography,
   Avatar,
 } from "antd";
 import type { MenuProps, TableProps } from "antd";
@@ -26,7 +25,6 @@ import {
 import { Album } from "@/dtos";
 import styles from "./albums.module.css";
 
-const { Title } = Typography;
 const { Search } = Input;
 
 // Mock data
@@ -201,26 +199,28 @@ export default function AlbumsPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <Title level={2} className={styles.title}>
-          Quản lý Albums
-        </Title>
-        <Button type="primary" icon={<PlusOutlined />}>
-          Thêm album
-        </Button>
-      </div>
-
-      {/* Filters */}
-      <Card className={styles.filterCard}>
-        <Search
-          placeholder="Tìm kiếm album..."
-          allowClear
-          style={{ width: 300 }}
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
+      {/* Filters & Actions */}
+      <Card
+        className={styles.filterCard}
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <div style={{ display: "flex", gap: "16px", width: "100%" }}>
+          <Search
+            placeholder="Tìm kiếm album..."
+            allowClear
+            style={{ width: 300 }}
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ marginLeft: "auto" }}
+          >
+            Thêm album
+          </Button>
+        </div>
       </Card>
 
       {/* Table */}
