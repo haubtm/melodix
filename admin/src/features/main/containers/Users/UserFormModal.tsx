@@ -100,11 +100,11 @@ export function UserFormModal({
       }
     : undefined;
 
-  const handleSubmit = (values: Record<string, any>) => {
+  const handleSubmit = (values: Record<string, unknown>) => {
     const formattedValues = {
       ...values,
-      dateOfBirth: values.dateOfBirth
-        ? values.dateOfBirth.format("YYYY-MM-DD")
+      dateOfBirth: (values.dateOfBirth as dayjs.Dayjs | undefined)
+        ? (values.dateOfBirth as dayjs.Dayjs).format("YYYY-MM-DD")
         : undefined,
     };
     onSubmit(formattedValues);

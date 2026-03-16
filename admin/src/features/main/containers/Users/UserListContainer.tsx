@@ -1,9 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Input, Space, Tag, message, Select } from "antd";
+import {
+  Button,
+  Input,
+  Tag,
+  message,
+  Select,
+  TablePaginationConfig,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { Table, useTableColumns } from "@/lib";
+import { Table, useTableColumns, Flex } from "@/lib";
 import { UserFormModal } from "./UserFormModal";
 import {
   useUsersList,
@@ -55,7 +62,10 @@ export function UserListContainer() {
     }));
   };
 
-  const handleFilterChange = (key: keyof IUserListRequest, value: any) => {
+  const handleFilterChange = (
+    key: keyof IUserListRequest,
+    value: string | undefined,
+  ) => {
     setQueryParams((prev) => ({
       ...prev,
       [key]: value || undefined,
@@ -63,7 +73,7 @@ export function UserListContainer() {
     }));
   };
 
-  const handleTableChange = (pagination: any) => {
+  const handleTableChange = (pagination: TablePaginationConfig) => {
     setQueryParams((prev) => ({
       ...prev,
       page: pagination.current,
@@ -152,33 +162,36 @@ export function UserListContainer() {
     }),
   ];
 
-  const handleModalSubmit = async (values: any) => {
+  const handleModalSubmit = async (values: Record<string, unknown>) => {
     try {
       if (editingUser) {
         const updateData: IUserUpdateRequest = {
-          displayName: values.displayName,
-          country: values.country,
-          dateOfBirth: values.dateOfBirth,
+          displayName: values.displayName as string,
+          country: values.country as string,
+          dateOfBirth: values.dateOfBirth as string,
         };
         await updateUser({ id: editingUser.id, data: updateData });
         message.success("Cập nhật người dùng thành công");
       } else {
         const createData: IUserCreateRequest = {
-          email: values.email,
-          password: values.password,
-          username: values.username,
-          displayName: values.displayName,
-          role: values.role,
-          country: values.country,
-          dateOfBirth: values.dateOfBirth,
+          email: values.email as string,
+          password: values.password as string,
+          username: values.username as string,
+          displayName: values.displayName as string,
+          role: values.role as "user" | "artist" | "admin",
+          country: values.country as string,
+          dateOfBirth: values.dateOfBirth as string,
         };
         await createUser(createData);
         message.success("Thêm người dùng thành công");
       }
       setIsModalVisible(false);
       setEditingUser(null);
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || "Có lỗi xảy ra");
+    } catch (error: unknown) {
+      const err = error as Error & {
+        response?: { data?: { message?: string } };
+      };
+      message.error(err?.response?.data?.message || "Có lỗi xảy ra");
     }
   };
 
@@ -200,9 +213,9 @@ export function UserListContainer() {
   };
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }} size="large">
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Space>
+    <Flex $direction="column" $gap={24} style={{ width: "100%" }}>
+      <Flex $justify="space-between" $align="center">
+        <Flex $gap={16} $align="center">
           <Search
             placeholder="Tìm kiếm theo email, username..."
             allowClear
@@ -220,7 +233,7 @@ export function UserListContainer() {
               { label: "User", value: "user" },
             ]}
           />
-        </Space>
+        </Flex>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -231,7 +244,7 @@ export function UserListContainer() {
         >
           Thêm người dùng
         </Button>
-      </div>
+      </Flex>
 
       <Table<IUserResponseData>
         rowKey="id"
@@ -250,13 +263,15 @@ export function UserListContainer() {
         onDeleteMany={handleDeleteMany}
       />
 
-      <UserFormModal
-        visible={isModalVisible}
-        onCancel={handleModalCancel}
-        onSubmit={handleModalSubmit}
-        initialValues={editingUser}
-        loading={isCreating || isUpdating}
-      />
-    </Space>
+      {isModalVisible && (
+        <UserFormModal
+          visible={isModalVisible}
+          onCancel={handleModalCancel}
+          onSubmit={handleModalSubmit}
+          initialValues={editingUser}
+          loading={isCreating || isUpdating}
+        />
+      )}
+    </Flex>
   );
 }

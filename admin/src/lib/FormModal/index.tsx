@@ -32,6 +32,7 @@ export default function FormModal<T extends object>({
   useEffect(() => {
     if (visible) {
       if (initialValues) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         form.setFieldsValue(initialValues as any);
       } else {
         form.resetFields();
@@ -64,7 +65,7 @@ export default function FormModal<T extends object>({
       onOk={handleOk}
       confirmLoading={loading}
       onCancel={handleCancel}
-      destroyOnClose
+      destroyOnHidden
       maskClosable={false}
       width={width}
     >

@@ -24,7 +24,7 @@ export const LoginContainer = () => {
 
         <S.AlertWrapper>
           <Alert
-            message="Chỉ Admin và Nghệ sĩ mới có quyền truy cập"
+            title="Chỉ Admin và Nghệ sĩ mới có quyền truy cập"
             type="info"
             showIcon
           />

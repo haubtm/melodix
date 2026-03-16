@@ -46,10 +46,10 @@ export const useLoginContainer = () => {
       );
       message.success("Đăng nhập thành công!");
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       localStorage.removeItem(STORAGE_KEY.ACCESS_TOKEN);
       localStorage.removeItem(STORAGE_KEY.REFRESH_TOKEN);
-      const msg = error?.message || "Đăng nhập thất bại";
+      const msg = (error as Error)?.message || "Đăng nhập thất bại";
       message.error(msg);
     }
   };
