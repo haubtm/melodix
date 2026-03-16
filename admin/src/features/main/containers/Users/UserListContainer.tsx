@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Input, Space, Tag, message } from "antd";
+import { Button, Input, Space, Tag, message, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Table, useTableColumns } from "@/lib";
 import { UserFormModal } from "./UserFormModal";
@@ -48,7 +48,17 @@ export function UserListContainer() {
   const handleSearch = (value: string) => {
     setQueryParams((prev) => ({
       ...prev,
-      search: value || undefined,
+      search: value
+        ? { fields: ["displayName", "username", "email"], data: value }
+        : undefined,
+      page: 1,
+    }));
+  };
+
+  const handleFilterChange = (key: keyof IUserListRequest, value: any) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      [key]: value || undefined,
       page: 1,
     }));
   };
@@ -192,12 +202,25 @@ export function UserListContainer() {
   return (
     <Space direction="vertical" style={{ width: "100%" }} size="large">
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Search
-          placeholder="Tìm kiếm theo email, username..."
-          allowClear
-          onSearch={handleSearch}
-          style={{ width: 300 }}
-        />
+        <Space>
+          <Search
+            placeholder="Tìm kiếm theo email, username..."
+            allowClear
+            onSearch={handleSearch}
+            style={{ width: 300 }}
+          />
+          <Select
+            placeholder="Vai trò"
+            allowClear
+            onChange={(val) => handleFilterChange("role", val)}
+            style={{ width: 150 }}
+            options={[
+              { label: "Admin", value: "admin" },
+              { label: "Artist", value: "artist" },
+              { label: "User", value: "user" },
+            ]}
+          />
+        </Space>
         <Button
           type="primary"
           icon={<PlusOutlined />}

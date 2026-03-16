@@ -1,4 +1,5 @@
 import { IResponse, IPaginatedResponse } from "@/api/axiosService";
+import { PaginatedRequest } from "@/dtos/common";
 
 // ============ User Response Data ============
 export interface IUserResponseData {
@@ -18,10 +19,7 @@ export interface IUserResponseData {
 }
 
 // ============ List Users ============
-export interface IUserListRequest {
-  page?: number;
-  limit?: number;
-  search?: string;
+export interface IUserListRequest extends PaginatedRequest {
   role?: "user" | "artist" | "admin";
   subscriptionType?: "free" | "premium" | "family";
   isActive?: boolean;
