@@ -86,3 +86,10 @@ export interface IUserSelectItem {
 }
 
 export type IUserSelectResponse = IPaginatedResponse<IUserSelectItem>;
+
+export interface IArtistSelectItem {
+  id: number;
+  name: string;
+}
+
+export type IArtistSelectResponse = IPaginatedResponse<IArtistSelectItem>;

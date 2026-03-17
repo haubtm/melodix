@@ -8,6 +8,8 @@ import {
   IArtistUpdateRequest,
   IArtistUpdateResponse,
   IArtistResponseData,
+  IArtistSelectItem,
+  IArtistSelectResponse,
   IUserSelectItem,
   IUserSelectResponse,
 } from "@/dtos/artists";
@@ -51,6 +53,15 @@ export const artistApi = {
   ): Promise<IUserSelectResponse> => {
     return apiService.postPaginated<IUserSelectItem>(
       "/users/list-using-select",
+      params,
+    );
+  },
+
+  getListUsingSelect: async (
+    params: IArtistListRequest,
+  ): Promise<IArtistSelectResponse> => {
+    return apiService.postPaginated<IArtistSelectItem>(
+      "/artists/list-using-select",
       params,
     );
   },

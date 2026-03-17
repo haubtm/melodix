@@ -7,6 +7,7 @@ import {
   IArtistByIdResponse,
   IArtistCreateRequest,
   IArtistCreateResponse,
+  IArtistSelectResponse,
   IArtistUpdateRequest,
   IArtistUpdateResponse,
   IUserSelectResponse,
@@ -72,5 +73,12 @@ export const useUsersForSelect = (params: PaginatedRequest) => {
   return useQuery<IUserSelectResponse>({
     queryKey: artistKeys.userSelect(params),
     queryFn: () => artistApi.getUsersForSelect(params),
+  });
+};
+
+export const useArtistsForSelect = (params: IArtistListRequest) => {
+  return useQuery<IArtistSelectResponse>({
+    queryKey: artistKeys.artistSelect(params),
+    queryFn: () => artistApi.getListUsingSelect(params),
   });
 };

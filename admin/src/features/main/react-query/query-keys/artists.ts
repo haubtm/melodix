@@ -10,4 +10,7 @@ export const artistKeys = {
   usersForSelect: () => ["users", "select"] as const,
   userSelect: (params: object) =>
     [...artistKeys.usersForSelect(), params] as const,
+  artistsForSelect: () => [...artistKeys.all, "select"] as const,
+  artistSelect: (params: object) =>
+    [...artistKeys.artistsForSelect(), params] as const,
 };

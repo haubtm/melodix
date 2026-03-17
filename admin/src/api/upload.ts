@@ -1,7 +1,4 @@
-import axios from "axios";
-import { STORAGE_KEY } from "@/common/constants";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+import apiService from "./axiosService";
 
 export interface UploadResponse {
   url: string;
@@ -17,20 +14,17 @@ export const uploadApi = {
     formData.append("file", file);
     formData.append("folder", folder);
 
-    const token = localStorage.getItem(STORAGE_KEY.ACCESS_TOKEN);
-
-    const response = await axios.post<{
-      status: number;
-      message: string;
-      data: UploadResponse;
-    }>(`${API_URL}/upload`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: token ? `Bearer ${token}` : "",
+    const response = await apiService.post<UploadResponse>(
+      "/upload",
+      formData as unknown as object,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
 
-    return response.data.data;
+    return response.data;
   },
 };
 
