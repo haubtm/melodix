@@ -15,6 +15,7 @@ interface CommonFormModalProps<T> {
   formItems: React.ReactNode;
   form: FormInstance<T>;
   width?: number;
+  top?: number;
 }
 
 export default function FormModal<T extends object>({
@@ -28,6 +29,7 @@ export default function FormModal<T extends object>({
   formItems,
   form,
   width = 600,
+  top = 32,
 }: CommonFormModalProps<T>) {
   useEffect(() => {
     if (visible) {
@@ -68,6 +70,7 @@ export default function FormModal<T extends object>({
       destroyOnHidden
       maskClosable={false}
       width={width}
+      style={{ top }}
     >
       <Spin spinning={spinning}>
         <Form

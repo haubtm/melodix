@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { Table as AntTable, App, Button, Popconfirm } from "antd";
-import type { TableProps, ColumnType } from "antd/es/table";
+import { App, Button, Popconfirm, Table as AntTable } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
+import type { ColumnType } from "antd/es/table";
+import type { TableProps } from "antd/es/table";
 
 interface ActionColumnOptions<T> {
   onEdit?: (record: T) => void;
@@ -23,12 +24,18 @@ export function useTableColumns<T extends object>() {
     align: "center",
     fixed: "right",
     render: (_, record) => (
-      <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+      <div
+        style={{ display: "flex", gap: "8px", justifyContent: "center" }}
+        onClick={(event) => event.stopPropagation()}
+      >
         {options.onEdit && (
           <Button
             type="text"
             icon={<EditOutlined />}
-            onClick={() => options.onEdit?.(record)}
+            onClick={(event) => {
+              event.stopPropagation();
+              options.onEdit?.(record);
+            }}
             style={{ color: "#1890ff" }}
           />
         )}
@@ -37,9 +44,17 @@ export function useTableColumns<T extends object>() {
             title="Bạn có chắc chắn muốn xóa?"
             okText="Có"
             cancelText="Không"
-            onConfirm={() => options.onDelete?.(record)}
+            onConfirm={(event) => {
+              event?.stopPropagation();
+              options.onDelete?.(record);
+            }}
           >
-            <Button type="text" danger icon={<DeleteOutlined />} />
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={(event) => event.stopPropagation()}
+            />
           </Popconfirm>
         )}
       </div>
@@ -66,6 +81,7 @@ export default function Table<T extends object>({
 
   const handleDeleteMany = () => {
     if (!selectedRowKeys || !onDeleteMany) return;
+
     modal.confirm({
       title: "Xác nhận xóa",
       icon: <ExclamationCircleOutlined />,

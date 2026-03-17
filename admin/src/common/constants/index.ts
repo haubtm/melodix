@@ -7,6 +7,7 @@ export const ROUTE_PATH = {
     SONGS: "/dashboard/songs",
     ALBUMS: "/dashboard/albums",
     USERS: "/dashboard/users",
+    ARTISTS: "/dashboard/artists",
     APPROVALS: "/dashboard/approvals",
   },
 } as const;
