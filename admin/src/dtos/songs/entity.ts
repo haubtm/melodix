@@ -1,30 +1,41 @@
-import { Album, ContentStatus } from "../albums";
-import { Artist } from "../artists";
-import { Genre } from "../genres";
+export type SongStatus = "pending" | "approved" | "rejected";
+
+export interface ISongArtistReference {
+  id: number;
+  name: string;
+  userId?: number;
+}
+
+export interface ISongAlbumReference {
+  id: number;
+  title: string;
+}
+
+export interface ISongGenreReference {
+  id: number;
+  name: string;
+}
+
+export interface ISongFeaturedArtistReference {
+  artist: ISongArtistReference;
+  role: string;
+}
 
 export interface Song {
   id: number;
   title: string;
   slug: string;
-  albumId?: number;
-  album?: Album;
-  artistId: number;
-  artist?: Artist;
-  genreId?: number;
-  genre?: Genre;
-  trackNumber?: number;
   durationMs: number;
   audioUrl: string;
-  audioPreviewUrl?: string;
-  coverUrl?: string;
-  lyrics?: string;
+  coverUrl?: string | null;
+  lyricsUrl?: string | null;
   playCount: number;
-  explicit: boolean;
-  status: ContentStatus;
-  rejectionReason?: string;
-  releasedAt?: string;
   createdAt: string;
-  updatedAt: string;
+  status: SongStatus;
+  albumId?: number;
+  primaryArtistId?: number;
+  primaryArtist?: ISongArtistReference;
+  album?: ISongAlbumReference | null;
+  genres?: Array<{ genre: ISongGenreReference }>;
+  songArtists?: ISongFeaturedArtistReference[];
 }
-
-export type { ContentStatus };

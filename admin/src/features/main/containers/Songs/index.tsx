@@ -1,164 +1,351 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
-  Table,
-  Button,
-  Space,
-  Input,
-  Select,
-  Tag,
-  Dropdown,
   Avatar,
+  Button,
+  Input,
+  Modal,
+  Select,
+  TableColumnsType,
+  Tag,
+  message,
 } from "antd";
-import type { TableProps } from "antd";
 import {
-  PlusOutlined,
-  SearchOutlined,
   MoreOutlined,
   PlayCircleOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
-import { Song, ContentStatus } from "@/dtos";
-import * as S from "./styles";
-import { useSongsContainer, statusOptions, formatDuration } from "./hook";
+import { useQueryClient } from "@tanstack/react-query";
+import { Flex, Table } from "@/lib";
+import {
+  CreateSongRequest,
+  ListSongsRequest,
+  Song,
+  SongStatus,
+  UpdateSongRequest,
+} from "@/dtos";
+import {
+  useApproveSong,
+  useCreateSong,
+  useDeleteSong,
+  useRejectSong,
+  useSongsList,
+  useUpdateSong,
+} from "../../react-query";
+import { songKeys } from "../../react-query/query-keys";
+import { SongFormModal } from "./SongFormModal";
 
-const getStatusTag = (status: ContentStatus) => {
+const { Search, TextArea } = Input;
+
+const statusOptions = [
+  { value: undefined, label: "Tất cả trạng thái" },
+  { value: "pending", label: "Chờ duyệt" },
+  { value: "approved", label: "Đã duyệt" },
+  { value: "rejected", label: "Từ chối" },
+];
+
+const getStatusTag = (status: SongStatus) => {
   const config = {
-    draft: { color: "default", text: "Nháp" },
     pending: { color: "orange", text: "Chờ duyệt" },
-    published: { color: "green", text: "Đã xuất bản" },
+    approved: { color: "green", text: "Đã duyệt" },
     rejected: { color: "red", text: "Từ chối" },
   };
   const { color, text } = config[status];
   return <Tag color={color}>{text}</Tag>;
 };
 
-export const SongsContainer = () => {
-  const {
-    searchText,
-    setSearchText,
-    statusFilter,
-    setStatusFilter,
-    selectedRowKeys,
-    setSelectedRowKeys,
-    filteredData,
-    getActionItems,
-    handleAction,
-  } = useSongsContainer();
+const formatDuration = (ms: number) => {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
 
-  const columns: TableProps<Song>["columns"] = [
-    {
-      title: "Bài hát",
-      key: "song",
-      render: (_, record) => (
-        <S.SongCell>
-          <Avatar
-            shape="square"
-            size={48}
-            src={record.coverUrl}
-            icon={<PlayCircleOutlined />}
-          />
-          <S.SongInfo>
-            <S.SongTitle>{record.title}</S.SongTitle>
-            <S.SongArtist>{record.artist?.name}</S.SongArtist>
-          </S.SongInfo>
-        </S.SongCell>
-      ),
-    },
-    {
-      title: "Thời lượng",
-      dataIndex: "durationMs",
-      key: "duration",
-      width: 100,
-      render: (ms: number) => formatDuration(ms),
-    },
-    {
-      title: "Lượt nghe",
-      dataIndex: "playCount",
-      key: "playCount",
-      width: 120,
-      sorter: (a, b) => a.playCount - b.playCount,
-      render: (count: number) => count.toLocaleString(),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: 120,
-      render: (status: ContentStatus) => getStatusTag(status),
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      width: 120,
-      render: (date: string) => new Date(date).toLocaleDateString("vi-VN"),
-    },
-    {
-      title: "",
-      key: "actions",
-      width: 60,
-      fixed: "right",
-      render: (_, record) => (
-        <Dropdown
-          menu={{
-            items: getActionItems(record),
-            onClick: ({ key }) => handleAction(key, record),
-          }}
-          trigger={["click"]}
-        >
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
-      ),
-    },
-  ];
+export const SongsContainer = () => {
+  const [queryParams, setQueryParams] = useState<ListSongsRequest>({
+    page: 1,
+    limit: 10,
+    search: undefined,
+    status: undefined,
+  });
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingSong, setEditingSong] = useState<Song | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isFetching } = useSongsList(queryParams);
+  const { mutateAsync: createSong, isPending: isCreating } = useCreateSong();
+  const { mutateAsync: updateSong, isPending: isUpdating } = useUpdateSong();
+  const { mutateAsync: deleteSong } = useDeleteSong();
+  const { mutateAsync: approveSong } = useApproveSong();
+  const { mutateAsync: rejectSong } = useRejectSong();
+
+  const columns = useMemo<TableColumnsType<Song>>(
+    () => [
+      {
+        title: "Bài hát",
+        key: "song",
+        render: (_, record) => (
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Avatar
+              shape="square"
+              size={48}
+              src={record.coverUrl}
+              icon={<PlayCircleOutlined />}
+            />
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span>{record.title}</span>
+              <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
+                {record.primaryArtist?.name || "-"}
+              </span>
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "Album",
+        dataIndex: ["album", "title"],
+        key: "album",
+        render: (_: unknown, record) => record.album?.title || "-",
+      },
+      {
+        title: "Thời lượng",
+        dataIndex: "durationMs",
+        key: "durationMs",
+        width: 110,
+        render: (ms: number) => formatDuration(ms),
+      },
+      {
+        title: "Lượt nghe",
+        dataIndex: "playCount",
+        key: "playCount",
+        width: 120,
+        render: (count: number) => count.toLocaleString(),
+      },
+      {
+        title: "Trạng thái",
+        dataIndex: "status",
+        key: "status",
+        width: 120,
+        render: (status: SongStatus) => getStatusTag(status),
+      },
+      {
+        title: "Ngày tạo",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        width: 130,
+        render: (date: string) => new Date(date).toLocaleDateString("vi-VN"),
+      },
+      {
+        title: "Thao tác",
+        key: "actions",
+        width: 90,
+        fixed: "right",
+        render: (_, record) => (
+          <div
+            style={{ display: "flex", justifyContent: "center" }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Button
+              type="text"
+              icon={<MoreOutlined />}
+              onClick={(event) => {
+                event.stopPropagation();
+                Modal.info({
+                  title: `Thao tác: ${record.title}`,
+                  content: (
+                    <Flex $direction="column" $gap={12}>
+                      <Button
+                        onClick={() => {
+                          Modal.destroyAll();
+                          setEditingSong(record);
+                          setIsModalVisible(true);
+                        }}
+                      >
+                        Chỉnh sửa
+                      </Button>
+                      {record.status === "pending" && (
+                        <>
+                          <Button
+                            type="primary"
+                            onClick={async () => {
+                              Modal.destroyAll();
+                              await approveSong(record.id);
+                              message.success("Đã duyệt bài hát");
+                            }}
+                          >
+                            Duyệt
+                          </Button>
+                          <Button
+                            danger
+                            onClick={() => {
+                              Modal.destroyAll();
+                              let rejectionReason = "";
+                              Modal.confirm({
+                                title: "Từ chối bài hát",
+                                content: (
+                                  <TextArea
+                                    rows={4}
+                                    placeholder="Nhập lý do từ chối"
+                                    onChange={(e) => {
+                                      rejectionReason = e.target.value;
+                                    }}
+                                  />
+                                ),
+                                onOk: async () => {
+                                  await rejectSong({
+                                    id: record.id,
+                                    reason: rejectionReason,
+                                  });
+                                  message.success("Đã từ chối bài hát");
+                                },
+                              });
+                            }}
+                          >
+                            Từ chối
+                          </Button>
+                        </>
+                      )}
+                      <Button
+                        danger
+                        onClick={() => {
+                          Modal.destroyAll();
+                          Modal.confirm({
+                            title: "Xác nhận xóa",
+                            content: `Bạn có chắc muốn xóa bài hát "${record.title}"?`,
+                            okType: "danger",
+                            onOk: async () => {
+                              await deleteSong(record.id);
+                              message.success("Đã xóa bài hát");
+                            },
+                          });
+                        }}
+                      >
+                        Xóa
+                      </Button>
+                    </Flex>
+                  ),
+                  footer: null,
+                });
+              }}
+            />
+          </div>
+        ),
+      },
+    ],
+    [approveSong, deleteSong, rejectSong],
+  );
+
+  const handleSearch = (value: string) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      search: value ? { fields: ["title"], data: value } : undefined,
+      page: 1,
+    }));
+  };
+
+  const handleStatusFilter = (value: SongStatus | undefined) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      status: value,
+      page: 1,
+    }));
+  };
+
+  const handleModalSubmit = async (
+    values: CreateSongRequest | UpdateSongRequest,
+  ) => {
+    try {
+      if (editingSong) {
+        await updateSong({ id: editingSong.id, data: values });
+        message.success("Cập nhật bài hát thành công");
+      } else {
+        await createSong(values as CreateSongRequest);
+        message.success("Thêm bài hát thành công");
+      }
+
+      setIsModalVisible(false);
+      setEditingSong(null);
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+    } catch (error: unknown) {
+      const err = error as Error & {
+        response?: { data?: { message?: string } };
+      };
+      message.error(err?.response?.data?.message || "Có lỗi xảy ra");
+    }
+  };
 
   return (
-    <S.Root>
-      <S.Header $justify="flex-end" $align="center">
-        <Button type="primary" icon={<PlusOutlined />}>
-          Thêm bài hát
-        </Button>
-      </S.Header>
-
-      <S.FilterCard>
-        <Space wrap>
-          <Input
+    <Flex $direction="column" $gap={24} style={{ width: "100%" }}>
+      <Flex $justify="space-between" $align="center">
+        <Flex $gap={16} $align="center">
+          <Search
             placeholder="Tìm kiếm bài hát..."
             allowClear
-            style={{ width: 300 }}
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onSearch={handleSearch}
+            style={{ width: 320 }}
           />
           <Select
             placeholder="Trạng thái"
+            allowClear
             style={{ width: 180 }}
             options={statusOptions}
-            value={statusFilter}
-            onChange={setStatusFilter}
+            onChange={handleStatusFilter}
           />
-        </Space>
-      </S.FilterCard>
+        </Flex>
 
-      <S.TableCard>
-        <Table
-          rowSelection={{
-            selectedRowKeys,
-            onChange: setSelectedRowKeys,
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setEditingSong(null);
+            setIsModalVisible(true);
           }}
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          pagination={{
-            total: filteredData.length,
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} bài hát`,
+        >
+          Thêm bài hát
+        </Button>
+      </Flex>
+
+      <Table<Song>
+        rowKey="id"
+        columns={columns}
+        dataSource={data?.data || []}
+        loading={isLoading || isFetching}
+        pagination={{
+          current: queryParams.page,
+          pageSize: queryParams.limit,
+          total: data?.metadata?.total || 0,
+          showSizeChanger: true,
+        }}
+        onChange={(pagination) => {
+          setQueryParams((prev) => ({
+            ...prev,
+            page: pagination.current,
+            limit: pagination.pageSize,
+          }));
+        }}
+        onRow={(record) => ({
+          onClick: () => {
+            setEditingSong(record);
+            setIsModalVisible(true);
+          },
+          style: { cursor: "pointer" },
+        })}
+      />
+
+      {isModalVisible && (
+        <SongFormModal
+          visible={isModalVisible}
+          onCancel={() => {
+            setIsModalVisible(false);
+            setEditingSong(null);
           }}
+          onSubmit={handleModalSubmit}
+          initialValues={editingSong}
+          loading={isCreating || isUpdating}
         />
-      </S.TableCard>
-    </S.Root>
+      )}
+    </Flex>
   );
 };
 

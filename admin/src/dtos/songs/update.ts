@@ -2,10 +2,10 @@ export interface UpdateSongRequest {
   title?: string;
   artistId?: number;
   albumId?: number;
-  genreIds?: number[];
+  durationMs?: number;
+  audioUrl?: string;
   coverUrl?: string;
-  explicit?: boolean;
-  lyrics?: string;
-  status?: "draft" | "pending" | "published" | "rejected";
-  rejectionReason?: string;
+  lyricsUrl?: string;
+  genreIds?: number[];
+  featuredArtistIds?: number[];
 }

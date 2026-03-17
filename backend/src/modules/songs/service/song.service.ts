@@ -203,7 +203,7 @@ export class SongService {
   }
 
   async update(id: number, updateSongDto: UpdateSongDto, user: User) {
-    const { artistId, albumId, title, featuredArtistIds, ...rest } = updateSongDto;
+    const { artistId, albumId, title, genreIds, featuredArtistIds, ...rest } = updateSongDto;
 
     // Validation for update
     const existingSong = await this.findOne(id); // Ensure exists
@@ -258,11 +258,24 @@ export class SongService {
           connect: { id: albumId },
         },
       }),
+      ...(albumId === null && {
+        album: {
+          disconnect: true,
+        },
+      }),
+      ...(genreIds && {
+        genres: {
+          deleteMany: {},
+          create: genreIds.map((genreId) => ({
+            genre: { connect: { id: genreId } },
+          })),
+        },
+      }),
       ...(featuredArtistIds && {
         songArtists: {
           deleteMany: { role: 'featured' },
-          create: featuredArtistIds.map((id) => ({
-            artist: { connect: { id } },
+          create: featuredArtistIds.map((featuredArtistId) => ({
+            artist: { connect: { id: featuredArtistId } },
             role: 'featured',
           })),
         },

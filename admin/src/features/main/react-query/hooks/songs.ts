@@ -1,97 +1,98 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import apiService from "@/api/axiosService";
-import { ListSongsRequest, UpdateSongRequest, CreateSongRequest } from "@/dtos";
-import { Song } from "@/dtos";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { songApi } from "@/api";
+import { CreateSongRequest, ListSongsRequest, UpdateSongRequest } from "@/dtos";
 import { songKeys } from "../query-keys";
 
-// API functions
-const songsApi = {
-  list: async (params: ListSongsRequest) => {
-    const response = await apiService.get<{ items: Song[]; total: number }>(
-      "/songs",
-      { params },
-    );
-    return response.data;
-  },
-
-  detail: async (id: number) => {
-    const response = await apiService.get<Song>(`/songs/${id}`);
-    return response.data;
-  },
-
-  create: async (data: CreateSongRequest) => {
-    const response = await apiService.post<Song>("/songs", data);
-    return response.data;
-  },
-
-  update: async (id: number, data: UpdateSongRequest) => {
-    const response = await apiService.patch<Song>(`/songs/${id}`, data);
-    return response.data;
-  },
-
-  delete: async (id: number) => {
-    const response = await apiService.delete<void>(`/songs/${id}`);
-    return response.data;
-  },
-
-  approve: async (id: number) => {
-    const response = await apiService.patch<Song>(`/songs/${id}/approve`);
-    return response.data;
-  },
-
-  reject: async (id: number, reason: string) => {
-    const response = await apiService.patch<Song>(`/songs/${id}/reject`, {
-      reason,
-    });
-    return response.data;
-  },
-};
-
-// Query hooks
 export const useSongsList = (params: ListSongsRequest) => {
   return useQuery({
     queryKey: songKeys.list(params),
-    queryFn: () => songsApi.list(params),
+    queryFn: () => songApi.list(params),
   });
 };
 
 export const useSongDetail = (id: number) => {
   return useQuery({
     queryKey: songKeys.detail(id),
-    queryFn: () => songsApi.detail(id),
+    queryFn: async () => {
+      const response = await songApi.getById(id);
+      return response.data;
+    },
     enabled: id > 0,
   });
 };
 
-// Mutation hooks
 export const useCreateSong = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (data: CreateSongRequest) => songsApi.create(data),
+    mutationFn: async (data: CreateSongRequest) => {
+      const response = await songApi.create(data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+    },
   });
 };
 
 export const useUpdateSong = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateSongRequest }) =>
-      songsApi.update(id, data),
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: UpdateSongRequest;
+    }) => {
+      const response = await songApi.update(id, data);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: songKeys.detail(variables.id),
+      });
+    },
   });
 };
 
 export const useDeleteSong = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (id: number) => songsApi.delete(id),
+    mutationFn: (id: number) => songApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+    },
   });
 };
 
 export const useApproveSong = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (id: number) => songsApi.approve(id),
+    mutationFn: async (id: number) => {
+      const response = await songApi.approve(id);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+    },
   });
 };
 
 export const useRejectSong = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ id, reason }: { id: number; reason: string }) =>
-      songsApi.reject(id, reason),
+    mutationFn: async ({ id, reason }: { id: number; reason: string }) => {
+      const response = await songApi.reject(id, reason);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+    },
   });
 };
