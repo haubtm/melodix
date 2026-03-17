@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useMemo, useState } from "react";
 import {
@@ -12,12 +12,13 @@ import {
   message,
 } from "antd";
 import {
-  MoreOutlined,
+  CheckOutlined,
+  CloseOutlined,
   PlayCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
-import { Flex, Table } from "@/lib";
+import { Flex, Table, useTableColumns } from "@/lib";
 import {
   CreateSongRequest,
   ListSongsRequest,
@@ -72,6 +73,7 @@ export const SongsContainer = () => {
   const [editingSong, setEditingSong] = useState<Song | null>(null);
 
   const queryClient = useQueryClient();
+  const { getDefaultActions } = useTableColumns<Song>();
 
   const { data, isLoading, isFetching } = useSongsList(queryParams);
   const { mutateAsync: createSong, isPending: isCreating } = useCreateSong();
@@ -136,104 +138,61 @@ export const SongsContainer = () => {
         width: 130,
         render: (date: string) => new Date(date).toLocaleDateString("vi-VN"),
       },
-      {
-        title: "Thao tác",
-        key: "actions",
-        width: 90,
-        fixed: "right",
-        render: (_, record) => (
-          <div
-            style={{ display: "flex", justifyContent: "center" }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Button
-              type="text"
-              icon={<MoreOutlined />}
-              onClick={(event) => {
-                event.stopPropagation();
-                Modal.info({
-                  title: `Thao tác: ${record.title}`,
-                  content: (
-                    <Flex $direction="column" $gap={12}>
-                      <Button
-                        onClick={() => {
-                          Modal.destroyAll();
-                          setEditingSong(record);
-                          setIsModalVisible(true);
+      getDefaultActions({
+        renderExtraActions: (record) =>
+          record.status === "pending" ? (
+            <>
+              <Button
+                type="text"
+                icon={<CheckOutlined />}
+                style={{ color: "#52c41a" }}
+                onClick={async (event) => {
+                  event.stopPropagation();
+                  await approveSong(record.id);
+                  message.success("Đã duyệt bài hát");
+                }}
+              />
+              <Button
+                type="text"
+                danger
+                icon={<CloseOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  let rejectionReason = "";
+                  Modal.confirm({
+                    title: "Từ chối bài hát",
+                    content: (
+                      <TextArea
+                        rows={4}
+                        placeholder="Nhập lý do từ chối"
+                        onChange={(e) => {
+                          rejectionReason = e.target.value;
                         }}
-                      >
-                        Chỉnh sửa
-                      </Button>
-                      {record.status === "pending" && (
-                        <>
-                          <Button
-                            type="primary"
-                            onClick={async () => {
-                              Modal.destroyAll();
-                              await approveSong(record.id);
-                              message.success("Đã duyệt bài hát");
-                            }}
-                          >
-                            Duyệt
-                          </Button>
-                          <Button
-                            danger
-                            onClick={() => {
-                              Modal.destroyAll();
-                              let rejectionReason = "";
-                              Modal.confirm({
-                                title: "Từ chối bài hát",
-                                content: (
-                                  <TextArea
-                                    rows={4}
-                                    placeholder="Nhập lý do từ chối"
-                                    onChange={(e) => {
-                                      rejectionReason = e.target.value;
-                                    }}
-                                  />
-                                ),
-                                onOk: async () => {
-                                  await rejectSong({
-                                    id: record.id,
-                                    reason: rejectionReason,
-                                  });
-                                  message.success("Đã từ chối bài hát");
-                                },
-                              });
-                            }}
-                          >
-                            Từ chối
-                          </Button>
-                        </>
-                      )}
-                      <Button
-                        danger
-                        onClick={() => {
-                          Modal.destroyAll();
-                          Modal.confirm({
-                            title: "Xác nhận xóa",
-                            content: `Bạn có chắc muốn xóa bài hát "${record.title}"?`,
-                            okType: "danger",
-                            onOk: async () => {
-                              await deleteSong(record.id);
-                              message.success("Đã xóa bài hát");
-                            },
-                          });
-                        }}
-                      >
-                        Xóa
-                      </Button>
-                    </Flex>
-                  ),
-                  footer: null,
-                });
-              }}
-            />
-          </div>
-        ),
-      },
+                      />
+                    ),
+                    onOk: async () => {
+                      await rejectSong({
+                        id: record.id,
+                        reason: rejectionReason,
+                      });
+                      message.success("Đã từ chối bài hát");
+                    },
+                  });
+                }}
+              />
+            </>
+          ) : null,
+        onEdit: (record) => {
+          setEditingSong(record);
+          setIsModalVisible(true);
+        },
+        onDelete: async (record) => {
+          await deleteSong(record.id);
+          message.success("Đã xóa bài hát");
+        },
+      }),
     ],
-    [approveSong, deleteSong, rejectSong],
+    [approveSong, deleteSong, getDefaultActions, rejectSong],
   );
 
   const handleSearch = (value: string) => {

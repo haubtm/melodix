@@ -13,6 +13,7 @@ import type { TableProps } from "antd/es/table";
 interface ActionColumnOptions<T> {
   onEdit?: (record: T) => void;
   onDelete?: (record: T) => void;
+  renderExtraActions?: (record: T) => React.ReactNode;
 }
 
 export function useTableColumns<T extends object>() {
@@ -28,6 +29,7 @@ export function useTableColumns<T extends object>() {
         style={{ display: "flex", gap: "8px", justifyContent: "center" }}
         onClick={(event) => event.stopPropagation()}
       >
+        {options.renderExtraActions?.(record)}
         {options.onEdit && (
           <Button
             type="text"
