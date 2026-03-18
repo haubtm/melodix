@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ConfigProvider, theme } from "antd";
+import { App, ConfigProvider, theme } from "antd";
 import { ReactNode } from "react";
 import AntdStyleRegistry from "./AntdStyleRegistry";
 
@@ -44,7 +44,9 @@ const antdTheme = {
 const AntdProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AntdStyleRegistry>
-      <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
+      <ConfigProvider theme={antdTheme}>
+        <App>{children}</App>
+      </ConfigProvider>
     </AntdStyleRegistry>
   );
 };

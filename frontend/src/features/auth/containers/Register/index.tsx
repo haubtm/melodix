@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Button, Typography, Divider, message, Steps } from "antd";
+import { App, Form, Button, Typography, Divider, Input, Steps } from "antd";
 import {
   MailOutlined,
   LockOutlined,
@@ -25,6 +25,7 @@ const { Title, Text } = Typography;
 interface RegisterFormData {
   email: string;
   username: string;
+  displayName: string;
   password: string;
   confirmPassword: string;
 }
@@ -42,6 +43,7 @@ interface ApiErrorShape {
 }
 
 export default function RegisterContainer() {
+  const { message } = App.useApp();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState(0);
@@ -60,6 +62,7 @@ export default function RegisterContainer() {
       {
         email: values.email,
         username: values.username,
+        displayName: values.displayName,
         password: values.password,
       },
       {
@@ -214,6 +217,20 @@ export default function RegisterContainer() {
                 </Form.Item>
 
                 <Form.Item
+                  name="displayName"
+                  label="Tên hiển thị"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên hiển thị" },
+                  ]}
+                >
+                  <AppInput
+                    prefix={<UserOutlined />}
+                    placeholder="Tên hiển thị của bạn"
+                    size="large"
+                  />
+                </Form.Item>
+
+                <Form.Item
                   name="password"
                   label="Mật khẩu"
                   rules={[
@@ -274,6 +291,7 @@ export default function RegisterContainer() {
             >
               <div className={styles.verifyInfo}>
                 <SafetyCertificateOutlined className={styles.verifyIcon} />
+                <Text className={styles.verifyEyebrow}>Xác thực email</Text>
                 <Text className={styles.verifyText}>
                   Chúng tôi đã gửi mã xác thực đến <strong>{email}</strong>
                 </Text>
@@ -294,10 +312,11 @@ export default function RegisterContainer() {
                     { len: 6, message: "Mã OTP phải có 6 số" },
                   ]}
                 >
-                  <AppInput
-                    placeholder="Nhập mã 6 số"
+                  <Input.OTP
+                    length={6}
                     size="large"
-                    maxLength={6}
+                    autoFocus
+                    formatter={(value) => value.replace(/\D/g, "")}
                     className={styles.otpInput}
                   />
                 </Form.Item>

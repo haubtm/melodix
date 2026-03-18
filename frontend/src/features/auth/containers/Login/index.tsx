@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Button, Typography, Divider, message } from "antd";
+import { App, Form, Button, Typography, Divider } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
@@ -31,6 +31,7 @@ interface ApiErrorShape {
 }
 
 export default function LoginContainer() {
+  const { message } = App.useApp();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<LoginFormData>();

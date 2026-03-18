@@ -2,12 +2,13 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Spin, message } from "antd";
+import { App, Spin } from "antd";
 import { authApi } from "@/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 
 export default function AuthCallbackContainer() {
+  const { message } = App.useApp();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
