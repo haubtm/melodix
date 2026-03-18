@@ -83,17 +83,25 @@
   display: flex;
   align-items: center;
   margin-left: auto;
+  min-width: 220px;
+  justify-content: flex-end;
+}
+
+.authPlaceholder {
+  width: 220px;
+  height: 40px;
 }
 
 .userButton {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: 4px 12px 4px 4px;
+  padding: 4px 10px 4px 4px;
   border-radius: var(--radius-full);
   background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: all var(--transition-fast);
+  max-height: 40px;
 }
 
 .userButton:hover {
@@ -101,8 +109,10 @@
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
   background: var(--bg-highlight);
 }
 
@@ -110,6 +120,7 @@
   color: var(--text-primary);
   font-weight: 600;
   font-size: 0.875rem;
+  line-height: 1;
 }
 
 .registerButton {

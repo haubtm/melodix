@@ -8,6 +8,7 @@ import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
+import { authApi } from "@/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { useLogin } from "../../react-query";
@@ -16,7 +17,7 @@ import styles from "@/app/(auth)/auth.module.css";
 const { Title, Text } = Typography;
 
 interface LoginFormData {
-  email: string;
+  usernameOrEmail: string;
   password: string;
 }
 
@@ -36,16 +37,23 @@ export default function LoginContainer() {
 
   const onFinish = (values: LoginFormData) => {
     loginMutation.mutate(values, {
-      onSuccess: (data) => {
-        dispatch(
-          setCredentials({
-            user: data.user,
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-          }),
-        );
-        message.success("Đăng nhập thành công!");
-        router.push("/");
+      onSuccess: async (data) => {
+        try {
+          const profile = await authApi.getProfile(data.accessToken);
+          const { accessToken, refreshToken, ...user } = profile;
+
+          dispatch(
+            setCredentials({
+              user,
+              accessToken,
+              refreshToken,
+            }),
+          );
+          message.success("Đăng nhập thành công!");
+          router.push("/");
+        } catch {
+          message.error("Đăng nhập thành công nhưng không tải được hồ sơ người dùng");
+        }
       },
       onError: (error) => {
         const typedError = error as ApiErrorShape;
@@ -110,7 +118,7 @@ export default function LoginContainer() {
           requiredMark={false}
         >
           <Form.Item
-            name="email"
+            name="usernameOrEmail"
             label="Email hoặc tên người dùng"
             rules={[
               {

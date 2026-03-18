@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
+import { authApi } from "@/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { useRegister, useVerifyEmail } from "../../react-query";
@@ -78,16 +79,23 @@ export default function RegisterContainer() {
         otpCode: values.otpCode,
       },
       {
-        onSuccess: (data) => {
-          dispatch(
-            setCredentials({
-              user: data.user,
-              accessToken: data.accessToken,
-              refreshToken: data.refreshToken,
-            }),
-          );
-          message.success("Xác thực thành công! Chào mừng bạn đến với Melodix");
-          router.push("/");
+        onSuccess: async (data) => {
+          try {
+            const profile = await authApi.getProfile(data.accessToken);
+            const { accessToken, refreshToken, ...user } = profile;
+
+            dispatch(
+              setCredentials({
+                user,
+                accessToken,
+                refreshToken,
+              }),
+            );
+            message.success("Xác thực thành công! Chào mừng bạn đến với Melodix");
+            router.push("/");
+          } catch {
+            message.error("Xác thực thành công nhưng không tải được hồ sơ người dùng");
+          }
         },
         onError: (error) => {
           const typedError = error as ApiErrorShape;

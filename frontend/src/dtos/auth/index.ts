@@ -1,8 +1,13 @@
-﻿import { User } from "../users";
+import { User } from "../users";
 
 export interface LoginRequest {
-  email: string;
+  usernameOrEmail: string;
   password: string;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface RegisterRequest {
@@ -16,8 +21,6 @@ export interface VerifyEmailRequest {
   otpCode: string;
 }
 
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: User;
+export interface AuthResponse extends AuthTokens {
+  user?: User;
 }

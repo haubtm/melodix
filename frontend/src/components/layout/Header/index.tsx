@@ -22,7 +22,9 @@ const { Header: AntHeader } = Layout;
 export default function Header() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { user, isAuthenticated, isLoading } = useAppSelector(
+    (state) => state.auth,
+  );
 
   const handleLogout = () => {
     dispatch(logout());
@@ -90,7 +92,9 @@ export default function Header() {
 
       {/* User Section */}
       <div className={styles.userSection}>
-        {isAuthenticated && user ? (
+        {isLoading ? (
+          <div className={styles.authPlaceholder} />
+        ) : isAuthenticated && user ? (
           <Dropdown
             menu={{ items: userMenuItems }}
             placement="bottomRight"
