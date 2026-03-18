@@ -8,7 +8,7 @@ import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { authApi } from "@/api";
+import { API_BASE_URL, authApi } from "@/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { useLogin } from "../../react-query";
@@ -34,6 +34,9 @@ export default function LoginContainer() {
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<LoginFormData>();
   const loginMutation = useLogin();
+  const handleOAuthLogin = (provider: "google" | "facebook") => {
+    window.location.href = `${API_BASE_URL}/auth/${provider}`;
+  };
 
   const onFinish = (values: LoginFormData) => {
     loginMutation.mutate(values, {
@@ -91,6 +94,7 @@ export default function LoginContainer() {
             icon={<FcGoogle className={styles.socialIcon} />}
             className={styles.socialButton}
             block
+            onClick={() => handleOAuthLogin("google")}
           >
             Tiếp tục với Google
           </Button>
@@ -103,6 +107,7 @@ export default function LoginContainer() {
             }
             className={styles.socialButton}
             block
+            onClick={() => handleOAuthLogin("facebook")}
           >
             Tiếp tục với Facebook
           </Button>

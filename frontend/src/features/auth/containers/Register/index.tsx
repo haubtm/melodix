@@ -13,7 +13,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { authApi } from "@/api";
+import { API_BASE_URL, authApi } from "@/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { useRegister, useVerifyEmail } from "../../react-query";
@@ -49,6 +49,9 @@ export default function RegisterContainer() {
   const [verifyForm] = Form.useForm<VerifyFormData>();
   const registerMutation = useRegister();
   const verifyMutation = useVerifyEmail();
+  const handleOAuthLogin = (provider: "google" | "facebook") => {
+    window.location.href = `${API_BASE_URL}/auth/${provider}`;
+  };
 
   const onRegisterFinish = (values: RegisterFormData) => {
     setEmail(values.email);
@@ -148,6 +151,7 @@ export default function RegisterContainer() {
                   icon={<FcGoogle className={styles.socialIcon} />}
                   className={styles.socialButton}
                   block
+                  onClick={() => handleOAuthLogin("google")}
                 >
                   Đăng ký với Google
                 </Button>
@@ -160,6 +164,7 @@ export default function RegisterContainer() {
                   }
                   className={styles.socialButton}
                   block
+                  onClick={() => handleOAuthLogin("facebook")}
                 >
                   Đăng ký với Facebook
                 </Button>
