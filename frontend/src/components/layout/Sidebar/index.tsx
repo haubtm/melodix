@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layout, Menu, Typography, Avatar, Divider, Button } from "antd";
+import { Layout, Menu, Typography, Divider, Button } from "antd";
 import {
   HomeOutlined,
   SearchOutlined,
@@ -11,8 +11,7 @@ import {
   PlusOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { toggleSidebar } from "@/store/slices/uiSlice";
+import { useAppSelector } from "@/store/hooks";
 import styles from "./Sidebar.module.css";
 
 const { Sider } = Layout;
@@ -51,13 +50,12 @@ const libraryMenuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
   const { sidebarCollapsed } = useAppSelector((state) => state.ui);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const getSelectedKeys = () => {
     const item = [...mainMenuItems, ...libraryMenuItems].find(
-      (item) => item.path === pathname,
+      (menuItem) => menuItem.path === pathname,
     );
     return item ? [item.key] : [];
   };
@@ -71,7 +69,6 @@ export default function Sidebar() {
       trigger={null}
       collapsible
     >
-      {/* Logo */}
       <div className={styles.logo}>
         <Link href="/">
           <div className={styles.logoContent}>
@@ -93,7 +90,6 @@ export default function Sidebar() {
         </Link>
       </div>
 
-      {/* Main Navigation */}
       <div className={styles.menuSection}>
         <Menu
           mode="inline"
@@ -109,7 +105,6 @@ export default function Sidebar() {
 
       <Divider className={styles.divider} />
 
-      {/* Library Section */}
       <div className={styles.librarySection}>
         <div className={styles.libraryHeader}>
           <UnorderedListOutlined className={styles.libraryIcon} />

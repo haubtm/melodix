@@ -16,6 +16,13 @@
   margin-bottom: var(--spacing-2xl);
 }
 
+.sectionDescription {
+  max-width: 720px;
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
 .sectionHeader {
   display: flex;
   align-items: center;
@@ -49,10 +56,74 @@
   gap: var(--spacing-xs);
 }
 
+.songRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.songRow:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.songTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.songMeta {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--spacing-lg);
+}
+
+.entityCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-height: 132px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(29, 185, 84, 0.14), rgba(255, 255, 255, 0.03)),
+    rgba(255, 255, 255, 0.02);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.entityCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(29, 185, 84, 0.35);
+}
+
+.entityTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.emptyState {
+  margin: 0;
+  color: var(--text-secondary);
 }
 
 @keyframes fadeIn {

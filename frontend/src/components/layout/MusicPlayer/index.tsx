@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useRef, useEffect, useState } from "react";
 import Image from "next/image";
@@ -42,18 +42,9 @@ export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [liked, setLiked] = useState(false);
 
-  const {
-    currentSong,
-    isPlaying,
-    volume,
-    progress,
-    duration,
-    shuffle,
-    repeat,
-    isMuted,
-  } = useAppSelector((state) => state.player);
+  const { currentSong, isPlaying, volume, progress, shuffle, repeat, isMuted } =
+    useAppSelector((state) => state.player);
 
-  // Handle audio playback
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -64,7 +55,6 @@ export default function MusicPlayer() {
     }
   }, [isPlaying, currentSong]);
 
-  // Handle volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume / 100;
@@ -92,7 +82,7 @@ export default function MusicPlayer() {
     if (repeat === "one") {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
-        audioRef.current.play();
+        audioRef.current.play().catch(() => {});
       }
     } else {
       dispatch(nextTrack());
@@ -113,7 +103,6 @@ export default function MusicPlayer() {
 
   return (
     <div className={styles.player}>
-      {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
         src={currentSong.audioUrl}
@@ -121,7 +110,6 @@ export default function MusicPlayer() {
         onEnded={handleEnded}
       />
 
-      {/* Song Info */}
       <div className={styles.songInfo}>
         <div className={styles.coverWrapper}>
           <Image
@@ -161,7 +149,6 @@ export default function MusicPlayer() {
         />
       </div>
 
-      {/* Controls */}
       <div className={styles.controls}>
         <div className={styles.controlButtons}>
           <Tooltip title="Trộn bài">
@@ -228,7 +215,6 @@ export default function MusicPlayer() {
         </div>
       </div>
 
-      {/* Extra Controls */}
       <div className={styles.extraControls}>
         <Tooltip title="Hàng đợi">
           <Button

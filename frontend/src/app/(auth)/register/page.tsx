@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -8,12 +8,12 @@ import {
   MailOutlined,
   LockOutlined,
   UserOutlined,
-  GoogleOutlined,
-  FacebookOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaFacebookF } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 import { authApi } from "@/lib/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
@@ -32,6 +32,14 @@ interface VerifyFormData {
   otpCode: string;
 }
 
+interface ApiErrorShape {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -46,7 +54,7 @@ export default function RegisterPage() {
       message.success("Mã OTP đã được gửi đến email của bạn");
       setCurrentStep(1);
     },
-    onError: (error: any) => {
+    onError: (error: ApiErrorShape) => {
       const msg = error.response?.data?.message || "Đăng ký thất bại";
       message.error(msg);
     },
@@ -65,7 +73,7 @@ export default function RegisterPage() {
       message.success("Xác thực thành công! Chào mừng bạn đến với Melodix");
       router.push("/");
     },
-    onError: (error: any) => {
+    onError: (error: ApiErrorShape) => {
       const msg = error.response?.data?.message || "Mã OTP không hợp lệ";
       message.error(msg);
     },
@@ -95,7 +103,6 @@ export default function RegisterPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        {/* Logo */}
         <div className={styles.logo}>
           <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
             <circle cx="12" cy="12" r="10" fill="#1DB954" />
@@ -110,7 +117,6 @@ export default function RegisterPage() {
           Đăng ký tài khoản
         </Title>
 
-        {/* Steps */}
         <Steps
           current={currentStep}
           className={styles.steps}
@@ -125,11 +131,10 @@ export default function RegisterPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
             >
-              {/* Social Signup */}
               <div className={styles.socialButtons}>
                 <Button
                   size="large"
-                  icon={<GoogleOutlined />}
+                  icon={<FcGoogle className={styles.socialIcon} />}
                   className={styles.socialButton}
                   block
                 >
@@ -137,7 +142,11 @@ export default function RegisterPage() {
                 </Button>
                 <Button
                   size="large"
-                  icon={<FacebookOutlined />}
+                  icon={
+                    <span className={`${styles.socialIcon} ${styles.facebookIcon}`}>
+                      <FaFacebookF />
+                    </span>
+                  }
                   className={styles.socialButton}
                   block
                 >
@@ -145,11 +154,8 @@ export default function RegisterPage() {
                 </Button>
               </div>
 
-              <Divider className={styles.divider}>
-                hoặc đăng ký với email
-              </Divider>
+              <Divider className={styles.divider}>hoặc đăng ký với email</Divider>
 
-              {/* Register Form */}
               <Form
                 form={registerForm}
                 layout="vertical"

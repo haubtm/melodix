@@ -1,17 +1,17 @@
-"use client";
+﻿"use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, Typography, Divider, message } from "antd";
 import {
   MailOutlined,
   LockOutlined,
-  GoogleOutlined,
-  FacebookOutlined,
 } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { FaFacebookF } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 import { authApi } from "@/lib/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
@@ -22,6 +22,14 @@ const { Title, Text } = Typography;
 interface LoginFormData {
   email: string;
   password: string;
+}
+
+interface ApiErrorShape {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
 }
 
 export default function LoginPage() {
@@ -42,7 +50,7 @@ export default function LoginPage() {
       message.success("Đăng nhập thành công!");
       router.push("/");
     },
-    onError: (error: any) => {
+    onError: (error: ApiErrorShape) => {
       const msg = error.response?.data?.message || "Đăng nhập thất bại";
       message.error(msg);
     },
@@ -60,7 +68,6 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        {/* Logo */}
         <div className={styles.logo}>
           <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
             <circle cx="12" cy="12" r="10" fill="#1DB954" />
@@ -75,11 +82,10 @@ export default function LoginPage() {
           Đăng nhập vào Melodix
         </Title>
 
-        {/* Social Login */}
         <div className={styles.socialButtons}>
           <Button
             size="large"
-            icon={<GoogleOutlined />}
+            icon={<FcGoogle className={styles.socialIcon} />}
             className={styles.socialButton}
             block
           >
@@ -87,7 +93,11 @@ export default function LoginPage() {
           </Button>
           <Button
             size="large"
-            icon={<FacebookOutlined />}
+            icon={
+              <span className={`${styles.socialIcon} ${styles.facebookIcon}`}>
+                <FaFacebookF />
+              </span>
+            }
             className={styles.socialButton}
             block
           >
@@ -97,7 +107,6 @@ export default function LoginPage() {
 
         <Divider className={styles.divider}>hoặc</Divider>
 
-        {/* Login Form */}
         <Form
           form={form}
           layout="vertical"
@@ -108,10 +117,7 @@ export default function LoginPage() {
           <Form.Item
             name="email"
             label="Email hoặc tên người dùng"
-            rules={[
-              { required: true, message: "Vui lòng nhập email" },
-              { type: "email", message: "Email không hợp lệ" },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập email hoặc tên người dùng" }]}
           >
             <Input
               prefix={<MailOutlined />}

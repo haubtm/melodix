@@ -69,6 +69,25 @@
   transform: scale(1.02);
 }
 
+.socialButton :global(.ant-btn-icon) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-end: 10px;
+}
+
+.socialIcon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.facebookIcon {
+  color: #1877f2;
+}
+
 .divider {
   color: var(--text-subdued) !important;
   border-color: var(--bg-highlight) !important;
@@ -88,12 +107,14 @@
   font-weight: 600;
 }
 
-.form :global(.ant-input),
+.form :global(.ant-input-affix-wrapper),
+.form :global(.ant-input-outlined),
 .form :global(.ant-input-password) {
   background: var(--bg-elevated) !important;
   border-color: var(--bg-highlight) !important;
   color: var(--text-primary) !important;
-  height: 48px;
+  min-height: 48px;
+  border-radius: 12px !important;
 }
 
 .form :global(.ant-input:hover),
@@ -106,6 +127,7 @@
 .form :global(.ant-input-affix-wrapper) {
   background: var(--bg-elevated) !important;
   border-color: var(--bg-highlight) !important;
+  padding-inline: 14px !important;
 }
 
 .form :global(.ant-input-affix-wrapper:hover),
@@ -113,9 +135,25 @@
   border-color: var(--accent-primary) !important;
 }
 
+.form :global(.ant-input-affix-wrapper .ant-input) {
+  height: auto !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.form :global(.ant-input-affix-wrapper .ant-input:focus) {
+  box-shadow: none !important;
+}
+
 .form :global(.ant-input-prefix) {
   color: var(--text-subdued);
   margin-right: var(--spacing-sm);
+}
+
+.form :global(.ant-input-password-icon) {
+  color: var(--text-subdued) !important;
 }
 
 .forgotPassword {
