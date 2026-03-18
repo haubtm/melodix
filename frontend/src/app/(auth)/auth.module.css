@@ -107,55 +107,6 @@
   font-weight: 600;
 }
 
-.form :global(.ant-input-affix-wrapper),
-.form :global(.ant-input-outlined),
-.form :global(.ant-input-password) {
-  background: var(--bg-elevated) !important;
-  border-color: var(--bg-highlight) !important;
-  color: var(--text-primary) !important;
-  min-height: 48px;
-  border-radius: 12px !important;
-}
-
-.form :global(.ant-input:hover),
-.form :global(.ant-input-password:hover),
-.form :global(.ant-input:focus),
-.form :global(.ant-input-password:focus) {
-  border-color: var(--accent-primary) !important;
-}
-
-.form :global(.ant-input-affix-wrapper) {
-  background: var(--bg-elevated) !important;
-  border-color: var(--bg-highlight) !important;
-  padding-inline: 14px !important;
-}
-
-.form :global(.ant-input-affix-wrapper:hover),
-.form :global(.ant-input-affix-wrapper-focused) {
-  border-color: var(--accent-primary) !important;
-}
-
-.form :global(.ant-input-affix-wrapper .ant-input) {
-  height: auto !important;
-  padding: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
-.form :global(.ant-input-affix-wrapper .ant-input:focus) {
-  box-shadow: none !important;
-}
-
-.form :global(.ant-input-prefix) {
-  color: var(--text-subdued);
-  margin-right: var(--spacing-sm);
-}
-
-.form :global(.ant-input-password-icon) {
-  color: var(--text-subdued) !important;
-}
-
 .forgotPassword {
   text-align: right;
   margin-bottom: var(--spacing-md);

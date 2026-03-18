@@ -18,7 +18,7 @@ export interface RegisterRequest {
 
 export interface VerifyEmailRequest {
   email: string;
-  otpCode: string;
+  otp: string;
 }
 
 export interface AuthResponse extends AuthTokens {

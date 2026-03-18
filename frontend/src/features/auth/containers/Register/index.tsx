@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Input, Button, Typography, Divider, message, Steps } from "antd";
+import { Form, Button, Typography, Divider, message, Steps } from "antd";
 import {
   MailOutlined,
   LockOutlined,
@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { API_BASE_URL, authApi } from "@/api";
+import { AppInput, AppPasswordInput } from "@/lib/Input";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { useRegister, useVerifyEmail } from "../../react-query";
@@ -29,7 +30,7 @@ interface RegisterFormData {
 }
 
 interface VerifyFormData {
-  otpCode: string;
+  otp: string;
 }
 
 interface ApiErrorShape {
@@ -79,7 +80,7 @@ export default function RegisterContainer() {
     verifyMutation.mutate(
       {
         email,
-        otpCode: values.otpCode,
+        otp: values.otp,
       },
       {
         onSuccess: async (data) => {
@@ -187,7 +188,7 @@ export default function RegisterContainer() {
                     { type: "email", message: "Email không hợp lệ" },
                   ]}
                 >
-                  <Input
+                  <AppInput
                     prefix={<MailOutlined />}
                     placeholder="Nhập email của bạn"
                     size="large"
@@ -205,7 +206,7 @@ export default function RegisterContainer() {
                     },
                   ]}
                 >
-                  <Input
+                  <AppInput
                     prefix={<UserOutlined />}
                     placeholder="Chọn tên người dùng"
                     size="large"
@@ -220,7 +221,7 @@ export default function RegisterContainer() {
                     { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
                   ]}
                 >
-                  <Input.Password
+                  <AppPasswordInput
                     prefix={<LockOutlined />}
                     placeholder="Tạo mật khẩu"
                     size="large"
@@ -243,7 +244,7 @@ export default function RegisterContainer() {
                     }),
                   ]}
                 >
-                  <Input.Password
+                  <AppPasswordInput
                     prefix={<LockOutlined />}
                     placeholder="Nhập lại mật khẩu"
                     size="large"
@@ -286,14 +287,14 @@ export default function RegisterContainer() {
                 requiredMark={false}
               >
                 <Form.Item
-                  name="otpCode"
+                  name="otp"
                   label="Mã xác thực OTP"
                   rules={[
                     { required: true, message: "Vui lòng nhập mã OTP" },
                     { len: 6, message: "Mã OTP phải có 6 số" },
                   ]}
                 >
-                  <Input
+                  <AppInput
                     placeholder="Nhập mã 6 số"
                     size="large"
                     maxLength={6}

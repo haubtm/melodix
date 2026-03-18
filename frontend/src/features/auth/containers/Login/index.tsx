@@ -3,12 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Input, Button, Typography, Divider, message } from "antd";
+import { Form, Button, Typography, Divider, message } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { FaFacebookF } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { API_BASE_URL, authApi } from "@/api";
+import { AppInput, AppPasswordInput } from "@/lib/Input";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { useLogin } from "../../react-query";
@@ -132,7 +133,7 @@ export default function LoginContainer() {
               },
             ]}
           >
-            <Input
+            <AppInput
               prefix={<MailOutlined />}
               placeholder="Email hoặc tên người dùng"
               size="large"
@@ -144,7 +145,7 @@ export default function LoginContainer() {
             label="Mật khẩu"
             rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
           >
-            <Input.Password
+            <AppPasswordInput
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
               size="large"

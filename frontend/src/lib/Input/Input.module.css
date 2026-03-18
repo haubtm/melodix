@@ -1,0 +1,68 @@
+.field {
+  min-height: 48px;
+  border-radius: 12px !important;
+  border-color: var(--bg-highlight) !important;
+  background: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+}
+
+.field:global(.ant-input),
+.field:global(.ant-input-affix-wrapper),
+.field:global(.ant-input-outlined) {
+  min-height: 48px;
+  border-radius: 12px !important;
+  border-color: var(--bg-highlight) !important;
+  background: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+}
+
+.field:global(.ant-input:hover),
+.field:global(.ant-input:focus),
+.field:global(.ant-input-affix-wrapper:hover),
+.field:global(.ant-input-affix-wrapper-focused),
+.field:global(.ant-input-outlined:hover),
+.field:global(.ant-input-outlined:focus) {
+  border-color: var(--accent-primary) !important;
+}
+
+.field:global(.ant-input-affix-wrapper) {
+  padding-inline: 14px !important;
+}
+
+.field :global(.ant-input) {
+  height: auto !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.field:global(.ant-input) {
+  padding-inline: 14px !important;
+}
+
+.field:global(.ant-input)::placeholder,
+.field :global(.ant-input::placeholder) {
+  color: var(--text-subdued) !important;
+}
+
+.field :global(.ant-input-prefix) {
+  color: var(--text-subdued);
+  margin-right: var(--spacing-sm);
+}
+
+.field :global(.ant-input-password-icon) {
+  color: var(--text-subdued) !important;
+}
+
+.field :global(input:-webkit-autofill),
+.field :global(input:-webkit-autofill:hover),
+.field :global(input:-webkit-autofill:focus),
+.field :global(input:-webkit-autofill:active) {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-elevated) inset !important;
+  box-shadow: 0 0 0 1000px var(--bg-elevated) inset !important;
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: var(--text-primary);
+}
