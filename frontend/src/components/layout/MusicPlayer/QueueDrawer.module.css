@@ -1,0 +1,137 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: var(--text-subdued);
+  font-size: 0.85rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.currentCard,
+.queueItem {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--bg-highlight);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.currentCard {
+  border-color: rgba(29, 185, 84, 0.25);
+  background: rgba(29, 185, 84, 0.08);
+}
+
+.cover {
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.songTitle {
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.songTitle:hover {
+  text-decoration: underline;
+}
+
+.artist {
+  color: var(--text-subdued);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(29, 185, 84, 0.18);
+  color: var(--accent-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.queueList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.queueItem {
+  grid-template-columns: 32px 48px minmax(0, 1fr) auto;
+}
+
+.index {
+  color: var(--text-subdued);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.queueItemActive {
+  border-color: rgba(29, 185, 84, 0.35);
+  background: rgba(29, 185, 84, 0.08);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionButton {
+  color: var(--text-subdued) !important;
+}
+
+.actionButton:hover {
+  color: var(--text-primary) !important;
+}
+
+.empty {
+  padding: 18px;
+  border: 1px dashed var(--bg-highlight);
+  border-radius: 14px;
+  color: var(--text-subdued);
+  text-align: center;
+}

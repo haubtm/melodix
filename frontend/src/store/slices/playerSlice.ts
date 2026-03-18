@@ -148,6 +148,31 @@ const playerSlice = createSlice({
       state.playlist = state.currentSong ? [state.currentSong] : [];
       state.currentIndex = 0;
     },
+
+    removeFromQueue: (state, action: PayloadAction<number>) => {
+      const indexToRemove = action.payload;
+      if (indexToRemove < 0 || indexToRemove >= state.playlist.length) return;
+
+      // Don't allow removing the currently playing song
+      if (indexToRemove === state.currentIndex) return;
+
+      state.playlist.splice(indexToRemove, 1);
+
+      // Adjust current index if needed
+      if (indexToRemove < state.currentIndex) {
+        state.currentIndex -= 1;
+      }
+    },
+
+    playFromQueue: (state, action: PayloadAction<number>) => {
+      const index = action.payload;
+      if (index < 0 || index >= state.playlist.length) return;
+
+      state.currentIndex = index;
+      state.currentSong = state.playlist[index];
+      state.progress = 0;
+      state.isPlaying = true;
+    },
   },
 });
 
@@ -168,6 +193,9 @@ export const {
   setRepeat,
   addToQueue,
   clearQueue,
+  removeFromQueue,
+  playFromQueue,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
+

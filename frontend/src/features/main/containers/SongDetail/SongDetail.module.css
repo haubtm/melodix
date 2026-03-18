@@ -1,0 +1,275 @@
+.container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding-bottom: var(--spacing-2xl);
+  animation: fadeIn var(--transition-normal);
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-2xl) 0 var(--spacing-lg);
+  background: linear-gradient(
+    180deg,
+    rgba(29, 185, 84, 0.18) 0%,
+    transparent 100%
+  );
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+.coverWrapper {
+  flex-shrink: 0;
+  width: 232px;
+  height: 232px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.type {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary) !important;
+}
+
+.title {
+  font-size: 3rem !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  color: var(--text-primary) !important;
+  word-break: break-word;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.artistLink {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.artistLink:hover {
+  text-decoration: underline;
+}
+
+.albumLink {
+  color: var(--text-secondary);
+}
+
+.albumLink:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.dot {
+  color: var(--text-subdued);
+}
+
+.year {
+  color: var(--text-secondary);
+}
+
+.duration {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.featuredArtists {
+  margin-top: var(--spacing-xs);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.featuredLabel {
+  color: var(--text-subdued) !important;
+}
+
+.featuredLink {
+  color: var(--text-secondary);
+}
+
+.featuredLink:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.genres {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-xs);
+}
+
+.genreTag {
+  background: var(--bg-highlight) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--radius-full) !important;
+  font-size: 0.75rem !important;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-xl);
+}
+
+.playButton {
+  width: 56px !important;
+  height: 56px !important;
+  font-size: 24px !important;
+  background: var(--accent-primary) !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast), background var(--transition-fast) !important;
+}
+
+.playButton:hover {
+  transform: scale(1.06) !important;
+  background: var(--accent-hover) !important;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.playCount {
+  font-size: 0.875rem;
+  color: var(--text-subdued);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.explicitTag {
+  background: var(--bg-highlight) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  font-weight: 700 !important;
+  font-size: 0.7rem !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0 6px !important;
+  line-height: 1.6 !important;
+}
+
+/* Sections */
+.section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.sectionTitle {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: var(--spacing-lg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Lyrics */
+.lyrics {
+  background: linear-gradient(
+    180deg,
+    rgba(29, 185, 84, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 720px;
+}
+
+.lyricLine {
+  font-size: 1.125rem;
+  line-height: 2;
+  color: var(--text-secondary) !important;
+  margin: 0;
+}
+
+/* Song List */
+.songList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-lg);
+  }
+
+  .coverWrapper {
+    width: 180px;
+    height: 180px;
+  }
+
+  .title {
+    font-size: 2rem !important;
+  }
+
+  .meta {
+    justify-content: center;
+  }
+
+  .heroInfo {
+    align-items: center;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .genres {
+    justify-content: center;
+  }
+}

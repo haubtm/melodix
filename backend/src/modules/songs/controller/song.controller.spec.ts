@@ -4,6 +4,7 @@ import { SongService } from '../service/song.service';
 import { CreateSongDto } from '../dto/create-song.dto';
 import { UserRole, SongStatus } from '@prisma/client';
 import { RejectSongDto } from '../dto/reject-song.dto';
+import { SongListDto } from '../dto/song-list.dto';
 
 describe('SongController', () => {
   let controller: SongController;
@@ -59,17 +60,18 @@ describe('SongController', () => {
 
   describe('findAll', () => {
     it('should call service.findAll with correct params', async () => {
-      await controller.findAll(1, 10, 'search', 1, 1, 1, SongStatus.pending, mockUser);
-      expect(songService.findAll).toHaveBeenCalledWith(
-        1,
-        10,
-        'search',
-        1,
-        1,
-        1,
-        SongStatus.pending,
-        mockUser,
-      );
+      const listDto: SongListDto = {
+        page: 1,
+        limit: 10,
+        search: 'search',
+        artistId: 1,
+        albumId: 1,
+        genreId: 1,
+        status: SongStatus.pending,
+      };
+
+      await controller.findAll(listDto, mockUser);
+      expect(songService.findAll).toHaveBeenCalledWith(listDto, mockUser);
     });
   });
 
@@ -97,17 +99,8 @@ describe('SongController', () => {
 
   describe('findPending', () => {
     it('should call service.findPending', async () => {
-      // The controller implementation for findPending calls service.findAll with status=pending
-      // but strictly speaking the controller has a `findPending` method?
-      // Wait, let me check the controller implementation in Step 2404 or viewed file.
-      // Current controller has `findAll` with status param.
-      // Ah, I added `GET /songs/pending` endpoint?
-      // Let me check if I added specific method for pending.
-      // Checking SongController content from previous steps...
-      // Step 2404 diff shows no new method, just `findAll` updated.
-      // But implementation plan said "Add GET /songs/pending endpoint".
-      // Step 2383 summary says: "GET /songs/pending: Protected endpoint for admins to view pending songs."
-      // Let me verify if `findPending` method exists in controller.
+      await controller.findPending(1, 10);
+      expect(songService.findPending).toHaveBeenCalledWith(1, 10);
     });
   });
 });

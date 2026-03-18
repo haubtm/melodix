@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 
 import { IPaginatedResponse, Album, Artist, Song } from "@/dtos";
 import { type AlbumQueryParams } from "./albums";
@@ -46,6 +46,12 @@ export const homeApi = {
   ): Promise<IPaginatedResponse<Artist>> => {
     return serverPost<IPaginatedResponse<Artist>>("/artists/list", params, {
       next: { revalidate: 300 },
+    });
+  },
+
+  getSongById: async (id: number): Promise<Song> => {
+    return serverGet<Song>(`/songs/${id}`, {
+      next: { revalidate: 60 },
     });
   },
 };

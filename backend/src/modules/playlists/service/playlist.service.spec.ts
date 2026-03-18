@@ -9,7 +9,7 @@ import { PlaylistEntity } from '../entity/playlist.entity';
 describe('PlaylistService', () => {
   let service: PlaylistService;
   let playlistRepository: Record<keyof PlaylistRepository, jest.Mock>;
-  let songService: Record<keyof SongService, jest.Mock>;
+  let songService: Partial<Record<keyof SongService, jest.Mock>>;
 
   beforeEach(async () => {
     playlistRepository = {
@@ -25,9 +25,14 @@ describe('PlaylistService', () => {
     };
 
     songService = {
+      getListUsingSelect: jest.fn(),
       create: jest.fn(),
       findAll: jest.fn(),
+      findMySongs: jest.fn(),
+      findPending: jest.fn(),
       findOne: jest.fn(),
+      approve: jest.fn(),
+      reject: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
     };
@@ -193,7 +198,7 @@ describe('PlaylistService', () => {
       playlistRepository.findById.mockResolvedValueOnce(playlist); // initial check
       playlistRepository.countSongs.mockResolvedValue(0);
       playlistRepository.count.mockResolvedValue(0); // Mock duplicate check
-      songService.findOne.mockResolvedValue({ id: 1, durationMs: 3000 });
+      songService.findOne!.mockResolvedValue({ id: 1, durationMs: 3000 });
       playlistRepository.addSong.mockResolvedValue({});
 
       // Mock findById for duration update

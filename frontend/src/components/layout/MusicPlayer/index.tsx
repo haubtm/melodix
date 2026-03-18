@@ -1,34 +1,36 @@
-﻿"use client";
+"use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Slider, Button, Tooltip } from "antd";
+import { Button, Slider, Tooltip } from "antd";
 import {
-  PlayCircleFilled,
+  ExpandOutlined,
+  HeartFilled,
+  HeartOutlined,
   PauseCircleFilled,
+  PlayCircleFilled,
+  RetweetOutlined,
+  SoundFilled,
+  SoundOutlined,
   StepBackwardFilled,
   StepForwardFilled,
-  RetweetOutlined,
   SwapOutlined,
-  SoundOutlined,
-  SoundFilled,
-  HeartOutlined,
-  HeartFilled,
   UnorderedListOutlined,
-  ExpandOutlined,
 } from "@ant-design/icons";
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { getStreamUrl } from "@/api/songs";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  togglePlay,
   nextTrack,
   previousTrack,
   setProgress,
   setVolume,
   toggleMute,
-  toggleShuffle,
+  togglePlay,
   toggleRepeat,
+  toggleShuffle,
 } from "@/store/slices/playerSlice";
+import QueueDrawer from "./QueueDrawer";
 import styles from "./MusicPlayer.module.css";
 
 function formatTime(seconds: number): string {
@@ -41,37 +43,36 @@ export default function MusicPlayer() {
   const dispatch = useAppDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [liked, setLiked] = useState(false);
+  const [queueOpen, setQueueOpen] = useState(false);
 
   const { currentSong, isPlaying, volume, progress, shuffle, repeat, isMuted } =
     useAppSelector((state) => state.player);
 
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      } else {
-        audioRef.current.pause();
-      }
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.play().catch(() => {});
+      return;
     }
-  }, [isPlaying, currentSong]);
+
+    audioRef.current.pause();
+  }, [currentSong, isPlaying]);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume / 100;
-    }
-  }, [volume, isMuted]);
+    if (!audioRef.current) return;
+    audioRef.current.volume = isMuted ? 0 : volume / 100;
+  }, [isMuted, volume]);
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      dispatch(setProgress(audioRef.current.currentTime));
-    }
+    if (!audioRef.current) return;
+    dispatch(setProgress(audioRef.current.currentTime));
   };
 
   const handleSeek = (value: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = value;
-      dispatch(setProgress(value));
-    }
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = value;
+    dispatch(setProgress(value));
   };
 
   const handleVolumeChange = (value: number) => {
@@ -79,14 +80,13 @@ export default function MusicPlayer() {
   };
 
   const handleEnded = () => {
-    if (repeat === "one") {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {});
-      }
-    } else {
-      dispatch(nextTrack());
+    if (repeat === "one" && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+      return;
     }
+
+    dispatch(nextTrack());
   };
 
   if (!currentSong) {
@@ -105,7 +105,7 @@ export default function MusicPlayer() {
     <div className={styles.player}>
       <audio
         ref={audioRef}
-        src={currentSong.audioUrl}
+        src={getStreamUrl(currentSong.id)}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
       />
@@ -144,7 +144,7 @@ export default function MusicPlayer() {
               <HeartOutlined />
             )
           }
-          onClick={() => setLiked(!liked)}
+          onClick={() => setLiked((prev) => !prev)}
           className={styles.likeButton}
         />
       </div>
@@ -221,6 +221,7 @@ export default function MusicPlayer() {
             type="text"
             icon={<UnorderedListOutlined />}
             className={styles.extraButton}
+            onClick={() => setQueueOpen(true)}
           />
         </Tooltip>
         <div className={styles.volumeControl}>
@@ -246,6 +247,8 @@ export default function MusicPlayer() {
           />
         </Tooltip>
       </div>
+
+      <QueueDrawer open={queueOpen} onClose={() => setQueueOpen(false)} />
     </div>
   );
 }

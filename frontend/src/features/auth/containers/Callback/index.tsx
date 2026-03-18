@@ -59,7 +59,7 @@ export default function AuthCallbackContainer() {
     return () => {
       isMounted = false;
     };
-  }, [dispatch, router, searchParams]);
+  }, [dispatch, message, router, searchParams]);
 
   return (
     <div
