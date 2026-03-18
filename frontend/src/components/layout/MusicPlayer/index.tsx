@@ -18,6 +18,7 @@ import {
   SwapOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
+import { playbackApi } from "@/api";
 import { getStreamUrl } from "@/api/songs";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -42,11 +43,17 @@ function formatTime(seconds: number): string {
 export default function MusicPlayer() {
   const dispatch = useAppDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const recordedSongIdRef = useRef<number | null>(null);
   const [liked, setLiked] = useState(false);
   const [queueOpen, setQueueOpen] = useState(false);
 
   const { currentSong, isPlaying, volume, progress, shuffle, repeat, isMuted } =
     useAppSelector((state) => state.player);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    recordedSongIdRef.current = null;
+  }, [currentSong?.id]);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -80,6 +87,18 @@ export default function MusicPlayer() {
   };
 
   const handleEnded = () => {
+    if (
+      isAuthenticated &&
+      currentSong &&
+      recordedSongIdRef.current !== currentSong.id
+    ) {
+      recordedSongIdRef.current = currentSong.id;
+      void playbackApi.recordPlay({
+        songId: currentSong.id,
+        durationMs: currentSong.durationMs,
+      });
+    }
+
     if (repeat === "one" && audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
@@ -88,6 +107,23 @@ export default function MusicPlayer() {
 
     dispatch(nextTrack());
   };
+
+  useEffect(() => {
+    if (
+      !isAuthenticated ||
+      !currentSong ||
+      progress < 30 ||
+      recordedSongIdRef.current === currentSong.id
+    ) {
+      return;
+    }
+
+    recordedSongIdRef.current = currentSong.id;
+    void playbackApi.recordPlay({
+      songId: currentSong.id,
+      durationMs: Math.floor(progress * 1000),
+    });
+  }, [currentSong, isAuthenticated, progress]);
 
   if (!currentSong) {
     return (
@@ -106,6 +142,7 @@ export default function MusicPlayer() {
       <audio
         ref={audioRef}
         src={getStreamUrl(currentSong.id)}
+        preload="metadata"
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
       />

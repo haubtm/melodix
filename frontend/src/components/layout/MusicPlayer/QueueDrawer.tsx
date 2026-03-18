@@ -53,10 +53,8 @@ export default function QueueDrawer({ open, onClose }: QueueDrawerProps) {
           background: "#121212",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
         },
-        content: {
-          background: "#121212",
-        },
       }}
+      style={{ background: "#121212" }}
     >
       {currentSong && (
         <section className={styles.section}>

@@ -9,8 +9,11 @@ interface SongPageProps {
   params: Promise<{ id: string }>;
 }
 
+type SongResponse = Song | { data: Song };
+
 async function loadSong(id: number): Promise<Song> {
-  return homeApi.getSongById(id);
+  const response = (await homeApi.getSongById(id)) as SongResponse;
+  return "data" in response ? response.data : response;
 }
 
 export async function generateMetadata({
