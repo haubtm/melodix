@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PlaylistEntity } from '../entity/playlist.entity';
 import { UserResponseDto } from '../../users/dto/user-response.dto';
 import { PlaylistSongResponseDto } from './playlist-song-response.dto';
-import { SongResponseDto } from '../../songs/dto/song-response.dto';
+import { SongResponseDto, SongArtistReferenceDto } from '../../songs/dto/song-response.dto';
 import { ArtistResponseDto } from '../../artists/dto/artist-response.dto';
 
 export class PlaylistResponseDto {
@@ -73,6 +73,13 @@ export class PlaylistResponseDto {
             coverUrl: item.song.coverUrl,
             playCount: Number(item.song.playCount ?? 0),
             createdAt: item.song.createdAt,
+            artistId: item.song.primaryArtist?.id,
+            artist: item.song.primaryArtist
+              ? new SongArtistReferenceDto({
+                  id: item.song.primaryArtist.id,
+                  name: item.song.primaryArtist.name,
+                })
+              : undefined,
             primaryArtist: item.song.primaryArtist
               ? new ArtistResponseDto(item.song.primaryArtist)
               : undefined,

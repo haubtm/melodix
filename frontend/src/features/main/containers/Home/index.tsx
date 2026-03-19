@@ -5,6 +5,7 @@ import SongCard from "@/components/music/SongCard";
 import AlbumCard from "@/components/music/AlbumCard";
 import ArtistCard from "@/components/music/ArtistCard";
 import { Album, Artist, Song } from "@/dtos";
+import { RecentlyPlayedSection } from "./RecentlyPlayedSection";
 import styles from "@/app/page.module.css";
 
 interface HomeContainerProps {
@@ -48,6 +49,8 @@ export function HomeContainer({ songs, albums, artists }: HomeContainerProps) {
             <Empty description="Chưa có bài hát nào" />
           )}
         </section>
+
+        <RecentlyPlayedSection />
 
         <section className={styles.section}>
           <div className={styles.sectionHeader}>

@@ -56,6 +56,12 @@
   gap: var(--spacing-xs);
 }
 
+.recentlyPlayedSkeleton {
+  width: 100% !important;
+  height: 78px !important;
+  border-radius: 16px !important;
+}
+
 .songRow {
   display: flex;
   align-items: center;

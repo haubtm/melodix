@@ -39,7 +39,7 @@ export default function QueueDrawer({ open, onClose }: QueueDrawerProps) {
         </div>
       }
       placement="right"
-      width={400}
+      size="large"
       onClose={onClose}
       open={open}
       styles={{

@@ -14,6 +14,7 @@ import { generateSlug } from '../../../common/utils/slug.util';
 import { ArtistService } from '../../artists/service/artist.service';
 import { User, UserRole, SongStatus, Prisma } from '@prisma/client';
 import { SongListDto } from '../dto/song-list.dto';
+import { toSongResponseDto } from '../dto/song-response.mapper';
 
 @Injectable()
 export class SongService {
@@ -82,7 +83,7 @@ export class SongService {
     // Default status: pending for artist, approved for admin
     const status = user.role === UserRole.admin ? SongStatus.approved : SongStatus.pending;
 
-    return this.songRepository.create({
+    const song = await this.songRepository.create({
       ...rest,
       slug,
       status,
@@ -110,6 +111,8 @@ export class SongService {
         },
       }),
     });
+
+    return toSongResponseDto(song);
   }
 
   async findAll(listDto: SongListDto, user?: User): Promise<PaginatedResponseDto<any>> {
@@ -130,7 +133,7 @@ export class SongService {
     }
     // Admin can filter by any status or see all
 
-    return this.songRepository.findAll(
+    const result = await this.songRepository.findAll(
       page,
       limit,
       typeof listDto.search === 'string' ? listDto.search : listDto.search?.data,
@@ -139,13 +142,27 @@ export class SongService {
       listDto.genreId,
       effectiveStatus,
     );
+
+    return new PaginatedResponseDto(
+      result.data.map((song) => toSongResponseDto(song)),
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   async findMySongs(user: User, page: number, limit: number): Promise<PaginatedResponseDto<any>> {
     if (user.role !== UserRole.artist && user.role !== UserRole.admin) {
       throw new ForbiddenException('Chỉ nghệ sĩ mới có thể xem bài hát của mình');
     }
-    return this.songRepository.findByArtistUserId(user.id, page, limit);
+    const result = await this.songRepository.findByArtistUserId(user.id, page, limit);
+
+    return new PaginatedResponseDto(
+      result.data.map((song) => toSongResponseDto(song)),
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   async findPending(page: number, limit: number): Promise<PaginatedResponseDto<any>> {
@@ -161,7 +178,7 @@ export class SongService {
     if (!song) {
       throw new NotFoundException(`Song with ID ${id} not found`);
     }
-    return song;
+    return toSongResponseDto(song);
   }
 
   async approve(id: number, user: User) {
@@ -169,18 +186,20 @@ export class SongService {
       throw new ForbiddenException('Chỉ Admin mới có quyền duyệt bài hát');
     }
 
-    const song = await this.findOne(id);
+    const existingSong = await this.findOne(id);
 
-    if (song.status === SongStatus.approved) {
+    if (existingSong.status === SongStatus.approved) {
       throw new BadRequestException('Bài hát đã được duyệt trước đó');
     }
 
-    return this.songRepository.update(id, {
+    const song = await this.songRepository.update(id, {
       status: SongStatus.approved,
       rejectionReason: null,
       reviewedAt: new Date(),
       reviewedBy: user.id,
     });
+
+    return toSongResponseDto(song);
   }
 
   async reject(id: number, rejectSongDto: RejectSongDto, user: User) {
@@ -188,18 +207,20 @@ export class SongService {
       throw new ForbiddenException('Chỉ Admin mới có quyền từ chối bài hát');
     }
 
-    const song = await this.findOne(id);
+    const existingSong = await this.findOne(id);
 
-    if (song.status === SongStatus.rejected) {
+    if (existingSong.status === SongStatus.rejected) {
       throw new BadRequestException('Bài hát đã bị từ chối trước đó');
     }
 
-    return this.songRepository.update(id, {
+    const song = await this.songRepository.update(id, {
       status: SongStatus.rejected,
       rejectionReason: rejectSongDto.rejectionReason || null,
       reviewedAt: new Date(),
       reviewedBy: user.id,
     });
+
+    return toSongResponseDto(song);
   }
 
   async update(id: number, updateSongDto: UpdateSongDto, user: User) {
@@ -244,7 +265,7 @@ export class SongService {
     const shouldResetStatus =
       user.role !== UserRole.admin && existingSong.status === SongStatus.approved;
 
-    return this.songRepository.update(id, {
+    const song = await this.songRepository.update(id, {
       ...rest,
       ...(title && { title, slug }),
       ...(shouldResetStatus && { status: SongStatus.pending, reviewedAt: null, reviewedBy: null }),
@@ -281,6 +302,8 @@ export class SongService {
         },
       }),
     });
+
+    return toSongResponseDto(song);
   }
 
   async remove(id: number, user: User) {

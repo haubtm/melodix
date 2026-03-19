@@ -71,6 +71,25 @@ export default function MusicPlayer() {
     audioRef.current.volume = isMuted ? 0 : volume / 100;
   }, [isMuted, volume]);
 
+  const recordPlaySafely = async (songId: number, durationMs: number) => {
+    try {
+      await playbackApi.recordPlay({
+        songId,
+        durationMs,
+      });
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("melodix:play-recorded", {
+            detail: { songId, durationMs },
+          }),
+        );
+      }
+    } catch {
+      // Do not interrupt playback if tracking fails or backend is not ready.
+    }
+  };
+
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
     dispatch(setProgress(audioRef.current.currentTime));
@@ -93,10 +112,7 @@ export default function MusicPlayer() {
       recordedSongIdRef.current !== currentSong.id
     ) {
       recordedSongIdRef.current = currentSong.id;
-      void playbackApi.recordPlay({
-        songId: currentSong.id,
-        durationMs: currentSong.durationMs,
-      });
+      void recordPlaySafely(currentSong.id, currentSong.durationMs);
     }
 
     if (repeat === "one" && audioRef.current) {
@@ -119,10 +135,7 @@ export default function MusicPlayer() {
     }
 
     recordedSongIdRef.current = currentSong.id;
-    void playbackApi.recordPlay({
-      songId: currentSong.id,
-      durationMs: Math.floor(progress * 1000),
-    });
+    void recordPlaySafely(currentSong.id, Math.floor(progress * 1000));
   }, [currentSong, isAuthenticated, progress]);
 
   if (!currentSong) {
@@ -136,6 +149,11 @@ export default function MusicPlayer() {
   }
 
   const durationSeconds = currentSong.durationMs / 1000;
+  const artistName =
+    currentSong.primaryArtist?.name ||
+    currentSong.artist?.name ||
+    "Unknown Artist";
+  const artistId = currentSong.primaryArtist?.id || currentSong.artistId;
 
   return (
     <div className={styles.player}>
@@ -165,11 +183,8 @@ export default function MusicPlayer() {
           <Link href={`/song/${currentSong.id}`} className={styles.songTitle}>
             {currentSong.title}
           </Link>
-          <Link
-            href={`/artist/${currentSong.artistId}`}
-            className={styles.artistName}
-          >
-            {currentSong.artist?.name || "Unknown Artist"}
+          <Link href={`/artist/${artistId}`} className={styles.artistName}>
+            {artistName}
           </Link>
         </div>
         <Button

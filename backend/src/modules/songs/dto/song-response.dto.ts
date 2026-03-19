@@ -2,6 +2,18 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ArtistResponseDto } from '../../artists/dto/artist-response.dto';
 
+export class SongArtistReferenceDto {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  name: string;
+
+  constructor(partial: Partial<SongArtistReferenceDto>) {
+    Object.assign(this, partial);
+  }
+}
+
 export class SongResponseDto {
   @ApiProperty()
   id: number;
@@ -33,6 +45,13 @@ export class SongResponseDto {
   @ApiPropertyOptional({ type: () => ArtistResponseDto })
   @Type(() => ArtistResponseDto)
   primaryArtist?: ArtistResponseDto;
+
+  @ApiPropertyOptional({ type: () => SongArtistReferenceDto })
+  @Type(() => SongArtistReferenceDto)
+  artist?: SongArtistReferenceDto;
+
+  @ApiPropertyOptional()
+  artistId?: number;
 
   // We can expand this to include Album and Genres as needed
   @ApiPropertyOptional()

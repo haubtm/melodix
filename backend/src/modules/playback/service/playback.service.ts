@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { toSongResponseDto } from '../../songs/dto';
 import { SongService } from '../../songs/service/song.service';
 import { RecordPlayDto } from '../dto';
 import { PlaybackRepository } from '../repository/playback.repository';
 
 @Injectable()
 export class PlaybackService {
+  private static readonly PLAY_COUNT_THRESHOLD_MS = 30_000;
+
   constructor(
     private readonly playbackRepository: PlaybackRepository,
     private readonly songService: SongService,
@@ -14,8 +17,10 @@ export class PlaybackService {
   async recordPlay(user: User, dto: RecordPlayDto) {
     await this.songService.findOne(dto.songId);
 
-    await Promise.all([
-      this.playbackRepository.incrementSongPlayCount(dto.songId),
+    const shouldIncrementPlayCount =
+      (dto.durationMs ?? 0) >= PlaybackService.PLAY_COUNT_THRESHOLD_MS;
+
+    const operations: Array<Promise<unknown>> = [
       this.playbackRepository.createListeningHistory({
         userId: user.id,
         songId: dto.songId,
@@ -29,10 +34,17 @@ export class PlaybackService {
         contextType: dto.contextType,
         contextId: dto.contextId,
       }),
-    ]);
+    ];
+
+    if (shouldIncrementPlayCount) {
+      operations.unshift(this.playbackRepository.incrementSongPlayCount(dto.songId));
+    }
+
+    await Promise.all(operations);
 
     return {
       message: 'Play recorded successfully',
+      counted: shouldIncrementPlayCount,
     };
   }
 
@@ -43,7 +55,7 @@ export class PlaybackService {
       playedAt: item.playedAt,
       contextType: item.contextType,
       contextId: item.contextId,
-      song: item.song,
+      song: toSongResponseDto(item.song),
     }));
   }
 }
