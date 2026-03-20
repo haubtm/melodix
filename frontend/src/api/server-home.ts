@@ -26,8 +26,9 @@ export const homeApi = {
   getSongs: async (
     params: SongQueryParams = {},
   ): Promise<IPaginatedResponse<Song>> => {
-    return serverGet<IPaginatedResponse<Song>>(
-      `/songs${toQueryString(params)}`,
+    return serverPost<IPaginatedResponse<Song>>(
+      "/songs/list",
+      params,
       { next: { revalidate: 300 } },
     );
   },

@@ -34,6 +34,7 @@ export interface Song {
   audioUrl: string;
   audioPreviewUrl?: string;
   coverUrl?: string;
+  lyricsUrl?: string;
   lyrics?: string;
   playCount: number;
   explicit: boolean;

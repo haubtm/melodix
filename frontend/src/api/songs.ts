@@ -22,7 +22,7 @@ export const songsApi = {
   getAll: async (
     params: SongQueryParams = {},
   ): Promise<IPaginatedResponse<Song>> => {
-    const response = await axiosService.get("/songs", { params });
+    const response = await axiosService.post("/songs/list", params);
     return response.data;
   },
 

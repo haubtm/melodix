@@ -5,9 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Layout, Menu, Typography, Divider, Button } from "antd";
 import {
+  CustomerServiceOutlined,
   HomeOutlined,
   SearchOutlined,
   HeartOutlined,
+  HistoryOutlined,
   PlusOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
@@ -32,6 +34,12 @@ const mainMenuItems: MenuItem[] = [
     path: "/",
   },
   {
+    key: "songs",
+    icon: <CustomerServiceOutlined />,
+    label: "Bài hát",
+    path: "/songs",
+  },
+  {
     key: "search",
     icon: <SearchOutlined />,
     label: "Tìm kiếm",
@@ -40,6 +48,12 @@ const mainMenuItems: MenuItem[] = [
 ];
 
 const libraryMenuItems: MenuItem[] = [
+  {
+    key: "history",
+    icon: <HistoryOutlined />,
+    label: "Nghe gần đây",
+    path: "/history",
+  },
   {
     key: "liked",
     icon: <HeartOutlined />,

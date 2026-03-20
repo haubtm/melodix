@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Song } from "@/dtos";
 import { homeApi } from "@/api/server-home";
+import { serverSongsApi } from "@/api/server-songs";
 import { SITE_CONFIG } from "@/common/seo";
 import { SongDetailContainer } from "@/features/main/containers/SongDetail";
 
@@ -14,6 +15,27 @@ type SongResponse = Song | { data: Song };
 async function loadSong(id: number): Promise<Song> {
   const response = (await homeApi.getSongById(id)) as SongResponse;
   return "data" in response ? response.data : response;
+}
+
+async function loadLyricsText(url?: string): Promise<string | undefined> {
+  if (!url) {
+    return undefined;
+  }
+
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const text = (await response.text()).trim();
+    return text || undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function generateMetadata({
@@ -54,7 +76,35 @@ export default async function SongPage({ params }: SongPageProps) {
       notFound();
     }
 
-    return <SongDetailContainer song={song} />;
+    const artistId = song.primaryArtist?.id || song.artistId;
+    const [lyricsText, albumSongsResult, artistSongsResult] = await Promise.all([
+      loadLyricsText(song.lyricsUrl),
+      song.albumId
+        ? serverSongsApi.getSongs({
+            albumId: song.albumId,
+            limit: 20,
+          })
+        : Promise.resolve(null),
+      artistId
+        ? serverSongsApi.getSongs({
+            artistId,
+            limit: 12,
+          })
+        : Promise.resolve(null),
+    ]);
+
+    return (
+      <SongDetailContainer
+        song={{
+          ...song,
+          lyrics: lyricsText || song.lyrics,
+        }}
+        albumSongs={albumSongsResult?.data || []}
+        artistSongs={(artistSongsResult?.data || []).filter(
+          (artistSong) => artistSong.id !== song.id,
+        )}
+      />
+    );
   } catch {
     notFound();
   }

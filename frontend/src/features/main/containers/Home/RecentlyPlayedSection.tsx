@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Empty, Skeleton } from "antd";
 import SongCard from "@/components/music/SongCard";
@@ -62,6 +63,7 @@ export function RecentlyPlayedSection() {
     <section className={styles.section}>
       <div className={styles.sectionHeader}>
         <h2 className={styles.sectionTitle}>Nghe gần đây</h2>
+        <Link href="/history">Xem tất cả</Link>
       </div>
 
       {loading ? (
@@ -93,3 +95,4 @@ export function RecentlyPlayedSection() {
     </section>
   );
 }
+

@@ -22,6 +22,7 @@ const { Text } = Typography;
 interface SongDetailContainerProps {
   song: Song;
   albumSongs?: Song[];
+  artistSongs?: Song[];
 }
 
 function formatDuration(ms: number): string {
@@ -40,6 +41,7 @@ function formatPlayCount(count: number | string): string {
 export function SongDetailContainer({
   song,
   albumSongs = [],
+  artistSongs = [],
 }: SongDetailContainerProps) {
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.player);
@@ -53,15 +55,21 @@ export function SongDetailContainer({
       return;
     }
 
-    dispatch(playSong({ song, playlist: albumSongs.length ? albumSongs : [song] }));
+    dispatch(
+      playSong({
+        song,
+        playlist: albumSongs.length ? albumSongs : [song, ...artistSongs],
+      }),
+    );
   };
 
-  const coverUrl =
-    song.coverUrl || song.album?.coverUrl || "/images/default-cover.jpg";
+  const coverUrl = song.coverUrl || song.album?.coverUrl || "/images/default-cover.jpg";
   const artistName = song.primaryArtist?.name || song.artist?.name || "Unknown Artist";
   const artistId = song.primaryArtist?.id || song.artistId;
   const featuredArtists = song.songArtists || [];
   const genres = song.genres || [];
+  const otherAlbumSongs = albumSongs.filter((albumSong) => albumSong.id !== song.id);
+  const otherArtistSongs = artistSongs.filter((artistSong) => artistSong.id !== song.id);
 
   return (
     <MainLayout>
@@ -90,10 +98,7 @@ export function SongDetailContainer({
               {song.album && (
                 <>
                   <span className={styles.dot}>•</span>
-                  <Link
-                    href={`/album/${song.album.id}`}
-                    className={styles.albumLink}
-                  >
+                  <Link href={`/album/${song.album.id}`} className={styles.albumLink}>
                     {song.album.title}
                   </Link>
                 </>
@@ -117,19 +122,14 @@ export function SongDetailContainer({
             {featuredArtists.length > 0 && (
               <div className={styles.featuredArtists}>
                 <Text className={styles.featuredLabel}>Hát cùng: </Text>
-                {featuredArtists.map(
-                  (item: SongArtistReference, index: number) => (
-                    <React.Fragment key={item.artist.id}>
-                      {index > 0 && ", "}
-                      <Link
-                        href={`/artist/${item.artist.id}`}
-                        className={styles.featuredLink}
-                      >
-                        {item.artist.name}
-                      </Link>
-                    </React.Fragment>
-                  ),
-                )}
+                {featuredArtists.map((item: SongArtistReference, index: number) => (
+                  <React.Fragment key={item.artist.id}>
+                    {index > 0 && ", "}
+                    <Link href={`/artist/${item.artist.id}`} className={styles.featuredLink}>
+                      {item.artist.name}
+                    </Link>
+                  </React.Fragment>
+                ))}
               </div>
             )}
 
@@ -150,9 +150,7 @@ export function SongDetailContainer({
             type="primary"
             shape="circle"
             size="large"
-            icon={
-              isCurrentlyPlaying ? <PauseCircleFilled /> : <PlayCircleFilled />
-            }
+            icon={isCurrentlyPlaying ? <PauseCircleFilled /> : <PlayCircleFilled />}
             onClick={handlePlay}
             className={styles.playButton}
           />
@@ -179,21 +177,36 @@ export function SongDetailContainer({
           </section>
         )}
 
-        {albumSongs.length > 0 && (
+        {otherAlbumSongs.length > 0 && (
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Bài hát khác trong album</h2>
             <div className={styles.songList}>
-              {albumSongs
-                .filter((albumSong) => albumSong.id !== song.id)
-                .map((albumSong, index) => (
-                  <SongCard
-                    key={albumSong.id}
-                    song={albumSong}
-                    playlist={albumSongs}
-                    index={index}
-                    showAlbum={false}
-                  />
-                ))}
+              {otherAlbumSongs.map((albumSong, index) => (
+                <SongCard
+                  key={albumSong.id}
+                  song={albumSong}
+                  playlist={albumSongs}
+                  index={index}
+                  showAlbum={false}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {otherArtistSongs.length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Bài hát khác của nghệ sĩ</h2>
+            <div className={styles.songList}>
+              {otherArtistSongs.map((artistSong, index) => (
+                <SongCard
+                  key={artistSong.id}
+                  song={artistSong}
+                  playlist={[song, ...otherArtistSongs]}
+                  index={index}
+                  showAlbum
+                />
+              ))}
             </div>
           </section>
         )}
@@ -201,3 +214,4 @@ export function SongDetailContainer({
     </MainLayout>
   );
 }
+
