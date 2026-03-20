@@ -5,5 +5,6 @@ export { genresApi } from "./genres";
 export { libraryApi } from "./library";
 export { playbackApi } from "./playback";
 export { playlistsApi } from "./playlists";
+export { uploadApi } from "./upload";
 export { songsApi } from "./songs";
 export { axiosService, API_BASE_URL } from "./axiosService";

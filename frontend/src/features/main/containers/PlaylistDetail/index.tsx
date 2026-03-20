@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { App, Button, Empty, Form, Input, Modal, Skeleton, Switch } from "antd";
+import { App, Button, Empty, Form, Input, Modal, Skeleton, Switch, Row, Col } from "antd";
+import type { UploadFile } from "antd/es/upload/interface";
 import { DeleteOutlined, PauseCircleFilled, PlayCircleFilled } from "@ant-design/icons";
 import MainLayout from "@/components/layout/MainLayout";
+import { PlaylistCoverField } from "@/components/music";
 import SongCard from "@/components/music/SongCard";
 import { Playlist, PlaylistSong } from "@/dtos";
-import { playlistsApi } from "@/api";
+import { playlistsApi, uploadApi } from "@/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { playSong, togglePlay } from "@/store/slices/playerSlice";
 import styles from "./PlaylistDetail.module.css";
@@ -42,6 +44,7 @@ export function PlaylistDetailContainer({
   const [removingSongId, setRemovingSongId] = useState<number | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [editCoverFiles, setEditCoverFiles] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
 
   const loadPlaylist = useCallback(async () => {
@@ -157,9 +160,9 @@ export function PlaylistDetailContainer({
     form.setFieldsValue({
       name: playlist.name,
       description: playlist.description || "",
-      imageUrl: playlist.imageUrl || "",
       isPublic: playlist.isPublic,
     });
+    setEditCoverFiles([]);
     setEditOpen(true);
   };
 
@@ -167,8 +170,17 @@ export function PlaylistDetailContainer({
     try {
       const values = await form.validateFields();
       setUpdating(true);
+      let imageUrl = playlist.imageUrl || undefined;
 
-      const updatedPlaylist = await playlistsApi.update(playlist.id, values);
+      const file = editCoverFiles[0]?.originFileObj;
+      if (file) {
+        imageUrl = await uploadApi.uploadFile(file, "playlists");
+      }
+
+      const updatedPlaylist = await playlistsApi.update(playlist.id, {
+        ...values,
+        imageUrl,
+      });
       setPlaylist((prev) =>
         prev
           ? {
@@ -179,6 +191,7 @@ export function PlaylistDetailContainer({
           : updatedPlaylist,
       );
       setEditOpen(false);
+      setEditCoverFiles([]);
       window.dispatchEvent(
         new CustomEvent("melodix:playlist-changed", {
           detail: { playlistId: playlist.id },
@@ -279,10 +292,14 @@ export function PlaylistDetailContainer({
       <Modal
         title="Chỉnh sửa playlist"
         open={editOpen}
-        onCancel={() => setEditOpen(false)}
+        onCancel={() => {
+          setEditOpen(false);
+          setEditCoverFiles([]);
+        }}
         onOk={() => void handleUpdatePlaylist()}
         okText="Lưu"
         confirmLoading={updating}
+        width={560}
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -293,16 +310,23 @@ export function PlaylistDetailContainer({
             <Input placeholder="Tên playlist" />
           </Form.Item>
 
+          <Row gutter={16} align="middle">
+            <Col span={16}>
+              <PlaylistCoverField
+                fileList={editCoverFiles}
+                initialImageUrl={playlist.coverUrl || playlist.imageUrl || undefined}
+                onChange={setEditCoverFiles}
+              />
+            </Col>
+            <Col span={8}>
+              <Form.Item name="isPublic" label="Công khai" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item name="description" label="Mô tả">
             <Input.TextArea rows={3} placeholder="Mô tả ngắn" />
-          </Form.Item>
-
-          <Form.Item name="imageUrl" label="Ảnh bìa">
-            <Input placeholder="https://..." />
-          </Form.Item>
-
-          <Form.Item name="isPublic" label="Công khai" valuePropName="checked">
-            <Switch />
           </Form.Item>
         </Form>
       </Modal>

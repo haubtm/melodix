@@ -12,10 +12,13 @@ import {
   Layout,
   Menu,
   Modal,
+  Row,
+  Col,
   Spin,
   Switch,
   Typography,
 } from "antd";
+import type { UploadFile } from "antd/es/upload/interface";
 import {
   CustomerServiceOutlined,
   HeartOutlined,
@@ -25,8 +28,9 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { playlistsApi } from "@/api";
+import { playlistsApi, uploadApi } from "@/api";
 import { Playlist } from "@/dtos";
+import { PlaylistCoverField } from "@/components/music";
 import { useAppSelector } from "@/store/hooks";
 import styles from "./Sidebar.module.css";
 
@@ -41,39 +45,14 @@ interface MenuItem {
 }
 
 const mainMenuItems: MenuItem[] = [
-  {
-    key: "home",
-    icon: <HomeOutlined />,
-    label: "Trang chủ",
-    path: "/",
-  },
-  {
-    key: "songs",
-    icon: <CustomerServiceOutlined />,
-    label: "Bài hát",
-    path: "/songs",
-  },
-  {
-    key: "search",
-    icon: <SearchOutlined />,
-    label: "Tìm kiếm",
-    path: "/search",
-  },
+  { key: "home", icon: <HomeOutlined />, label: "Trang chủ", path: "/" },
+  { key: "songs", icon: <CustomerServiceOutlined />, label: "Bài hát", path: "/songs" },
+  { key: "search", icon: <SearchOutlined />, label: "Tìm kiếm", path: "/search" },
 ];
 
 const libraryMenuItems: MenuItem[] = [
-  {
-    key: "history",
-    icon: <HistoryOutlined />,
-    label: "Nghe gần đây",
-    path: "/history",
-  },
-  {
-    key: "liked",
-    icon: <HeartOutlined />,
-    label: "Bài hát yêu thích",
-    path: "/library/liked",
-  },
+  { key: "history", icon: <HistoryOutlined />, label: "Nghe gần đây", path: "/history" },
+  { key: "liked", icon: <HeartOutlined />, label: "Bài hát yêu thích", path: "/library/liked" },
 ];
 
 export default function Sidebar() {
@@ -86,6 +65,7 @@ export default function Sidebar() {
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [createCoverFiles, setCreateCoverFiles] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
 
   const getSelectedKeys = () => {
@@ -147,9 +127,20 @@ export default function Sidebar() {
       const values = await form.validateFields();
       setCreating(true);
 
-      const playlist = await playlistsApi.create(values);
+      let imageUrl: string | undefined;
+      const file = createCoverFiles[0]?.originFileObj;
+      if (file) {
+        imageUrl = await uploadApi.uploadFile(file, "playlists");
+      }
+
+      const playlist = await playlistsApi.create({
+        ...values,
+        imageUrl,
+      });
+
       setCreateOpen(false);
       form.resetFields();
+      setCreateCoverFiles([]);
       message.success("Đã tạo playlist.");
       window.dispatchEvent(
         new CustomEvent("melodix:playlist-changed", {
@@ -253,9 +244,7 @@ export default function Sidebar() {
                           }`}
                         >
                           <span className={styles.playlistName}>{playlist.name}</span>
-                          <span className={styles.playlistMeta}>
-                            {playlist.totalTracks} bài hát
-                          </span>
+                          <span className={styles.playlistMeta}>{playlist.totalTracks} bài hát</span>
                         </Link>
                       ))}
                     </div>
@@ -288,10 +277,12 @@ export default function Sidebar() {
         onCancel={() => {
           setCreateOpen(false);
           form.resetFields();
+          setCreateCoverFiles([]);
         }}
         onOk={() => void handleCreatePlaylist()}
         okText="Tạo"
         confirmLoading={creating}
+        width={560}
       >
         <Form
           form={form}
@@ -308,28 +299,22 @@ export default function Sidebar() {
             <Input placeholder="Ví dụ: Chill đêm muộn" />
           </Form.Item>
 
+          <Row gutter={16} align="middle">
+            <Col span={16}>
+              <PlaylistCoverField fileList={createCoverFiles} onChange={setCreateCoverFiles} />
+            </Col>
+            <Col span={8}>
+              <Form.Item name="isPublic" label="Công khai" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item name="description" label="Mô tả">
             <Input.TextArea rows={3} placeholder="Mô tả ngắn về playlist" />
-          </Form.Item>
-
-          <Form.Item
-            name="imageUrl"
-            label="Ảnh bìa"
-            extra="Hiện tại dùng URL ảnh, chưa nối upload riêng cho playlist."
-          >
-            <Input placeholder="https://..." />
-          </Form.Item>
-
-          <Form.Item
-            name="isPublic"
-            label="Công khai"
-            valuePropName="checked"
-          >
-            <Switch />
           </Form.Item>
         </Form>
       </Modal>
     </>
   );
 }
-
