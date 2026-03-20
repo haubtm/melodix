@@ -62,6 +62,14 @@ export const playlistsApi = {
     return normalizePlaylist(unwrapEntity<Playlist>(response.data));
   },
 
+  update: async (
+    playlistId: number,
+    payload: Partial<CreatePlaylistRequest>,
+  ): Promise<Playlist> => {
+    const response = await axiosService.patch(`/playlists/${playlistId}`, payload);
+    return normalizePlaylist(unwrapEntity<Playlist>(response.data));
+  },
+
   addSongs: async (playlistId: number, songIds: number[]): Promise<void> => {
     await axiosService.post(`/playlists/${playlistId}/songs`, { songIds });
   },
@@ -70,4 +78,3 @@ export const playlistsApi = {
     await axiosService.delete(`/playlists/${playlistId}/songs/${songId}`);
   },
 };
-

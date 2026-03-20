@@ -25,6 +25,23 @@
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
 
+.coverButton,
+.titleButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.titleButton:disabled,
+.coverButton:disabled {
+  cursor: default;
+}
+
+.editable {
+  cursor: pointer;
+}
+
 .heroInfo {
   display: flex;
   flex-direction: column;
@@ -45,6 +62,17 @@
   color: #fff;
   font-size: clamp(38px, 5vw, 68px);
   font-weight: 800;
+}
+
+.editable .cover,
+.editable .title {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.editable:hover .cover,
+.editable:hover .title {
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 .description {
@@ -125,4 +153,3 @@
     grid-template-columns: 1fr;
   }
 }
-
