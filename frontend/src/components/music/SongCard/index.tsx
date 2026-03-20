@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { PlayCircleFilled, PauseCircleFilled } from "@ant-design/icons";
+import FallbackImage from "@/components/common/FallbackImage";
 import AddToPlaylistButton from "../AddToPlaylistButton";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { playSong, togglePlay } from "@/store/slices/playerSlice";
@@ -64,10 +64,11 @@ export default function SongCard({
       )}
 
       <div className={styles.coverWrapper}>
-        <Image
+        <FallbackImage
           src={
-            song.coverUrl || song.album?.coverUrl || "/images/default-cover.jpg"
+            song.coverUrl || song.album?.coverUrl
           }
+          fallbackSrc="/images/default-cover.svg"
           alt={song.title}
           width={48}
           height={48}

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { PlayCircleFilled } from "@ant-design/icons";
+import FallbackImage from "@/components/common/FallbackImage";
 import { Album } from "@/types";
 import styles from "./AlbumCard.module.css";
 
@@ -20,8 +20,9 @@ export default function AlbumCard({ album }: AlbumCardProps) {
   return (
     <Link href={`/album/${album.id}`} className={styles.card}>
       <div className={styles.coverWrapper}>
-        <Image
-          src={album.coverUrl || "/images/default-cover.jpg"}
+        <FallbackImage
+          src={album.coverUrl}
+          fallbackSrc="/images/default-cover.svg"
           alt={album.title}
           width={180}
           height={180}

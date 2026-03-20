@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { PlayCircleFilled } from "@ant-design/icons";
+import FallbackImage from "@/components/common/FallbackImage";
 import { Artist } from "@/types";
 import styles from "./ArtistCard.module.css";
 
@@ -25,8 +25,9 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
   return (
     <Link href={`/artist/${artist.id}`} className={styles.card}>
       <div className={styles.avatarWrapper}>
-        <Image
-          src={artist.avatarUrl || "/images/default-artist.jpg"}
+        <FallbackImage
+          src={artist.avatarUrl}
+          fallbackSrc="/images/default-artist.svg"
           alt={artist.name}
           width={180}
           height={180}

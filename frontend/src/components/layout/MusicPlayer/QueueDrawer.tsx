@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Button, Drawer, Tooltip } from "antd";
 import {
@@ -9,6 +8,7 @@ import {
   PlayCircleFilled,
 } from "@ant-design/icons";
 import { Song } from "@/types";
+import FallbackImage from "@/components/common/FallbackImage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { playFromQueue, removeFromQueue, togglePlay } from "@/store/slices/playerSlice";
 import styles from "./QueueDrawer.module.css";
@@ -60,12 +60,9 @@ export default function QueueDrawer({ open, onClose }: QueueDrawerProps) {
         <section className={styles.section}>
           <h4 className={styles.sectionTitle}>Đang phát</h4>
           <div className={styles.currentCard}>
-            <Image
-              src={
-                currentSong.coverUrl ||
-                currentSong.album?.coverUrl ||
-                "/images/default-cover.jpg"
-              }
+            <FallbackImage
+              src={currentSong.coverUrl || currentSong.album?.coverUrl}
+              fallbackSrc="/images/default-cover.svg"
               alt={currentSong.title}
               width={56}
               height={56}
@@ -104,12 +101,9 @@ export default function QueueDrawer({ open, onClose }: QueueDrawerProps) {
                   className={styles.queueItem}
                 >
                   <span className={styles.index}>{offset + 1}</span>
-                  <Image
-                    src={
-                      song.coverUrl ||
-                      song.album?.coverUrl ||
-                      "/images/default-cover.jpg"
-                    }
+                  <FallbackImage
+                    src={song.coverUrl || song.album?.coverUrl}
+                    fallbackSrc="/images/default-cover.svg"
                     alt={song.title}
                     width={48}
                     height={48}

@@ -18,6 +18,10 @@
   align-items: center;
 }
 
+.logoLink {
+  min-width: 0;
+}
+
 .logoContent {
   display: flex;
   align-items: center;
@@ -38,10 +42,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.menuSection {
-  padding: 0 var(--spacing-sm);
 }
 
 .menu {
@@ -165,8 +165,8 @@
 
 .playlistItem {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 10px;
   padding: 10px 12px;
   border-radius: 12px;
   color: var(--text-secondary);
@@ -183,13 +183,34 @@
   color: var(--text-primary);
 }
 
+.playlistCover {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.playlistInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .playlistName {
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .playlistMeta {
   font-size: 0.75rem;
   color: var(--text-subdued);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Scrollbar for playlists */

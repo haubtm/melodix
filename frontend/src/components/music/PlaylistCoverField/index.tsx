@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import Image from "next/image";
 import { App, Upload } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 import { PictureOutlined } from "@ant-design/icons";
+import FallbackImage from "@/components/common/FallbackImage";
 import styles from "./PlaylistCoverField.module.css";
 
 interface PlaylistCoverFieldProps {
@@ -70,7 +70,12 @@ export default function PlaylistCoverField({
         >
           {previewUrl ? (
             <div className={styles.preview}>
-              <Image src={previewUrl} alt="Playlist cover preview" fill unoptimized />
+              <FallbackImage
+                src={previewUrl}
+                fallbackSrc="/images/default-cover.svg"
+                alt="Playlist cover preview"
+                fill
+              />
               <div className={styles.overlay}>
                 <div className={styles.cta}>Chọn ảnh khác</div>
               </div>

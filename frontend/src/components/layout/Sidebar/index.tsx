@@ -20,15 +20,13 @@ import {
 } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 import {
-  CustomerServiceOutlined,
   HeartOutlined,
   HistoryOutlined,
-  HomeOutlined,
   PlusOutlined,
-  SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import { playlistsApi, uploadApi } from "@/api";
+import FallbackImage from "@/components/common/FallbackImage";
 import { Playlist } from "@/dtos";
 import { PlaylistCoverField } from "@/components/music";
 import { useAppSelector } from "@/store/hooks";
@@ -43,12 +41,6 @@ interface MenuItem {
   label: React.ReactNode;
   path: string;
 }
-
-const mainMenuItems: MenuItem[] = [
-  { key: "home", icon: <HomeOutlined />, label: "Trang chủ", path: "/" },
-  { key: "songs", icon: <CustomerServiceOutlined />, label: "Bài hát", path: "/songs" },
-  { key: "search", icon: <SearchOutlined />, label: "Tìm kiếm", path: "/search" },
-];
 
 const libraryMenuItems: MenuItem[] = [
   { key: "history", icon: <HistoryOutlined />, label: "Nghe gần đây", path: "/history" },
@@ -69,9 +61,7 @@ export default function Sidebar() {
   const [form] = Form.useForm();
 
   const getSelectedKeys = () => {
-    const item = [...mainMenuItems, ...libraryMenuItems].find(
-      (menuItem) => menuItem.path === pathname,
-    );
+    const item = libraryMenuItems.find((menuItem) => menuItem.path === pathname);
 
     if (item) {
       return [item.key];
@@ -170,7 +160,7 @@ export default function Sidebar() {
         collapsible
       >
         <div className={styles.logo}>
-          <Link href="/">
+          <Link href="/" className={styles.logoLink}>
             <div className={styles.logoContent}>
               <div className={styles.logoIcon}>
                 <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
@@ -181,19 +171,6 @@ export default function Sidebar() {
               {!sidebarCollapsed && <Text className={styles.logoText}>Melodix</Text>}
             </div>
           </Link>
-        </div>
-
-        <div className={styles.menuSection}>
-          <Menu
-            mode="inline"
-            selectedKeys={getSelectedKeys()}
-            className={styles.menu}
-            items={mainMenuItems.map((item) => ({
-              key: item.key,
-              icon: item.icon,
-              label: <Link href={item.path}>{item.label}</Link>,
-            }))}
-          />
         </div>
 
         <Divider className={styles.divider} />
@@ -243,8 +220,18 @@ export default function Sidebar() {
                             pathname === `/playlist/${playlist.id}` ? styles.playlistItemActive : ""
                           }`}
                         >
-                          <span className={styles.playlistName}>{playlist.name}</span>
-                          <span className={styles.playlistMeta}>{playlist.totalTracks} bài hát</span>
+                          <FallbackImage
+                            src={playlist.coverUrl || playlist.imageUrl}
+                            fallbackSrc="/images/default-cover.svg"
+                            alt={playlist.name}
+                            width={40}
+                            height={40}
+                            className={styles.playlistCover}
+                          />
+                          <span className={styles.playlistInfo}>
+                            <span className={styles.playlistName}>{playlist.name}</span>
+                            <span className={styles.playlistMeta}>{playlist.totalTracks} bài hát</span>
+                          </span>
                         </Link>
                       ))}
                     </div>

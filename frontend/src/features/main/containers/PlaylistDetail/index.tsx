@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { App, Button, Empty, Form, Input, Modal, Skeleton, Switch, Row, Col } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 import { DeleteOutlined, PauseCircleFilled, PlayCircleFilled } from "@ant-design/icons";
 import MainLayout from "@/components/layout/MainLayout";
+import FallbackImage from "@/components/common/FallbackImage";
 import { PlaylistCoverField } from "@/components/music";
 import SongCard from "@/components/music/SongCard";
 import { Playlist, PlaylistSong } from "@/dtos";
@@ -219,8 +219,9 @@ export function PlaylistDetailContainer({
             onClick={openEditModal}
             disabled={!isOwner}
           >
-            <Image
-              src={playlist.coverUrl || playlist.imageUrl || "/images/default-cover.jpg"}
+            <FallbackImage
+              src={playlist.coverUrl || playlist.imageUrl}
+              fallbackSrc="/images/default-cover.svg"
               alt={playlist.name}
               width={220}
               height={220}

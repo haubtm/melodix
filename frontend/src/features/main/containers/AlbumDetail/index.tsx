@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "antd";
 import { PauseCircleFilled, PlayCircleFilled } from "@ant-design/icons";
 import MainLayout from "@/components/layout/MainLayout";
+import FallbackImage from "@/components/common/FallbackImage";
 import AlbumCard from "@/components/music/AlbumCard";
 import SongCard from "@/components/music/SongCard";
 import { Album, Song } from "@/dtos";
@@ -63,8 +63,9 @@ export function AlbumDetailContainer({
     <MainLayout>
       <div className={styles.container}>
         <section className={styles.hero}>
-          <Image
-            src={album.coverUrl || "/images/default-cover.jpg"}
+          <FallbackImage
+            src={album.coverUrl}
+            fallbackSrc="/images/default-cover.svg"
             alt={album.title}
             width={220}
             height={220}
@@ -135,4 +136,3 @@ export function AlbumDetailContainer({
     </MainLayout>
   );
 }
-

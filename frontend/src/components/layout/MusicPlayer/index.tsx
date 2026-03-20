@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { App, Button, Slider, Tooltip } from "antd";
@@ -20,6 +19,7 @@ import {
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import { libraryApi, playbackApi } from "@/api";
+import FallbackImage from "@/components/common/FallbackImage";
 import { getStreamUrl } from "@/api/songs";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -232,12 +232,9 @@ export default function MusicPlayer() {
 
       <div className={styles.songInfo}>
         <div className={styles.coverWrapper}>
-          <Image
-            src={
-              currentSong.coverUrl ||
-              currentSong.album?.coverUrl ||
-              "/images/default-cover.jpg"
-            }
+          <FallbackImage
+            src={currentSong.coverUrl || currentSong.album?.coverUrl}
+            fallbackSrc="/images/default-cover.svg"
             alt={currentSong.title}
             width={56}
             height={56}

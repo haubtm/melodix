@@ -3,10 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Layout, Input, Avatar, Dropdown, Button, Space } from "antd";
+import { Layout, Avatar, Dropdown, Button, Space } from "antd";
 import type { MenuProps } from "antd";
 import {
-  SearchOutlined,
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
@@ -53,12 +52,6 @@ export default function Header() {
     },
   ];
 
-  const handleSearch = (value: string) => {
-    if (value.trim()) {
-      router.push(`/search?q=${encodeURIComponent(value)}`);
-    }
-  };
-
   return (
     <AntHeader className={styles.header}>
       {/* Navigation Arrows */}
@@ -74,19 +67,6 @@ export default function Header() {
           icon={<RightOutlined />}
           className={styles.navButton}
           onClick={() => router.forward()}
-        />
-      </div>
-
-      {/* Search Bar */}
-      <div className={styles.searchContainer}>
-        <Input
-          prefix={<SearchOutlined className={styles.searchIcon} />}
-          placeholder="Bạn muốn nghe gì?"
-          className={styles.searchInput}
-          size="large"
-          onPressEnter={(e) =>
-            handleSearch((e.target as HTMLInputElement).value)
-          }
         />
       </div>
 

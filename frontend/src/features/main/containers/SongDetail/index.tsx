@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Button, Tag, Typography } from "antd";
 import {
@@ -11,6 +10,7 @@ import {
   PlayCircleFilled,
 } from "@ant-design/icons";
 import MainLayout from "@/components/layout/MainLayout";
+import FallbackImage from "@/components/common/FallbackImage";
 import AddToPlaylistButton from "@/components/music/AddToPlaylistButton";
 import SongCard from "@/components/music/SongCard";
 import { Song, SongArtistReference, SongGenreReference } from "@/dtos";
@@ -64,7 +64,7 @@ export function SongDetailContainer({
     );
   };
 
-  const coverUrl = song.coverUrl || song.album?.coverUrl || "/images/default-cover.jpg";
+  const coverUrl = song.coverUrl || song.album?.coverUrl;
   const artistName = song.primaryArtist?.name || song.artist?.name || "Unknown Artist";
   const artistId = song.primaryArtist?.id || song.artistId;
   const featuredArtists = song.songArtists || [];
@@ -77,8 +77,9 @@ export function SongDetailContainer({
       <div className={styles.container}>
         <div className={styles.hero}>
           <div className={styles.coverWrapper}>
-            <Image
+            <FallbackImage
               src={coverUrl}
+              fallbackSrc="/images/default-cover.svg"
               alt={song.title}
               width={232}
               height={232}
