@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayCircleFilled, PauseCircleFilled } from "@ant-design/icons";
+import AddToPlaylistButton from "../AddToPlaylistButton";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { playSong, togglePlay } from "@/store/slices/playerSlice";
 import { Song } from "@/types";
@@ -97,6 +98,12 @@ export default function SongCard({
           {song.album.title}
         </Link>
       )}
+
+      <AddToPlaylistButton
+        songId={song.id}
+        songTitle={song.title}
+        className={styles.addButton}
+      />
 
       <div className={styles.duration}>{formatDuration(song.durationMs)}</div>
     </div>

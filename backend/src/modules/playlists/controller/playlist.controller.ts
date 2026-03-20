@@ -54,6 +54,24 @@ export class PlaylistController {
     return this.playlistService.findAll(Number(page), Number(limit), search);
   }
 
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user playlists' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return current user playlists',
+  })
+  findMyPlaylists(
+    @GetUser('id') userId: number,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 20,
+  ) {
+    return this.playlistService.findMyPlaylists(userId, Number(page), Number(limit));
+  }
+
   @Get(':id')
   @Public()
   @UseGuards(JwtAuthGuard) // Use guard but allow public access logic in service

@@ -11,6 +11,7 @@ import {
   PlayCircleFilled,
 } from "@ant-design/icons";
 import MainLayout from "@/components/layout/MainLayout";
+import AddToPlaylistButton from "@/components/music/AddToPlaylistButton";
 import SongCard from "@/components/music/SongCard";
 import { Song, SongArtistReference, SongGenreReference } from "@/dtos";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -155,6 +156,13 @@ export function SongDetailContainer({
             className={styles.playButton}
           />
 
+          <AddToPlaylistButton
+            songId={song.id}
+            songTitle={song.title}
+            buttonText="Thêm vào playlist"
+            type="default"
+          />
+
           <div className={styles.stats}>
             <span className={styles.playCount}>
               <CustomerServiceOutlined /> {formatPlayCount(song.playCount)} lượt nghe
@@ -214,4 +222,3 @@ export function SongDetailContainer({
     </MainLayout>
   );
 }
-

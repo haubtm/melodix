@@ -1,18 +1,32 @@
-﻿"use client";
+"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Layout, Menu, Typography, Divider, Button } from "antd";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  App,
+  Button,
+  Divider,
+  Form,
+  Input,
+  Layout,
+  Menu,
+  Modal,
+  Spin,
+  Switch,
+  Typography,
+} from "antd";
 import {
   CustomerServiceOutlined,
-  HomeOutlined,
-  SearchOutlined,
   HeartOutlined,
   HistoryOutlined,
+  HomeOutlined,
   PlusOutlined,
+  SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
+import { playlistsApi } from "@/api";
+import { Playlist } from "@/dtos";
 import { useAppSelector } from "@/store/hooks";
 import styles from "./Sidebar.module.css";
 
@@ -64,103 +78,258 @@ const libraryMenuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { message } = App.useApp();
   const { sidebarCollapsed } = useAppSelector((state) => state.ui);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [loadingPlaylists, setLoadingPlaylists] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [form] = Form.useForm();
 
   const getSelectedKeys = () => {
     const item = [...mainMenuItems, ...libraryMenuItems].find(
       (menuItem) => menuItem.path === pathname,
     );
-    return item ? [item.key] : [];
+
+    if (item) {
+      return [item.key];
+    }
+
+    const playlistMatch = playlists.find((playlist) => pathname === `/playlist/${playlist.id}`);
+    return playlistMatch ? [`playlist-${playlistMatch.id}`] : [];
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setPlaylists([]);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadPlaylists = async () => {
+      setLoadingPlaylists(true);
+
+      try {
+        const response = await playlistsApi.getMine(1, 50);
+        if (isMounted) {
+          setPlaylists(response.data || []);
+        }
+      } catch {
+        if (isMounted) {
+          setPlaylists([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingPlaylists(false);
+        }
+      }
+    };
+
+    void loadPlaylists();
+
+    const handlePlaylistChanged = () => {
+      void loadPlaylists();
+    };
+
+    window.addEventListener("melodix:playlist-changed", handlePlaylistChanged);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener("melodix:playlist-changed", handlePlaylistChanged);
+    };
+  }, [isAuthenticated]);
+
+  const handleCreatePlaylist = async () => {
+    try {
+      const values = await form.validateFields();
+      setCreating(true);
+
+      const playlist = await playlistsApi.create(values);
+      setCreateOpen(false);
+      form.resetFields();
+      message.success("Đã tạo playlist.");
+      window.dispatchEvent(
+        new CustomEvent("melodix:playlist-changed", {
+          detail: { playlistId: playlist.id },
+        }),
+      );
+      router.push(`/playlist/${playlist.id}`);
+    } catch (error) {
+      if (error && typeof error === "object" && "errorFields" in error) {
+        return;
+      }
+
+      message.error("Không thể tạo playlist lúc này.");
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
-    <Sider
-      width={280}
-      collapsedWidth={72}
-      collapsed={sidebarCollapsed}
-      className={styles.sidebar}
-      trigger={null}
-      collapsible
-    >
-      <div className={styles.logo}>
-        <Link href="/">
-          <div className={styles.logoContent}>
-            <div className={styles.logoIcon}>
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                width="32"
-                height="32"
-              >
-                <circle cx="12" cy="12" r="10" fill="#1DB954" />
-                <path d="M8 15V9l8 3-8 3z" fill="white" />
-              </svg>
+    <>
+      <Sider
+        width={280}
+        collapsedWidth={72}
+        collapsed={sidebarCollapsed}
+        className={styles.sidebar}
+        trigger={null}
+        collapsible
+      >
+        <div className={styles.logo}>
+          <Link href="/">
+            <div className={styles.logoContent}>
+              <div className={styles.logoIcon}>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                  <circle cx="12" cy="12" r="10" fill="#1DB954" />
+                  <path d="M8 15V9l8 3-8 3z" fill="white" />
+                </svg>
+              </div>
+              {!sidebarCollapsed && <Text className={styles.logoText}>Melodix</Text>}
             </div>
-            {!sidebarCollapsed && (
-              <Text className={styles.logoText}>Melodix</Text>
-            )}
-          </div>
-        </Link>
-      </div>
-
-      <div className={styles.menuSection}>
-        <Menu
-          mode="inline"
-          selectedKeys={getSelectedKeys()}
-          className={styles.menu}
-          items={mainMenuItems.map((item) => ({
-            key: item.key,
-            icon: item.icon,
-            label: <Link href={item.path}>{item.label}</Link>,
-          }))}
-        />
-      </div>
-
-      <Divider className={styles.divider} />
-
-      <div className={styles.librarySection}>
-        <div className={styles.libraryHeader}>
-          <UnorderedListOutlined className={styles.libraryIcon} />
-          {!sidebarCollapsed && (
-            <Text className={styles.libraryTitle}>Thư viện</Text>
-          )}
-          {!sidebarCollapsed && isAuthenticated && (
-            <Button
-              type="text"
-              icon={<PlusOutlined />}
-              className={styles.addButton}
-              title="Tạo playlist mới"
-            />
-          )}
+          </Link>
         </div>
 
-        {isAuthenticated ? (
+        <div className={styles.menuSection}>
           <Menu
             mode="inline"
             selectedKeys={getSelectedKeys()}
             className={styles.menu}
-            items={libraryMenuItems.map((item) => ({
+            items={mainMenuItems.map((item) => ({
               key: item.key,
               icon: item.icon,
               label: <Link href={item.path}>{item.label}</Link>,
             }))}
           />
-        ) : (
-          !sidebarCollapsed && (
-            <div className={styles.loginPrompt}>
-              <Text className={styles.promptText}>
-                Đăng nhập để tạo playlist và lưu bài hát yêu thích
-              </Text>
-              <Link href="/login">
-                <Button type="primary" className={styles.loginButton}>
-                  Đăng nhập
-                </Button>
-              </Link>
-            </div>
-          )
-        )}
-      </div>
-    </Sider>
+        </div>
+
+        <Divider className={styles.divider} />
+
+        <div className={styles.librarySection}>
+          <div className={styles.libraryHeader}>
+            <UnorderedListOutlined className={styles.libraryIcon} />
+            {!sidebarCollapsed && <Text className={styles.libraryTitle}>Thư viện</Text>}
+            {!sidebarCollapsed && isAuthenticated && (
+              <Button
+                type="text"
+                icon={<PlusOutlined />}
+                className={styles.addButton}
+                title="Tạo playlist mới"
+                onClick={() => setCreateOpen(true)}
+              />
+            )}
+          </div>
+
+          {isAuthenticated ? (
+            <>
+              <Menu
+                mode="inline"
+                selectedKeys={getSelectedKeys()}
+                className={styles.menu}
+                items={libraryMenuItems.map((item) => ({
+                  key: item.key,
+                  icon: item.icon,
+                  label: <Link href={item.path}>{item.label}</Link>,
+                }))}
+              />
+
+              {!sidebarCollapsed && (
+                <div className={styles.playlistSection}>
+                  <div className={styles.playlistHeader}>Playlist của bạn</div>
+                  {loadingPlaylists ? (
+                    <div className={styles.playlistLoading}>
+                      <Spin size="small" />
+                    </div>
+                  ) : playlists.length ? (
+                    <div className={styles.playlistList}>
+                      {playlists.map((playlist) => (
+                        <Link
+                          key={playlist.id}
+                          href={`/playlist/${playlist.id}`}
+                          className={`${styles.playlistItem} ${
+                            pathname === `/playlist/${playlist.id}` ? styles.playlistItemActive : ""
+                          }`}
+                        >
+                          <span className={styles.playlistName}>{playlist.name}</span>
+                          <span className={styles.playlistMeta}>
+                            {playlist.totalTracks} bài hát
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={styles.playlistEmpty}>Chưa có playlist nào.</div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            !sidebarCollapsed && (
+              <div className={styles.loginPrompt}>
+                <Text className={styles.promptText}>
+                  Đăng nhập để tạo playlist và lưu bài hát yêu thích
+                </Text>
+                <Link href="/login">
+                  <Button type="primary" className={styles.loginButton}>
+                    Đăng nhập
+                  </Button>
+                </Link>
+              </div>
+            )
+          )}
+        </div>
+      </Sider>
+
+      <Modal
+        title="Tạo playlist"
+        open={createOpen}
+        onCancel={() => {
+          setCreateOpen(false);
+          form.resetFields();
+        }}
+        onOk={() => void handleCreatePlaylist()}
+        okText="Tạo"
+        confirmLoading={creating}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            isPublic: false,
+          }}
+        >
+          <Form.Item
+            name="name"
+            label="Tên playlist"
+            rules={[{ required: true, message: "Nhập tên playlist" }]}
+          >
+            <Input placeholder="Ví dụ: Chill đêm muộn" />
+          </Form.Item>
+
+          <Form.Item name="description" label="Mô tả">
+            <Input.TextArea rows={3} placeholder="Mô tả ngắn về playlist" />
+          </Form.Item>
+
+          <Form.Item
+            name="imageUrl"
+            label="Ảnh bìa"
+            extra="Hiện tại dùng URL ảnh, chưa nối upload riêng cho playlist."
+          >
+            <Input placeholder="https://..." />
+          </Form.Item>
+
+          <Form.Item
+            name="isPublic"
+            label="Công khai"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }
+

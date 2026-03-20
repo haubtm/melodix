@@ -56,6 +56,35 @@ export class PlaylistService {
     );
   }
 
+  async findMyPlaylists(
+    userId: number,
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<PaginatedResponseDto<PlaylistResponseDto>> {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.PlaylistWhereInput = {
+      userId,
+    };
+
+    const [playlists, total] = await Promise.all([
+      this.playlistRepository.findAll({
+        skip,
+        take: limit,
+        where,
+        orderBy: { updatedAt: 'desc' },
+      }),
+      this.playlistRepository.count(where),
+    ]);
+
+    return new PaginatedResponseDto(
+      playlists.map((playlist) => new PlaylistResponseDto(playlist)),
+      total,
+      page,
+      limit,
+    );
+  }
+
   async findOne(id: number, currentUserId?: number): Promise<any> {
     const playlist = await this.playlistRepository.findById(id);
     if (!playlist) {
