@@ -1,10 +1,6 @@
-﻿import { ProtectedPageShell } from "@/features";
+import { LikedSongsPageContainer } from "@/features/main/containers/LikedSongs";
 
 export default function LikedSongsPage() {
-  return (
-    <ProtectedPageShell
-      title="Bài hát yêu thích"
-      description="Đây là danh sách bài hát đã thích của bạn. Route này hiện đã được bảo vệ bởi auth guard và sẵn sàng để nối API thật."
-    />
-  );
+  return <LikedSongsPageContainer />;
 }
+

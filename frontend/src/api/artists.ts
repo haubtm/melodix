@@ -16,4 +16,9 @@ export const artistsApi = {
     const response = await axiosService.post("/artists/list", params);
     return response.data;
   },
+
+  getById: async (id: number): Promise<Artist> => {
+    const response = await axiosService.get(`/artists/${id}`);
+    return response.data?.data || response.data;
+  },
 };

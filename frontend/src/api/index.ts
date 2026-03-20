@@ -2,6 +2,7 @@
 export { artistsApi } from "./artists";
 export { authApi } from "./auth";
 export { genresApi } from "./genres";
+export { libraryApi } from "./library";
 export { playbackApi } from "./playback";
 export { playlistsApi } from "./playlists";
 export { songsApi } from "./songs";

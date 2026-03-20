@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, Slider, Tooltip } from "antd";
+import { useRouter } from "next/navigation";
+import { App, Button, Slider, Tooltip } from "antd";
 import {
   ExpandOutlined,
   HeartFilled,
@@ -18,7 +19,7 @@ import {
   SwapOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { playbackApi } from "@/api";
+import { libraryApi, playbackApi } from "@/api";
 import { getStreamUrl } from "@/api/songs";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -41,10 +42,15 @@ function formatTime(seconds: number): string {
 }
 
 export default function MusicPlayer() {
+  const router = useRouter();
+  const { message } = App.useApp();
   const dispatch = useAppDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
   const recordedSongIdRef = useRef<number | null>(null);
-  const [liked, setLiked] = useState(false);
+  const [likedState, setLikedState] = useState<{ songId: number | null; liked: boolean }>({
+    songId: null,
+    liked: false,
+  });
   const [queueOpen, setQueueOpen] = useState(false);
 
   const { currentSong, isPlaying, volume, progress, shuffle, repeat, isMuted } =
@@ -54,6 +60,33 @@ export default function MusicPlayer() {
   useEffect(() => {
     recordedSongIdRef.current = null;
   }, [currentSong?.id]);
+
+  useEffect(() => {
+    if (!currentSong || !isAuthenticated) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadLikeStatus = async () => {
+      try {
+        const result = await libraryApi.getLikedSongStatus(currentSong.id);
+        if (isMounted) {
+          setLikedState({ songId: currentSong.id, liked: result.liked });
+        }
+      } catch {
+        if (isMounted) {
+          setLikedState({ songId: currentSong.id, liked: false });
+        }
+      }
+    };
+
+    void loadLikeStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentSong, isAuthenticated]);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -71,22 +104,53 @@ export default function MusicPlayer() {
     audioRef.current.volume = isMuted ? 0 : volume / 100;
   }, [isMuted, volume]);
 
-  const recordPlaySafely = async (songId: number, durationMs: number) => {
+  const emitWindowEvent = (name: string, detail?: unknown) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(name, { detail }));
+    }
+  };
+
+  const recordPlaySafely = useCallback(async (songId: number, durationMs: number) => {
     try {
       await playbackApi.recordPlay({
         songId,
         durationMs,
       });
 
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("melodix:play-recorded", {
-            detail: { songId, durationMs },
-          }),
-        );
-      }
+      emitWindowEvent("melodix:play-recorded", { songId, durationMs });
     } catch {
-      // Do not interrupt playback if tracking fails or backend is not ready.
+      // Ignore playback tracking errors to avoid interrupting audio.
+    }
+  }, []);
+
+  const handleToggleLike = async () => {
+    if (!currentSong) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    const currentLiked = likedState.songId === currentSong.id ? likedState.liked : false;
+    const nextLiked = !currentLiked;
+    setLikedState({ songId: currentSong.id, liked: nextLiked });
+
+    try {
+      if (nextLiked) {
+        await libraryApi.likeSong(currentSong.id);
+      } else {
+        await libraryApi.unlikeSong(currentSong.id);
+      }
+
+      emitWindowEvent("melodix:library-changed", {
+        songId: currentSong.id,
+        liked: nextLiked,
+      });
+    } catch {
+      setLikedState({ songId: currentSong.id, liked: currentLiked });
+      message.error("Không thể cập nhật thư viện lúc này.");
     }
   };
 
@@ -136,7 +200,7 @@ export default function MusicPlayer() {
 
     recordedSongIdRef.current = currentSong.id;
     void recordPlaySafely(currentSong.id, Math.floor(progress * 1000));
-  }, [currentSong, isAuthenticated, progress]);
+  }, [currentSong, isAuthenticated, progress, recordPlaySafely]);
 
   if (!currentSong) {
     return (
@@ -149,6 +213,7 @@ export default function MusicPlayer() {
   }
 
   const durationSeconds = currentSong.durationMs / 1000;
+  const liked = likedState.songId === currentSong.id ? likedState.liked : false;
   const artistName =
     currentSong.primaryArtist?.name ||
     currentSong.artist?.name ||
@@ -189,14 +254,8 @@ export default function MusicPlayer() {
         </div>
         <Button
           type="text"
-          icon={
-            liked ? (
-              <HeartFilled className={styles.likedIcon} />
-            ) : (
-              <HeartOutlined />
-            )
-          }
-          onClick={() => setLiked((prev) => !prev)}
+          icon={liked ? <HeartFilled className={styles.likedIcon} /> : <HeartOutlined />}
+          onClick={() => void handleToggleLike()}
           className={styles.likeButton}
         />
       </div>

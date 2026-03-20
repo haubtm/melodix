@@ -1,0 +1,120 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  align-items: end;
+  padding: 28px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(29, 185, 84, 0.2) 0%, rgba(10, 10, 10, 0.92) 78%),
+    #101010;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.avatar {
+  width: 220px;
+  height: 220px;
+  border-radius: 24px;
+  object-fit: cover;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 0.96;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bio {
+  margin: 0;
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.albums {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.songs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 20px 18px;
+  }
+
+  .avatar {
+    width: 180px;
+    height: 180px;
+  }
+}
+
