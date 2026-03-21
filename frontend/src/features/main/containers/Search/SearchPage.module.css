@@ -1,0 +1,251 @@
+.container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding-bottom: var(--spacing-2xl);
+}
+
+.hero {
+  margin-bottom: 32px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--text-subdued);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 12px 0 0;
+  max-width: 720px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.chip {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.chip:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.chipActive {
+  background: #fff;
+  color: #111;
+}
+
+.resultsHero {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.35fr);
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.sectionCaption {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.topResultCard {
+  position: relative;
+  display: block;
+  min-height: 100%;
+  padding: 28px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(29, 185, 84, 0.28), transparent 44%),
+    rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.topResultCard:hover {
+  background:
+    radial-gradient(circle at top left, rgba(29, 185, 84, 0.34), transparent 44%),
+    rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.topResultImage {
+  width: 112px;
+  height: 112px;
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
+}
+
+.topResultArtist {
+  border-radius: 50%;
+}
+
+.topResultTitle {
+  margin: 22px 0 8px;
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.topResultMeta {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.topResultPlay {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 58px;
+  height: 58px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #000;
+  font-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
+}
+
+.songsSection {
+  min-width: 0;
+}
+
+.songsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.browseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.browseCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(29, 185, 84, 0.2), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.browseImage {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.browseArtist {
+  border-radius: 50%;
+}
+
+.browseText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.browseTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.browseMeta {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.empty {
+  padding: 34px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .resultsHero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .grid,
+  .browseGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .topResultCard {
+    padding: 22px;
+  }
+
+  .topResultTitle {
+    font-size: 1.8rem;
+  }
+}

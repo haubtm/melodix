@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Layout, Avatar, Dropdown, Button, Space } from "antd";
@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
+import SearchBox from "./SearchBox";
 import styles from "./Header.module.css";
 
 const { Header: AntHeader } = Layout;
@@ -54,7 +55,6 @@ export default function Header() {
 
   return (
     <AntHeader className={styles.header}>
-      {/* Navigation Arrows */}
       <div className={styles.navigation}>
         <Button
           type="text"
@@ -70,7 +70,10 @@ export default function Header() {
         />
       </div>
 
-      {/* User Section */}
+      <Suspense fallback={<div style={{ flex: 1, maxWidth: 520 }} />}>
+        <SearchBox />
+      </Suspense>
+
       <div className={styles.userSection}>
         {isLoading ? (
           <div className={styles.authPlaceholder} />

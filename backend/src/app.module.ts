@@ -14,6 +14,7 @@ import { GenresModule } from './modules/genres/genres.module';
 import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { PlaybackModule } from './modules/playback/playback.module';
 import { LibraryModule } from './modules/library/library.module';
+import { SearchModule } from './modules/search/search.module';
 import { SongsModule } from './modules/songs/songs.module';
 import { appConfig, jwtConfig, oauthConfig } from './config';
 
@@ -45,12 +46,12 @@ import { appConfig, jwtConfig, oauthConfig } from './config';
     SongsModule,
     PlaybackModule,
     LibraryModule,
+    SearchModule,
     GenresModule,
     PlaylistsModule,
     // SyncModule,
     // SubscriptionsModule,
     // AdsModule,
-    // SearchModule,
     UploadModule,
   ],
   controllers: [AppController],
