@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class SearchQueryDto {
@@ -42,7 +42,4 @@ export class SearchQueryDto {
   @Min(1)
   @Max(20)
   playlistsLimit?: number = 6;
-
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  normalizedQuery?: string;
 }
