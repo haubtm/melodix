@@ -400,10 +400,6 @@ export function SearchPageContainer({
             <section className={styles.hero}>
               <p className={styles.eyebrow}>Kết quả tìm kiếm</p>
               <h1 className={styles.title}>“{query}”</h1>
-              <p className={styles.subtitle}>
-                Kết quả được gom theo bài hát, nghệ sĩ, album và playlist, giống
-                flow tìm kiếm kiểu Spotify.
-              </p>
             </section>
 
             <div className={styles.chips}>

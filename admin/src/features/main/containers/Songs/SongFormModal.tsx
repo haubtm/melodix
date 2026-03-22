@@ -81,6 +81,32 @@ function createInitialFileList(
   ];
 }
 
+function readAudioDurationMs(source: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const audio = document.createElement("audio");
+
+    const cleanup = () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("error", handleError);
+    };
+
+    const handleLoadedMetadata = () => {
+      cleanup();
+      resolve(Math.round(audio.duration * 1000));
+    };
+
+    const handleError = () => {
+      cleanup();
+      reject(new Error("Unable to read audio duration"));
+    };
+
+    audio.preload = "metadata";
+    audio.src = source;
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("error", handleError);
+  });
+}
+
 function UploadCard({
   title,
   description,
@@ -244,8 +270,27 @@ export function SongFormModal({
 
     if (!currentFile) {
       setAudioUrl(undefined);
+      if (!initialValues?.audioUrl) {
+        form.setFieldValue("durationMs", undefined);
+      }
     } else if (currentFile.url) {
       setAudioUrl(currentFile.url);
+    }
+
+    const originFile = currentFile?.originFileObj as File | undefined;
+    if (originFile) {
+      const objectUrl = URL.createObjectURL(originFile);
+
+      void readAudioDurationMs(objectUrl)
+        .then((durationMs) => {
+          form.setFieldValue("durationMs", durationMs);
+        })
+        .catch(() => {
+          message.error("Không thể đọc thời lượng từ file audio");
+        })
+        .finally(() => {
+          URL.revokeObjectURL(objectUrl);
+        });
     }
   };
 
@@ -326,9 +371,20 @@ export function SongFormModal({
         <Form.Item
           name="durationMs"
           label="Thời lượng (ms)"
-          rules={[{ required: true, message: "Vui lòng nhập thời lượng" }]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng chọn file audio để tự động tính thời lượng",
+            },
+          ]}
         >
-          <InputNumber style={{ width: "100%" }} min={0} />
+          <InputNumber
+            style={{ width: "100%" }}
+            min={0}
+            readOnly
+            controls={false}
+            placeholder="Tự động tính từ file audio"
+          />
         </Form.Item>
       </Col>
 

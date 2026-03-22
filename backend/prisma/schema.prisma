@@ -194,7 +194,7 @@ model Artist {
   userId      Int?     @unique @map("user_id")
   name        String
   slug        String   @unique
-  bio         String?
+  bio         String?  @db.Text
   avatarUrl   String?  @map("avatar_url")
   coverUrl    String?  @map("cover_url")
   verified    Boolean  @default(false)
