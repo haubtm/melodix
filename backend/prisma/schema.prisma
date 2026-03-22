@@ -217,7 +217,7 @@ model Album {
   artistId    Int       @map("artist_id")
   title       String
   slug        String    @unique
-  description String?
+  description String?   @db.Text
   coverUrl    String?   @map("cover_url")
   releaseDate DateTime? @map("release_date") @db.Date
   albumType   AlbumType @default(album) @map("album_type")

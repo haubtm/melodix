@@ -1,6 +1,10 @@
-"use client";
+﻿"use client";
 
-import { CustomerServiceOutlined, SafetyCertificateFilled } from "@ant-design/icons";
+import { useMemo, useState } from "react";
+import {
+  CustomerServiceOutlined,
+  SafetyCertificateFilled,
+} from "@ant-design/icons";
 import MainLayout from "@/components/layout/MainLayout";
 import FallbackImage from "@/components/common/FallbackImage";
 import AlbumCard from "@/components/music/AlbumCard";
@@ -25,36 +29,67 @@ export function ArtistDetailContainer({
   songs,
   albums,
 }: ArtistDetailContainerProps) {
+  const [bioExpanded, setBioExpanded] = useState(false);
+
+  const shouldCollapseBio = (artist.bio?.length || 0) > 320;
+  const bioContent = useMemo(() => {
+    if (!artist.bio) {
+      return "";
+    }
+
+    if (bioExpanded || !shouldCollapseBio) {
+      return artist.bio;
+    }
+
+    return `${artist.bio.slice(0, 320).trim()}...`;
+  }, [artist.bio, bioExpanded, shouldCollapseBio]);
+
   return (
     <MainLayout>
       <div className={styles.container}>
         <section className={styles.hero}>
-          <FallbackImage
-            src={artist.avatarUrl}
-            fallbackSrc="/images/default-artist.svg"
-            alt={artist.name}
-            width={220}
-            height={220}
-            className={styles.avatar}
-          />
+          <div className={styles.heroTop}>
+            <FallbackImage
+              src={artist.avatarUrl}
+              fallbackSrc="/images/default-artist.svg"
+              alt={artist.name}
+              width={220}
+              height={220}
+              className={styles.avatar}
+            />
 
-          <div className={styles.heroInfo}>
-            <p className={styles.eyebrow}>Nghệ sĩ</p>
-            <h1 className={styles.title}>{artist.name}</h1>
-            <div className={styles.meta}>
-              <span className={styles.metaItem}>
-                <CustomerServiceOutlined /> {formatListeners(artist.monthlyListeners)} người nghe
-              </span>
-              {artist.verified && (
+            <div className={styles.heroInfo}>
+              <p className={styles.eyebrow}>Nghệ sĩ</p>
+              <h1 className={styles.title}>{artist.name}</h1>
+              <div className={styles.meta}>
                 <span className={styles.metaItem}>
-                  <SafetyCertificateFilled /> Đã xác minh
+                  <CustomerServiceOutlined /> {formatListeners(artist.monthlyListeners)} người nghe
                 </span>
-              )}
-              <span className={styles.metaItem}>{songs.length} bài hát</span>
-              <span className={styles.metaItem}>{albums.length} album</span>
+                {artist.verified && (
+                  <span className={styles.metaItem}>
+                    <SafetyCertificateFilled /> Đã xác minh
+                  </span>
+                )}
+                <span className={styles.metaItem}>{songs.length} bài hát</span>
+                <span className={styles.metaItem}>{albums.length} album</span>
+              </div>
             </div>
-            {artist.bio && <p className={styles.bio}>{artist.bio}</p>}
           </div>
+
+          {artist.bio && (
+            <div className={styles.bioSection}>
+              <p className={styles.bio}>{bioContent}</p>
+              {shouldCollapseBio && (
+                <button
+                  type="button"
+                  className={styles.expandButton}
+                  onClick={() => setBioExpanded((current) => !current)}
+                >
+                  {bioExpanded ? "Thu gọn" : "Xem thêm"}
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         {songs.length > 0 && (
