@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Button } from "antd";
@@ -36,17 +36,20 @@ export function AlbumDetailContainer({
 }: AlbumDetailContainerProps) {
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.player);
+  const orderedSongs = songs;
 
-  const firstSong = songs[0];
+  const firstSong = orderedSongs[0];
   const isCurrentAlbumPlaying =
-    Boolean(firstSong) && songs.some((song) => song.id === currentSong?.id) && isPlaying;
+    Boolean(firstSong) &&
+    orderedSongs.some((song) => song.id === currentSong?.id) &&
+    isPlaying;
 
   const handlePlay = () => {
     if (!firstSong) {
       return;
     }
 
-    if (songs.some((song) => song.id === currentSong?.id)) {
+    if (orderedSongs.some((song) => song.id === currentSong?.id)) {
       dispatch(togglePlay());
       return;
     }
@@ -54,7 +57,7 @@ export function AlbumDetailContainer({
     dispatch(
       playSong({
         song: firstSong,
-        playlist: songs,
+        playlist: orderedSongs,
       }),
     );
   };
@@ -81,7 +84,7 @@ export function AlbumDetailContainer({
               </Link>
             )}
             <div className={styles.meta}>
-              <span className={styles.metaItem}>{songs.length} bài hát</span>
+              <span className={styles.metaItem}>{orderedSongs.length} bài hát</span>
               <span className={styles.metaItem}>{formatDuration(album.durationMs)}</span>
               {album.releaseDate && (
                 <span className={styles.metaItem}>
@@ -105,15 +108,15 @@ export function AlbumDetailContainer({
           </div>
         </section>
 
-        {songs.length > 0 && (
+        {orderedSongs.length > 0 && (
           <section className={styles.songs}>
             <h2 className={styles.sectionTitle}>Danh sách bài hát</h2>
             <div className={styles.songList}>
-              {songs.map((song, index) => (
+              {orderedSongs.map((song, index) => (
                 <SongCard
                   key={song.id}
                   song={song}
-                  playlist={songs}
+                  playlist={orderedSongs}
                   index={index}
                   showAlbum={false}
                 />

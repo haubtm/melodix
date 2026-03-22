@@ -32,6 +32,10 @@ export class SongRepository {
     status?: SongStatus,
   ): Promise<PaginatedResponseDto<any>> {
     const skip = (page - 1) * limit;
+    const orderBy: Prisma.SongOrderByWithRelationInput[] = albumId
+      ? [{ trackNumber: 'asc' }, { createdAt: 'asc' }]
+      : [{ createdAt: 'desc' }];
+
     const where: Prisma.SongWhereInput = {
       ...(search && {
         OR: [{ title: { contains: search } }],
@@ -47,7 +51,7 @@ export class SongRepository {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         include: {
           primaryArtist: true,
           album: true,
