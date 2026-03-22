@@ -28,6 +28,13 @@ export class CreateSongDto {
   @IsInt()
   albumId?: number;
 
+  @ApiPropertyOptional({ example: 1, description: 'Track number inside album' })
+  @IsOptional()
+  @IsNumber()
+  @IsInt()
+  @Min(1)
+  trackNumber?: number;
+
   @ApiProperty({ example: 233000, description: 'Duration in milliseconds' })
   @IsNumber()
   @IsInt()

@@ -8,20 +8,40 @@ export class AlbumRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.AlbumCreateInput): Promise<AlbumEntity> {
-    return this.prisma.album.create({ data, include: { songs: true } });
+    return this.prisma.album.create({
+      data,
+      include: {
+        songs: {
+          orderBy: [{ trackNumber: 'asc' }, { createdAt: 'asc' }],
+          include: { primaryArtist: true },
+        },
+      },
+    });
   }
 
   async findById(id: number): Promise<AlbumEntity | null> {
     return this.prisma.album.findUnique({
       where: { id },
-      include: { artist: true, songs: true },
+      include: {
+        artist: true,
+        songs: {
+          orderBy: [{ trackNumber: 'asc' }, { createdAt: 'asc' }],
+          include: { primaryArtist: true },
+        },
+      },
     });
   }
 
   async findBySlug(slug: string): Promise<AlbumEntity | null> {
     return this.prisma.album.findUnique({
       where: { slug },
-      include: { artist: true, songs: true },
+      include: {
+        artist: true,
+        songs: {
+          orderBy: [{ trackNumber: 'asc' }, { createdAt: 'asc' }],
+          include: { primaryArtist: true },
+        },
+      },
     });
   }
 
@@ -37,7 +57,13 @@ export class AlbumRepository {
       take,
       where,
       orderBy,
-      include: { artist: true, songs: true },
+      include: {
+        artist: true,
+        songs: {
+          orderBy: [{ trackNumber: 'asc' }, { createdAt: 'asc' }],
+          include: { primaryArtist: true },
+        },
+      },
     });
   }
 
@@ -49,7 +75,13 @@ export class AlbumRepository {
     return this.prisma.album.update({
       where: { id },
       data,
-      include: { artist: true, songs: true },
+      include: {
+        artist: true,
+        songs: {
+          orderBy: [{ trackNumber: 'asc' }, { createdAt: 'asc' }],
+          include: { primaryArtist: true },
+        },
+      },
     });
   }
 

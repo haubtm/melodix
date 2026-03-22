@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flex, Table, useTableColumns } from "@/lib";
 import { albumApi } from "@/api/albums";
+import { songApi } from "@/api/songs";
 import {
   AlbumType,
   IAlbumCreateRequest,
@@ -180,10 +181,22 @@ export function AlbumListContainer() {
 
   const handleModalSubmit = async (
     values: IAlbumCreateRequest | IAlbumUpdateRequest,
+    options?: {
+      orderedSongs?: Array<{ id: number; trackNumber?: number | null }>;
+    },
   ) => {
     try {
       if (editingAlbum) {
         await updateAlbum({ id: editingAlbum.id, data: values });
+        if (options?.orderedSongs?.length) {
+          await Promise.all(
+            options.orderedSongs.map((song) =>
+              songApi.update(song.id, {
+                trackNumber: song.trackNumber ?? undefined,
+              }),
+            ),
+          );
+        }
         message.success("Cập nhật album thành công");
       } else {
         await createAlbum(values as IAlbumCreateRequest);

@@ -27,6 +27,9 @@ export class SongResponseDto {
   @ApiProperty()
   durationMs: number;
 
+  @ApiPropertyOptional()
+  trackNumber?: number | null;
+
   @ApiProperty()
   audioUrl: string;
 

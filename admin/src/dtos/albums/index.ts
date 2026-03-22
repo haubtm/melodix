@@ -1,6 +1,7 @@
 import { IResponse, IPaginatedResponse } from "@/api/axiosService";
 import { PaginatedRequest } from "@/dtos/common";
 import { IArtistSelectItem } from "@/dtos/artists";
+import type { Song } from "@/dtos/songs";
 
 export type AlbumType = "album" | "single" | "ep" | "compilation";
 
@@ -19,6 +20,7 @@ export interface IAlbumResponseData {
   createdAt: string;
   updatedAt: string;
   artist?: IArtistSelectItem;
+  songs?: Song[];
 }
 
 export type Album = IAlbumResponseData;

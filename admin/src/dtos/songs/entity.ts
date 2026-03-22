@@ -26,6 +26,7 @@ export interface Song {
   title: string;
   slug: string;
   durationMs: number;
+  trackNumber?: number | null;
   audioUrl: string;
   coverUrl?: string | null;
   lyricsUrl?: string | null;
