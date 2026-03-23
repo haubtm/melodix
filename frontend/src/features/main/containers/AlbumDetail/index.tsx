@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "antd";
 import { PauseCircleFilled, PlayCircleFilled } from "@ant-design/icons";
@@ -34,9 +35,23 @@ export function AlbumDetailContainer({
   songs,
   moreAlbums,
 }: AlbumDetailContainerProps) {
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.player);
   const orderedSongs = songs;
+  const shouldCollapseDescription = (album.description?.length || 0) > 320;
+
+  const descriptionContent = useMemo(() => {
+    if (!album.description) {
+      return "";
+    }
+
+    if (descriptionExpanded || !shouldCollapseDescription) {
+      return album.description;
+    }
+
+    return `${album.description.slice(0, 320).trim()}...`;
+  }, [album.description, descriptionExpanded, shouldCollapseDescription]);
 
   const firstSong = orderedSongs[0];
   const isCurrentAlbumPlaying =
@@ -66,46 +81,62 @@ export function AlbumDetailContainer({
     <MainLayout>
       <div className={styles.container}>
         <section className={styles.hero}>
-          <FallbackImage
-            src={album.coverUrl}
-            fallbackSrc="/images/default-cover.svg"
-            alt={album.title}
-            width={220}
-            height={220}
-            className={styles.cover}
-          />
+          <div className={styles.heroTop}>
+            <FallbackImage
+              src={album.coverUrl}
+              fallbackSrc="/images/default-cover.svg"
+              alt={album.title}
+              width={220}
+              height={220}
+              className={styles.cover}
+            />
 
-          <div className={styles.heroInfo}>
-            <p className={styles.eyebrow}>Album</p>
-            <h1 className={styles.title}>{album.title}</h1>
-            {album.artist && (
-              <Link href={`/artist/${album.artist.id}`} className={styles.artistLink}>
-                {album.artist.name}
-              </Link>
-            )}
-            <div className={styles.meta}>
-              <span className={styles.metaItem}>{orderedSongs.length} bài hát</span>
-              <span className={styles.metaItem}>{formatDuration(album.durationMs)}</span>
-              {album.releaseDate && (
-                <span className={styles.metaItem}>
-                  {new Date(album.releaseDate).getFullYear()}
-                </span>
+            <div className={styles.heroInfo}>
+              <p className={styles.eyebrow}>Album</p>
+              <h1 className={styles.title}>{album.title}</h1>
+              {album.artist && (
+                <Link href={`/artist/${album.artist.id}`} className={styles.artistLink}>
+                  {album.artist.name}
+                </Link>
               )}
-              <span className={styles.metaItem}>{album.albumType.toUpperCase()}</span>
-            </div>
-            {album.description && <p className={styles.description}>{album.description}</p>}
-            <div className={styles.actions}>
-              <Button
-                type="primary"
-                className={styles.playButton}
-                icon={isCurrentAlbumPlaying ? <PauseCircleFilled /> : <PlayCircleFilled />}
-                onClick={handlePlay}
-                disabled={!firstSong}
-              >
-                {isCurrentAlbumPlaying ? "Tạm dừng" : "Phát album"}
-              </Button>
+              <div className={styles.meta}>
+                <span className={styles.metaItem}>{orderedSongs.length} bài hát</span>
+                <span className={styles.metaItem}>{formatDuration(album.durationMs)}</span>
+                {album.releaseDate && (
+                  <span className={styles.metaItem}>
+                    {new Date(album.releaseDate).getFullYear()}
+                  </span>
+                )}
+                <span className={styles.metaItem}>{album.albumType.toUpperCase()}</span>
+              </div>
+              <div className={styles.actions}>
+                <Button
+                  type="primary"
+                  className={styles.playButton}
+                  icon={isCurrentAlbumPlaying ? <PauseCircleFilled /> : <PlayCircleFilled />}
+                  onClick={handlePlay}
+                  disabled={!firstSong}
+                >
+                  {isCurrentAlbumPlaying ? "Tạm dừng" : "Phát album"}
+                </Button>
+              </div>
             </div>
           </div>
+
+          {album.description && (
+            <div className={styles.descriptionSection}>
+              <p className={styles.description}>{descriptionContent}</p>
+              {shouldCollapseDescription && (
+                <button
+                  type="button"
+                  className={styles.expandButton}
+                  onClick={() => setDescriptionExpanded((current) => !current)}
+                >
+                  {descriptionExpanded ? "Thu gọn" : "Xem thêm"}
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         {orderedSongs.length > 0 && (
