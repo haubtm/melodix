@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
@@ -47,6 +47,14 @@ export class ArtistResponseDto {
   monthlyListeners: number;
 
   @Expose()
+  @ApiProperty({ example: 24, description: 'Số bài hát' })
+  songCount: number;
+
+  @Expose()
+  @ApiProperty({ example: 3, description: 'Số album' })
+  albumCount: number;
+
+  @Expose()
   @ApiProperty({ example: '2026-01-01T00:00:00Z', description: 'Ngày tạo' })
   createdAt: Date;
 
@@ -54,9 +62,13 @@ export class ArtistResponseDto {
   @ApiProperty({ example: '2026-01-01T00:00:00Z', description: 'Ngày cập nhật' })
   updatedAt: Date;
 
-  constructor(partial: Partial<ArtistResponseDto>) {
+  constructor(
+    partial: Partial<ArtistResponseDto> & { _count?: { songs?: number; albums?: number } },
+  ) {
     Object.assign(this, partial);
     this.avatarUrl = buildMediaUrl(this.avatarUrl);
     this.coverUrl = buildMediaUrl(this.coverUrl);
+    this.songCount = partial.songCount ?? partial._count?.songs ?? 0;
+    this.albumCount = partial.albumCount ?? partial._count?.albums ?? 0;
   }
 }

@@ -1,4 +1,4 @@
-import { Artist } from '@prisma/client';
+﻿import { Artist } from '@prisma/client';
 
 export class ArtistEntity implements Artist {
   id: number;
@@ -12,6 +12,10 @@ export class ArtistEntity implements Artist {
   monthlyListeners: number;
   createdAt: Date;
   updatedAt: Date;
+  _count?: {
+    songs: number;
+    albums: number;
+  };
 
   constructor(partial: Partial<ArtistEntity>) {
     Object.assign(this, partial);

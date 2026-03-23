@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ArtistEntity } from '../entity';
 import { Prisma } from '@prisma/client';
@@ -8,19 +8,59 @@ export class ArtistRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.ArtistCreateInput): Promise<ArtistEntity> {
-    return this.prisma.artist.create({ data });
+    return this.prisma.artist.create({
+      data,
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
+    });
   }
 
   async findById(id: number): Promise<ArtistEntity | null> {
-    return this.prisma.artist.findUnique({ where: { id } });
+    return this.prisma.artist.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
+    });
   }
 
   async findBySlug(slug: string): Promise<ArtistEntity | null> {
-    return this.prisma.artist.findUnique({ where: { slug } });
+    return this.prisma.artist.findUnique({
+      where: { slug },
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
+    });
   }
 
   async findByUserId(userId: number): Promise<ArtistEntity | null> {
-    return this.prisma.artist.findUnique({ where: { userId } });
+    return this.prisma.artist.findUnique({
+      where: { userId },
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
+    });
   }
 
   async findAll(params: {
@@ -35,6 +75,14 @@ export class ArtistRepository {
       take,
       where,
       orderBy,
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
     });
   }
 
@@ -73,10 +121,28 @@ export class ArtistRepository {
     return this.prisma.artist.update({
       where: { id },
       data,
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
     });
   }
 
   async delete(id: number): Promise<ArtistEntity> {
-    return this.prisma.artist.delete({ where: { id } });
+    return this.prisma.artist.delete({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            songs: true,
+            albums: true,
+          },
+        },
+      },
+    });
   }
 }

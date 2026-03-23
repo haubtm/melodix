@@ -8,6 +8,8 @@
   country?: string;
   verified: boolean;
   monthlyListeners: number;
+  songCount: number;
+  albumCount: number;
   createdAt: string;
   updatedAt: string;
 }
