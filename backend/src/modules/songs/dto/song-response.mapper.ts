@@ -1,7 +1,11 @@
 import { ArtistResponseDto } from '../../artists/dto/artist-response.dto';
 import { SongArtistReferenceDto, SongResponseDto } from './song-response.dto';
+import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
 type SongWithRelations = {
+  audioUrl?: string | null;
+  coverUrl?: string | null;
+  lyricsUrl?: string | null;
   primaryArtist?: {
     id: number;
     name: string;
@@ -17,9 +21,14 @@ export function toSongResponseDto<T extends SongWithRelations>(
 
   return {
     ...song,
+    audioUrl: song.audioUrl ? (buildMediaUrl(song.audioUrl) ?? song.audioUrl) : song.audioUrl,
+    coverUrl: song.coverUrl ? (buildMediaUrl(song.coverUrl) ?? song.coverUrl) : song.coverUrl,
+    lyricsUrl: song.lyricsUrl ? (buildMediaUrl(song.lyricsUrl) ?? song.lyricsUrl) : song.lyricsUrl,
     artistId,
     primaryArtist: song.primaryArtist
-      ? new ArtistResponseDto(song.primaryArtist as ConstructorParameters<typeof ArtistResponseDto>[0])
+      ? new ArtistResponseDto(
+          song.primaryArtist as ConstructorParameters<typeof ArtistResponseDto>[0],
+        )
       : undefined,
     artist: song.primaryArtist
       ? new SongArtistReferenceDto({
@@ -29,4 +38,3 @@ export function toSongResponseDto<T extends SongWithRelations>(
       : undefined,
   };
 }
-
