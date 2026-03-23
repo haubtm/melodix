@@ -1,4 +1,4 @@
-import {
+﻿import {
   BadRequestException,
   Injectable,
   NotFoundException,
@@ -105,7 +105,14 @@ export class ArtistService {
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
-    return new ArtistResponseDto(artist);
+
+    const stats = await this.artistRepository.getStats(id);
+    return new ArtistResponseDto({
+      ...artist,
+      monthlyListeners: stats.monthlyListeners || artist.monthlyListeners,
+      songCount: stats.songCount,
+      albumCount: stats.albumCount,
+    });
   }
 
   async update(

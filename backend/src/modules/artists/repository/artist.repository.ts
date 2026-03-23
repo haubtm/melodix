@@ -105,6 +105,32 @@ export class ArtistRepository {
     });
   }
 
+  async getStats(
+    id: number,
+  ): Promise<{ songCount: number; albumCount: number; monthlyListeners: number }> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [songCount, albumCount, distinctListeners] = await Promise.all([
+      this.prisma.song.count({ where: { artistId: id } }),
+      this.prisma.album.count({ where: { artistId: id } }),
+      this.prisma.listeningHistory.findMany({
+        where: {
+          playedAt: { gte: thirtyDaysAgo },
+          song: { artistId: id },
+        },
+        distinct: ['userId'],
+        select: { userId: true },
+      }),
+    ]);
+
+    return {
+      songCount,
+      albumCount,
+      monthlyListeners: distinctListeners.length,
+    };
+  }
+
   async deleteMany(ids: number[]): Promise<Prisma.BatchPayload> {
     return this.prisma.artist.deleteMany({
       where: {
