@@ -19,12 +19,12 @@
 .heroTop {
   display: flex;
   align-items: flex-start;
-  gap: 28px;
+  gap: 24px;
 }
 
 .avatar {
-  width: 220px;
-  height: 220px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -65,6 +65,7 @@
 .metaItem {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   min-height: 34px;
   padding: 0 14px;
   border-radius: 999px;
@@ -72,6 +73,10 @@
   color: rgba(255, 255, 255, 0.88);
   font-size: 13px;
   font-weight: 600;
+}
+
+.metaItem :global(svg) {
+  flex-shrink: 0;
 }
 
 .bioSection {
@@ -107,6 +112,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.songsSection {
+  margin-top: 28px;
 }
 
 .sectionHeader {
@@ -147,7 +156,11 @@
   }
 
   .avatar {
-    width: 180px;
-    height: 180px;
+    width: 140px;
+    height: 140px;
+  }
+
+  .songsSection {
+    margin-top: 20px;
   }
 }

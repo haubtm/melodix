@@ -44,6 +44,9 @@ export function ArtistDetailContainer({
     return `${artist.bio.slice(0, 320).trim()}...`;
   }, [artist.bio, bioExpanded, shouldCollapseBio]);
 
+  const songCount = artist.songCount ?? songs.length;
+  const albumCount = artist.albumCount ?? albums.length;
+
   return (
     <MainLayout>
       <div className={styles.container}>
@@ -53,8 +56,8 @@ export function ArtistDetailContainer({
               src={artist.avatarUrl}
               fallbackSrc="/images/default-artist.svg"
               alt={artist.name}
-              width={220}
-              height={220}
+              width={160}
+              height={160}
               className={styles.avatar}
             />
 
@@ -63,15 +66,17 @@ export function ArtistDetailContainer({
               <h1 className={styles.title}>{artist.name}</h1>
               <div className={styles.meta}>
                 <span className={styles.metaItem}>
-                  <CustomerServiceOutlined /> {formatListeners(artist.monthlyListeners)} người nghe
+                  <CustomerServiceOutlined />
+                  <span>{formatListeners(artist.monthlyListeners)} người nghe</span>
                 </span>
                 {artist.verified && (
                   <span className={styles.metaItem}>
-                    <SafetyCertificateFilled /> Đã xác minh
+                    <SafetyCertificateFilled />
+                    <span>Đã xác minh</span>
                   </span>
                 )}
-                <span className={styles.metaItem}>{songs.length} bài hát</span>
-                <span className={styles.metaItem}>{albums.length} album</span>
+                <span className={styles.metaItem}>{songCount} bài hát</span>
+                <span className={styles.metaItem}>{albumCount} album</span>
               </div>
             </div>
           </div>
@@ -93,7 +98,7 @@ export function ArtistDetailContainer({
         </section>
 
         {songs.length > 0 && (
-          <section className={styles.section}>
+          <section className={`${styles.section} ${styles.songsSection}`}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Bài hát nổi bật</h2>
             </div>
