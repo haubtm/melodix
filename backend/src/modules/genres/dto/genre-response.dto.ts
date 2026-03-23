@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GenreEntity } from '../entity/genre.entity';
+import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
 export class GenreResponseDto {
   @ApiProperty({ example: 1 })
@@ -28,7 +29,7 @@ export class GenreResponseDto {
     this.name = entity.name;
     this.slug = entity.slug;
     this.description = entity.description;
-    this.imageUrl = entity.imageUrl;
+    this.imageUrl = buildMediaUrl(entity.imageUrl);
     this.color = entity.color;
     this.createdAt = entity.createdAt;
   }

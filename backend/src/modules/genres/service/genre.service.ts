@@ -4,6 +4,7 @@ import { CreateGenreDto, UpdateGenreDto, GenreResponseDto, GenreListDto } from '
 import { DeleteManyDto } from '../../../common/dto/delete-many.dto';
 import { PaginatedResponseDto } from '../../../common/dto';
 import { Prisma } from '@prisma/client';
+import { normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class GenreService {
@@ -22,6 +23,7 @@ export class GenreService {
 
     const genre = await this.genreRepository.create({
       ...dto,
+      imageUrl: normalizeMediaKey(dto.imageUrl),
       slug,
     });
 
@@ -78,7 +80,10 @@ export class GenreService {
       }
     }
 
-    const updatedGenre = await this.genreRepository.update(id, dto);
+    const updatedGenre = await this.genreRepository.update(id, {
+      ...dto,
+      ...(dto.imageUrl !== undefined && { imageUrl: normalizeMediaKey(dto.imageUrl) }),
+    });
     return new GenreResponseDto(updatedGenre);
   }
 

@@ -8,6 +8,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import { Readable } from 'stream';
+import { buildMediaUrl, normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class UploadService {
@@ -41,14 +42,11 @@ export class UploadService {
    * e.g. https://bucket.s3.region.amazonaws.com/songs/uuid.mp3 → songs/uuid.mp3
    */
   extractKeyFromUrl(url: string): string {
-    try {
-      const urlObj = new URL(url);
-      // Remove leading slash
-      return urlObj.pathname.substring(1);
-    } catch {
-      // If not a valid URL, assume it's already a key
-      return url;
-    }
+    return normalizeMediaKey(url) ?? url;
+  }
+
+  buildFileUrl(key: string): string {
+    return buildMediaUrl(key) ?? key;
   }
 
   async uploadFile(
@@ -68,10 +66,8 @@ export class UploadService {
 
       await this.s3Client.send(command);
 
-      const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${fileName}`;
-
       return {
-        url,
+        url: this.buildFileUrl(fileName),
         key: fileName,
       };
     } catch (error) {
@@ -111,7 +107,10 @@ export class UploadService {
   /**
    * Get a readable stream from S3, optionally with Range support
    */
-  async getFileStream(key: string, range?: string): Promise<{
+  async getFileStream(
+    key: string,
+    range?: string,
+  ): Promise<{
     stream: Readable;
     contentLength: number;
     contentType: string;

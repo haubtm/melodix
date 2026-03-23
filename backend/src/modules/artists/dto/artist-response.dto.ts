@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
+import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
 @Exclude()
 export class ArtistResponseDto {
@@ -55,5 +56,7 @@ export class ArtistResponseDto {
 
   constructor(partial: Partial<ArtistResponseDto>) {
     Object.assign(this, partial);
+    this.avatarUrl = buildMediaUrl(this.avatarUrl);
+    this.coverUrl = buildMediaUrl(this.coverUrl);
   }
 }

@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ArtistResponseDto } from '../../artists/dto/artist-response.dto';
+import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
 export class SongArtistReferenceDto {
   @ApiProperty()
@@ -34,10 +35,10 @@ export class SongResponseDto {
   audioUrl: string;
 
   @ApiPropertyOptional()
-  coverUrl?: string;
+  coverUrl?: string | null;
 
   @ApiPropertyOptional()
-  lyricsUrl?: string;
+  lyricsUrl?: string | null;
 
   @ApiProperty()
   playCount: number; // Changed from BigInt to number for JSON response
@@ -62,5 +63,9 @@ export class SongResponseDto {
 
   constructor(partial: Partial<SongResponseDto>) {
     Object.assign(this, partial);
+    this.audioUrl = buildMediaUrl(this.audioUrl) ?? this.audioUrl;
+    this.coverUrl = buildMediaUrl(this.coverUrl);
+    this.lyricsUrl = buildMediaUrl(this.lyricsUrl);
+    this.primaryArtist = this.primaryArtist ? new ArtistResponseDto(this.primaryArtist) : undefined;
   }
 }

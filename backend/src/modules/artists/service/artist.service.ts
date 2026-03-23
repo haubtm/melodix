@@ -8,6 +8,7 @@ import { ArtistRepository } from '../repository/artist.repository';
 import { CreateArtistDto, UpdateArtistDto, ArtistResponseDto, ArtistListDto } from '../dto';
 import { Prisma, UserRole } from '@prisma/client';
 import { PaginatedResponseDto } from '../../../common/dto';
+import { normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class ArtistService {
@@ -36,6 +37,8 @@ export class ArtistService {
 
     const artist = await this.artistRepository.create({
       ...dto,
+      avatarUrl: normalizeMediaKey(dto.avatarUrl),
+      coverUrl: normalizeMediaKey(dto.coverUrl),
       slug,
     });
 
@@ -133,7 +136,11 @@ export class ArtistService {
       }
     }
 
-    const updatedArtist = await this.artistRepository.update(id, dto);
+    const updatedArtist = await this.artistRepository.update(id, {
+      ...dto,
+      ...(dto.avatarUrl !== undefined && { avatarUrl: normalizeMediaKey(dto.avatarUrl) }),
+      ...(dto.coverUrl !== undefined && { coverUrl: normalizeMediaKey(dto.coverUrl) }),
+    });
     return new ArtistResponseDto(updatedArtist);
   }
 

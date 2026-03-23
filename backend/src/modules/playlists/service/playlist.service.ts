@@ -4,6 +4,7 @@ import { CreatePlaylistDto, UpdatePlaylistDto, PlaylistResponseDto, AddSongsDto 
 import { PaginatedResponseDto } from '../../../common/dto';
 import { Prisma } from '@prisma/client';
 import { SongService } from '../../songs/service/song.service';
+import { normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class PlaylistService {
@@ -17,6 +18,7 @@ export class PlaylistService {
 
     const playlist = await this.playlistRepository.create({
       ...dto,
+      imageUrl: normalizeMediaKey(dto.imageUrl),
       slug,
       user: { connect: { id: userId } },
     });
@@ -112,7 +114,10 @@ export class PlaylistService {
       throw new ForbiddenException('You can only update your own playlists');
     }
 
-    const updatedPlaylist = await this.playlistRepository.update(id, dto);
+    const updatedPlaylist = await this.playlistRepository.update(id, {
+      ...dto,
+      ...(dto.imageUrl !== undefined && { imageUrl: normalizeMediaKey(dto.imageUrl) }),
+    });
     return new PlaylistResponseDto(updatedPlaylist);
   }
 

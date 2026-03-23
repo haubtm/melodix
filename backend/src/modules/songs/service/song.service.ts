@@ -15,6 +15,7 @@ import { ArtistService } from '../../artists/service/artist.service';
 import { User, UserRole, SongStatus, Prisma } from '@prisma/client';
 import { SongListDto } from '../dto/song-list.dto';
 import { toSongResponseDto } from '../dto/song-response.mapper';
+import { normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class SongService {
@@ -85,6 +86,9 @@ export class SongService {
 
     const song = await this.songRepository.create({
       ...rest,
+      audioUrl: normalizeMediaKey(rest.audioUrl) ?? rest.audioUrl,
+      coverUrl: normalizeMediaKey(rest.coverUrl),
+      lyricsUrl: normalizeMediaKey(rest.lyricsUrl),
       slug,
       status,
       primaryArtist: {
@@ -267,6 +271,11 @@ export class SongService {
 
     const song = await this.songRepository.update(id, {
       ...rest,
+      ...(rest.audioUrl !== undefined && {
+        audioUrl: normalizeMediaKey(rest.audioUrl) ?? rest.audioUrl,
+      }),
+      ...(rest.coverUrl !== undefined && { coverUrl: normalizeMediaKey(rest.coverUrl) }),
+      ...(rest.lyricsUrl !== undefined && { lyricsUrl: normalizeMediaKey(rest.lyricsUrl) }),
       ...(title && { title, slug }),
       ...(shouldResetStatus && { status: SongStatus.pending, reviewedAt: null, reviewedBy: null }),
       ...(artistId && {

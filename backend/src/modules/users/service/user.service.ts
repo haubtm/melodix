@@ -11,6 +11,7 @@ import { CreateUserDto, UpdateUserDto, UserResponseDto, UserListDto } from '../d
 import { USER_ERRORS, USER_DEFAULTS } from '../constant';
 import { PaginatedResponseDto } from '../../../common/dto';
 import { Prisma } from '@prisma/client';
+import { normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class UserService {
@@ -181,7 +182,10 @@ export class UserService {
 
     const user = await this.userRepository.update(id, {
       displayName: updateUserDto.displayName,
-      avatarUrl: updateUserDto.avatarUrl,
+      avatarUrl:
+        updateUserDto.avatarUrl === undefined
+          ? undefined
+          : normalizeMediaKey(updateUserDto.avatarUrl),
       dateOfBirth: updateUserDto.dateOfBirth ? new Date(updateUserDto.dateOfBirth) : undefined,
       country: updateUserDto.country,
     });

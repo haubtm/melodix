@@ -3,6 +3,7 @@ import { AlbumType } from '@prisma/client';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ArtistResponseDto } from '../../artists/dto/artist-response.dto';
 import { SongResponseDto } from '../../songs/dto/song-response.dto';
+import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
 @Exclude()
 export class AlbumResponseDto {
@@ -71,5 +72,8 @@ export class AlbumResponseDto {
 
   constructor(partial: Partial<AlbumResponseDto>) {
     Object.assign(this, partial);
+    this.coverUrl = buildMediaUrl(this.coverUrl);
+    this.artist = this.artist ? new ArtistResponseDto(this.artist) : undefined;
+    this.songs = this.songs?.map((song) => new SongResponseDto(song));
   }
 }

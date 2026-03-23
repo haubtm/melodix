@@ -4,6 +4,7 @@ import { UserResponseDto } from '../../users/dto/user-response.dto';
 import { PlaylistSongResponseDto } from './playlist-song-response.dto';
 import { SongResponseDto, SongArtistReferenceDto } from '../../songs/dto/song-response.dto';
 import { ArtistResponseDto } from '../../artists/dto/artist-response.dto';
+import { buildMediaUrl } from '../../../common/utils/media-url.util';
 
 export class PlaylistResponseDto {
   @ApiProperty({ example: 1 })
@@ -47,7 +48,7 @@ export class PlaylistResponseDto {
     this.name = entity.name;
     this.slug = entity.slug;
     this.description = entity.description;
-    this.imageUrl = entity.imageUrl;
+    this.imageUrl = buildMediaUrl(entity.imageUrl);
     this.isPublic = entity.isPublic;
     this.totalTracks = entity.totalTracks;
     this.durationMs = entity.durationMs;
@@ -71,6 +72,7 @@ export class PlaylistResponseDto {
             durationMs: item.song.durationMs,
             audioUrl: item.song.audioUrl,
             coverUrl: item.song.coverUrl,
+            lyricsUrl: item.song.lyricsUrl,
             playCount: Number(item.song.playCount ?? 0),
             createdAt: item.song.createdAt,
             artistId: item.song.primaryArtist?.id,

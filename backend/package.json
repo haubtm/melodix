@@ -15,6 +15,7 @@
     "dev": "npx prisma db push && nest start --watch",
     "db:push": "npx prisma db push",
     "db:migrate": "npx prisma migrate dev",
+    "db:migrate-media-keys": "node --env-file=.env prisma/scripts/migrate-media-urls-to-keys.cjs",
     "db:studio": "npx prisma studio",
     "db:generate": "npx prisma generate",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

@@ -11,6 +11,7 @@ import { AlbumListDto } from '../dto/album-list.dto';
 import { ArtistRepository } from '../../artists/repository/artist.repository';
 import { PaginatedResponseDto } from '../../../common/dto';
 import { Prisma, UserRole } from '@prisma/client';
+import { normalizeMediaKey } from '../../../common/utils/media-url.util';
 
 @Injectable()
 export class AlbumService {
@@ -52,6 +53,7 @@ export class AlbumService {
 
     const album = await this.albumRepository.create({
       ...albumData,
+      coverUrl: normalizeMediaKey(dto.coverUrl),
       releaseDate: dto.releaseDate ? new Date(dto.releaseDate) : undefined,
       slug,
       artist: { connect: { id: dto.artistId } },
@@ -136,7 +138,10 @@ export class AlbumService {
       }
     }
 
-    const updateData: any = { ...dto };
+    const updateData: any = {
+      ...dto,
+      ...(dto.coverUrl !== undefined && { coverUrl: normalizeMediaKey(dto.coverUrl) }),
+    };
     if (dto.releaseDate) {
       updateData.releaseDate = new Date(dto.releaseDate);
     }
