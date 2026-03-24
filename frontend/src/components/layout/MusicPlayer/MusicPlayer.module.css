@@ -178,9 +178,14 @@
   display: block;
   width: 12px !important;
   height: 12px !important;
-  background: var(--text-primary) !important;
+  background: transparent !important;
   border: none !important;
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: none !important;
+}
+
+.slider:hover :global(.ant-slider-handle::after) {
+  background-color: var(--bg-secondary) !important;
+  box-shadow: 0 0 0 2px var(--accent-primary) !important;
 }
 
 /* Extra Controls */
@@ -233,8 +238,14 @@
   display: block;
   width: 12px !important;
   height: 12px !important;
-  background: var(--text-primary) !important;
+  background: transparent !important;
   border: none !important;
+  box-shadow: none !important;
+}
+
+.volumeSlider:hover :global(.ant-slider-handle::after) {
+  background-color: var(--bg-secondary) !important;
+  box-shadow: 0 0 0 2px var(--accent-primary) !important;
 }
 
 /* Responsive */
